@@ -99,18 +99,15 @@ public class MeterMasterDao {
     public int createMeterMaster(MeterMasterBean meterMasterBean){
         int result = -1;
         try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            String username = authentication.getName();
 
             meterMasterBean.setCreated_on(new DateMethods().getServerTime());
             meterMasterBean.setUpdated_on(new DateMethods().getServerTime());
-            meterMasterBean.setCreated_by(username);
-            meterMasterBean.setUpdated_by(username);
+            meterMasterBean.setCreated_by(new DateMethods().getCurrentUsername());
+            meterMasterBean.setUpdated_by(new DateMethods().getCurrentUsername());
             meterMasterBean.setStatus("active");
             meterMasterBean.setRemark("unassigned");
 
             result = meterMasterRepo.createMeterMaster(meterMasterBean);
-
 
         }catch (Exception e) {
             System.out.print(e);
