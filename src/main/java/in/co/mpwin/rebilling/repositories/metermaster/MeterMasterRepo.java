@@ -20,7 +20,7 @@ public interface MeterMasterRepo extends CrudRepository<MeterMasterBean, Long> {
     public ArrayList<MeterMasterBean> getAllMeterByStatus(@Param("status") String status);
 
 
-    @Transactional
+    /*@Transactional
     @Modifying
     @Query(value = "INSERT into re_meter_master (" +
             "meterno," +
@@ -88,7 +88,7 @@ public interface MeterMasterRepo extends CrudRepository<MeterMasterBean, Long> {
                           @Param("updated_on") Timestamp updated_on,
                           @Param("status") String status,
                           @Param("remark") String remark
-                        );
+                        );*/
     @Transactional
     @Modifying
     @Query(value = "INSERT into re_meter_master (" +
@@ -135,7 +135,7 @@ public interface MeterMasterRepo extends CrudRepository<MeterMasterBean, Long> {
             ":#{#mmb.updated_on}," +
             ":#{#mmb.status}," +
             ":#{#mmb.remark})", nativeQuery = true)
-    public int createMeterMaster2(@Param("mmb") MeterMasterBean mmb);
+    public int createMeterMaster(@Param("mmb") MeterMasterBean mmb);
 //        public MeterMasterBean save(MeterMasterBean meterMasterBean);
 
 

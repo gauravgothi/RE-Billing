@@ -1,9 +1,12 @@
 package in.co.mpwin.rebilling.dao.metermaster;
 
 import in.co.mpwin.rebilling.beans.metermaster.MeterMasterBean;
+import in.co.mpwin.rebilling.miscellanious.DateMethods;
 import in.co.mpwin.rebilling.repositories.metermaster.MeterMasterRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
@@ -39,7 +42,7 @@ public class MeterMasterDao {
         return meterList;
     }
     
-    public int createMeterMaster(
+    /*public int createMeterMaster(
             String METERNO,
             String MAKE,
             String CATEGORY,
@@ -91,12 +94,24 @@ public class MeterMasterDao {
             e.printStackTrace();
         }
         return result;
-    }
+    }*/
 
-    public int createMeterMaster2(MeterMasterBean meterMasterBean){
+    public int createMeterMaster(MeterMasterBean meterMasterBean){
         int result = -1;
         try {
-            result = meterMasterRepo.createMeterMaster2(meterMasterBean);
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String username = authentication.getName();
+
+            meterMasterBean.setCreated_on(new DateMethods().getServerTime());
+            meterMasterBean.setUpdated_on(new DateMethods().getServerTime());
+            meterMasterBean.setCreated_by(username);
+            meterMasterBean.setUpdated_by(username);
+            meterMasterBean.setStatus("active");
+            meterMasterBean.setRemark("unassigned");
+
+            result = meterMasterRepo.createMeterMaster(meterMasterBean);
+
+
         }catch (Exception e) {
             System.out.print(e);
             e.printStackTrace();

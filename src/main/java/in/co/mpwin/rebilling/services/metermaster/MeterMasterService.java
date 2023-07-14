@@ -38,7 +38,7 @@ public class MeterMasterService {
         return meterList;
     }
 
-    public int createMeterMaster(
+    /*public int createMeterMaster(
             String METERNO,
             String MAKE,
             String CATEGORY,
@@ -90,13 +90,13 @@ public class MeterMasterService {
             e.printStackTrace();
         }
         return resp_code;
-    }
+    }*/
 
 
-    public  int createMeterMaster2(MeterMasterBean meterMasterBean) {
+    public  int createMeterMaster(MeterMasterBean meterMasterBean) {
         int result = -1;
         try {
-            result = meterMasterDao.createMeterMaster2(meterMasterBean);
+            result = meterMasterDao.createMeterMaster(meterMasterBean);
         }catch (Exception e) {
             System.out.print(e);
             e.printStackTrace();
