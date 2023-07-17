@@ -93,14 +93,15 @@ public class MeterMasterService {
     }*/
 
 
-    public  int createMeterMaster(MeterMasterBean meterMasterBean) {
-        int result = -1;
+    public MeterMasterBean createMeterMaster(MeterMasterBean meterMasterBean) {
+        //int result = -1;
+        MeterMasterBean mmb = new MeterMasterBean();
         try {
-            result = meterMasterDao.createMeterMaster(meterMasterBean);
+            mmb = meterMasterDao.createMeterMaster(meterMasterBean);
         }catch (Exception e) {
             System.out.print(e);
             e.printStackTrace();
         }
-        return result;
+        return mmb;
     }
 }

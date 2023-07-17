@@ -13,15 +13,16 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 
 @RestController
+@RequestMapping("/meter")
 @CrossOrigin(origins="*")
 public class MeterMasterController {
 
     @Autowired
     MeterMasterService meterMasterService;
 
-    @RequestMapping(method= RequestMethod.GET,value="/getMeterDetailsByMeterNo")
-    public ResponseEntity<MeterMasterBean> getMeterDetailsByMeterNo(@RequestParam("meterno") String meterno,
-                                                                    @RequestParam("status") String status) {
+    @RequestMapping(method= RequestMethod.GET,value="/meterno/{meterno}/status/{status}")
+    public ResponseEntity<MeterMasterBean> getMeterDetailsByMeterNo(@PathVariable("meterno") String meterno,
+                                                                    @PathVariable("status") String status) {
         ResponseEntity meterDtlResp = null;
         try {
 
@@ -45,8 +46,8 @@ public class MeterMasterController {
         return meterDtlResp;
     }
 
-    @RequestMapping(method= RequestMethod.GET,value="/getAllMeterByStatus")
-    public ResponseEntity<MeterMasterBean> getAllMeterByStatus(@RequestParam("status") String status) {
+    @RequestMapping(method= RequestMethod.GET,value="/list/status/{status}")
+    public ResponseEntity<MeterMasterBean> getAllMeterByStatus(@PathVariable("status") String status) {
         ResponseEntity meterDtlResp = null;
         try {
 
@@ -68,6 +69,29 @@ public class MeterMasterController {
         }
         return meterDtlResp;
     }
+
+    @RequestMapping(method= RequestMethod.POST,value="")
+    public ResponseEntity<?> createMeterMaster(@RequestBody MeterMasterBean meterMasterBean){
+        //int result = -1;
+        //String resp = null;
+        MeterMasterBean mmb = new MeterMasterBean();
+        //ResponseEntity meterInsrtResp = null;
+        try {
+            mmb = meterMasterService.createMeterMaster(meterMasterBean);
+            return new ResponseEntity<>(mmb,HttpStatus.CREATED);
+//            if(result==1)
+//            {
+//                meterInsrtResp = new ResponseEntity<>("Success", HttpStatus.OK);
+//            }else if(result!=1) {
+//                meterInsrtResp = new ResponseEntity<>("Fail", HttpStatus.NOT_MODIFIED);
+//            }else {
+//                meterInsrtResp = new ResponseEntity<>("Fail", HttpStatus.BAD_REQUEST);
+//            }
+        }catch (Exception e){
+            System.out.println(e);
+            e.printStackTrace();
+            return new ResponseEntity<>("Fail",HttpStatus.BAD_REQUEST);
+        }
 
     /*@RequestMapping(method= RequestMethod.POST,value="/createMeterMaster")
     public ResponseEntity<?> createMeterMaster(@RequestParam("meterno") String METERNO,
@@ -130,28 +154,8 @@ public class MeterMasterController {
         return new ResponseEntity<>(resp,HttpStatus.OK);
     }*/
 
-    @RequestMapping(method= RequestMethod.POST,value="/createMeterMaster")
-    public ResponseEntity<?> createMeterMaster(@RequestBody MeterMasterBean meterMasterBean){
-        int result = -1;
-        //String resp = null;
-        ResponseEntity meterInsrtResp = null;
-        try {
-            result = meterMasterService.createMeterMaster(meterMasterBean);
 
-            if(result==1)
-            {
-                meterInsrtResp = new ResponseEntity<>("Success", HttpStatus.OK);
-            }else if(result!=1) {
-                meterInsrtResp = new ResponseEntity<>("Fail", HttpStatus.NOT_MODIFIED);
-            }else {
-                meterInsrtResp = new ResponseEntity<>("Fail", HttpStatus.BAD_REQUEST);
-            }
 
-        }catch (Exception e){
-            System.out.println(e);
-            e.printStackTrace();
-        }
-        return meterInsrtResp;
 
     }
 }
