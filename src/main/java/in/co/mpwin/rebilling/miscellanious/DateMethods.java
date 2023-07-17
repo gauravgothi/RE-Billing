@@ -15,10 +15,5 @@ public class DateMethods {
         java.sql.Timestamp ourJavaTimestampObject = new java.sql.Timestamp(calendar.getTime().getTime());
         return ourJavaTimestampObject;
     }
-    public String getCurrentUsername()
-    {
-        //Get the Current Logged-In Username
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication.getName();
-    }
+
 }

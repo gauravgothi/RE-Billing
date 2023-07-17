@@ -2,6 +2,7 @@ package in.co.mpwin.rebilling.dao.metermaster;
 
 import in.co.mpwin.rebilling.beans.metermaster.MeterMasterBean;
 import in.co.mpwin.rebilling.miscellanious.DateMethods;
+import in.co.mpwin.rebilling.miscellanious.TokenInfo;
 import in.co.mpwin.rebilling.repositories.metermaster.MeterMasterRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
@@ -20,7 +21,7 @@ public class MeterMasterDao {
     public MeterMasterBean getMeterDetailsByMeterNo(String meterno, String status) {
         MeterMasterBean meterMasterBean = new MeterMasterBean();
         try {
-                meterMasterBean = meterMasterRepo.getMeterDetailsByMeterNo(meterno,status);
+                meterMasterBean = meterMasterRepo.findByMeterNumberAndStatus(meterno,status);
         }
         catch (Exception e) {
             System.out.print(e);
@@ -33,13 +34,34 @@ public class MeterMasterDao {
         ArrayList<MeterMasterBean> meterList = new ArrayList<MeterMasterBean>();
         try {
 
-            meterList = meterMasterRepo.getAllMeterByStatus(status);
+            meterList = meterMasterRepo.findAllByStatus(status);
         }
         catch (Exception e) {
             System.out.print(e);
             e.printStackTrace();
         }
         return meterList;
+    }
+
+    public MeterMasterBean createMeterMaster(MeterMasterBean meterMasterBean){
+        //int result = -1;
+        MeterMasterBean mmb = new MeterMasterBean();
+        try {
+
+            meterMasterBean.setCreatedOn(new DateMethods().getServerTime());
+            meterMasterBean.setUpdatedOn(new DateMethods().getServerTime());
+            meterMasterBean.setCreatedBy(new TokenInfo().getCurrentUsername());
+            meterMasterBean.setUpdatedBy(new TokenInfo().getCurrentUsername());
+            meterMasterBean.setStatus("active");
+            meterMasterBean.setRemark("unassigned");
+
+            mmb = meterMasterRepo.save(meterMasterBean);
+
+        }catch (Exception e) {
+            System.out.print(e);
+            e.printStackTrace();
+        }
+        return mmb;
     }
     
     /*public int createMeterMaster(
@@ -95,26 +117,6 @@ public class MeterMasterDao {
         }
         return result;
     }*/
-
-    public int createMeterMaster(MeterMasterBean meterMasterBean){
-        int result = -1;
-        try {
-
-            meterMasterBean.setCreated_on(new DateMethods().getServerTime());
-            meterMasterBean.setUpdated_on(new DateMethods().getServerTime());
-            meterMasterBean.setCreated_by(new DateMethods().getCurrentUsername());
-            meterMasterBean.setUpdated_by(new DateMethods().getCurrentUsername());
-            meterMasterBean.setStatus("active");
-            meterMasterBean.setRemark("unassigned");
-
-            result = meterMasterRepo.createMeterMaster(meterMasterBean);
-
-        }catch (Exception e) {
-            System.out.print(e);
-            e.printStackTrace();
-        }
-        return result;
-    }
     
 
 }
