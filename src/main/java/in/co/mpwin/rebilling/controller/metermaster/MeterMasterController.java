@@ -20,9 +20,9 @@ public class MeterMasterController {
     @Autowired
     MeterMasterService meterMasterService;
 
-    @RequestMapping(method= RequestMethod.GET,value="")
-    public ResponseEntity<MeterMasterBean> getMeterDetailsByMeterNo(@RequestParam("meterno") String meterno,
-                                                                    @RequestParam("status") String status) {
+    @RequestMapping(method= RequestMethod.GET,value="/meterno/{meterno}/status/{status}")
+    public ResponseEntity<MeterMasterBean> getMeterDetailsByMeterNo(@PathVariable("meterno") String meterno,
+                                                                    @PathVariable("status") String status) {
         ResponseEntity meterDtlResp = null;
         try {
 
@@ -46,8 +46,8 @@ public class MeterMasterController {
         return meterDtlResp;
     }
 
-    @RequestMapping(method= RequestMethod.GET,value="/list")
-    public ResponseEntity<MeterMasterBean> getAllMeterByStatus(@RequestParam("status") String status) {
+    @RequestMapping(method= RequestMethod.GET,value="/list/status/{status}")
+    public ResponseEntity<MeterMasterBean> getAllMeterByStatus(@PathVariable("status") String status) {
         ResponseEntity meterDtlResp = null;
         try {
 

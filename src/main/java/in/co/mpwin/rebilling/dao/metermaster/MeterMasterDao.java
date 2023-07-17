@@ -53,7 +53,7 @@ public class MeterMasterDao {
             meterMasterBean.setCreatedBy(new TokenInfo().getCurrentUsername());
             meterMasterBean.setUpdatedBy(new TokenInfo().getCurrentUsername());
             meterMasterBean.setStatus("active");
-            meterMasterBean.setRemark("unassigned");
+            //meterMasterBean.setRemark("unassigned");
 
             mmb = meterMasterRepo.save(meterMasterBean);
 
