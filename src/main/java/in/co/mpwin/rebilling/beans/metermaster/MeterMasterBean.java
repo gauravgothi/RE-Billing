@@ -14,7 +14,7 @@ public class MeterMasterBean implements MeterMasterInterface {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
     Long id;
-    @Column(name="meterno")
+    @Column(name="meter_number")
     String meterNumber;
     @Column(name="make")
     String make;

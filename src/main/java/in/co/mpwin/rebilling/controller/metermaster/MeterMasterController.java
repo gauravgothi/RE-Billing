@@ -3,6 +3,7 @@ package in.co.mpwin.rebilling.controller.metermaster;
 import in.co.mpwin.rebilling.beans.metermaster.MeterMasterBean;
 import in.co.mpwin.rebilling.services.metermaster.MeterMasterService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ public class MeterMasterController {
     MeterMasterService meterMasterService;
 
     @RequestMapping(method= RequestMethod.GET,value="/meterno/{meterno}/status/{status}")
-    public ResponseEntity<MeterMasterBean> getMeterDetailsByMeterNo(@PathVariable("meterno") String meterno,
+    public ResponseEntity<MeterMasterBean> getMeterDetails(@PathVariable("meterno") String meterno,
                                                                     @PathVariable("status") String status) {
         ResponseEntity meterDtlResp = null;
         try {
@@ -45,6 +46,32 @@ public class MeterMasterController {
         }
         return meterDtlResp;
     }
+
+    /*@RequestMapping(method= RequestMethod.GET,value="/meterno/{meterno}/type/{type}")
+    public ResponseEntity<MeterMasterBean> getMeterDetails(@PathVariable("meterno") String meterno,
+                                                           @PathVariable("type") String type) {
+        ResponseEntity meterDtlResp = null;
+        try {
+
+            MeterMasterBean meterMasterBean = new MeterMasterBean();
+            meterMasterBean = meterMasterService.getMeterDetailsByMeterNo(meterno, status);
+            if(meterMasterBean!=null)
+            {
+                meterDtlResp = new ResponseEntity<>(meterMasterBean, HttpStatus.OK);
+            }
+            else if(meterMasterBean==null)
+            {
+                meterDtlResp=new ResponseEntity<>("Meter Detail not present",HttpStatus.NO_CONTENT);
+            }
+            else {
+                meterDtlResp=new ResponseEntity<>("Invalid Request",HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+            e.printStackTrace();
+        }
+        return meterDtlResp;
+    }*/
 
     @RequestMapping(method= RequestMethod.GET,value="/list/status/{status}")
     public ResponseEntity<MeterMasterBean> getAllMeterByStatus(@PathVariable("status") String status) {
@@ -75,22 +102,32 @@ public class MeterMasterController {
         //int result = -1;
         //String resp = null;
         MeterMasterBean mmb = new MeterMasterBean();
-        //ResponseEntity meterInsrtResp = null;
+        //mmb = null;
+        ResponseEntity meterInsrtResp = null;
         try {
             mmb = meterMasterService.createMeterMaster(meterMasterBean);
-            return new ResponseEntity<>(mmb,HttpStatus.CREATED);
-//            if(result==1)
-//            {
-//                meterInsrtResp = new ResponseEntity<>("Success", HttpStatus.OK);
-//            }else if(result!=1) {
-//                meterInsrtResp = new ResponseEntity<>("Fail", HttpStatus.NOT_MODIFIED);
-//            }else {
-//                meterInsrtResp = new ResponseEntity<>("Fail", HttpStatus.BAD_REQUEST);
-//            }
-        }catch (Exception e){
+
+            if(mmb!=null)
+            {
+                meterInsrtResp = new ResponseEntity<>(meterMasterBean.getMeterNumber()+" is created successfully", HttpStatus.OK);
+            }else if(mmb==null) {
+                meterInsrtResp = new ResponseEntity<>(meterMasterBean.getMeterNumber()+" can not be created may already exist", HttpStatus.BAD_REQUEST);
+            }else {
+                meterInsrtResp = new ResponseEntity<>("Something went wrong", HttpStatus.BAD_REQUEST);
+            }
+            return meterInsrtResp;
+
+        }
+        /*catch(DataIntegrityViolationException d)
+        {
+            System.out.println("Personal Message: "+d);
+            //d.printStackTrace();
+            return new ResponseEntity<>("Meter already exist",HttpStatus.BAD_REQUEST);
+        }*/
+        catch (Exception e){
             System.out.println(e);
             e.printStackTrace();
-            return new ResponseEntity<>("Fail",HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Internal Server Error",HttpStatus.BAD_REQUEST);
         }
 
     /*@RequestMapping(method= RequestMethod.POST,value="/createMeterMaster")

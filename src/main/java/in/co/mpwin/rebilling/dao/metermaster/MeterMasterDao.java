@@ -1,10 +1,14 @@
 package in.co.mpwin.rebilling.dao.metermaster;
 
 import in.co.mpwin.rebilling.beans.metermaster.MeterMasterBean;
+import in.co.mpwin.rebilling.jwt.exception.ApiException;
+import in.co.mpwin.rebilling.miscellanious.AuditControlServices;
 import in.co.mpwin.rebilling.miscellanious.DateMethods;
 import in.co.mpwin.rebilling.miscellanious.TokenInfo;
+import in.co.mpwin.rebilling.miscellanious.ValidatorService;
 import in.co.mpwin.rebilling.repositories.metermaster.MeterMasterRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -48,17 +52,27 @@ public class MeterMasterDao {
         MeterMasterBean mmb = new MeterMasterBean();
         try {
 
-            meterMasterBean.setCreatedOn(new DateMethods().getServerTime());
+           /* meterMasterBean.setCreatedOn(new DateMethods().getServerTime());
             meterMasterBean.setUpdatedOn(new DateMethods().getServerTime());
             meterMasterBean.setCreatedBy(new TokenInfo().getCurrentUsername());
             meterMasterBean.setUpdatedBy(new TokenInfo().getCurrentUsername());
             meterMasterBean.setStatus("active");
-            //meterMasterBean.setRemark("unassigned");
+            meterMasterBean.setRemark("NA");*/
+
+            //To check the duplicate meter-make-status combination
+            boolean isExist=meterMasterRepo.existsByMeterNumberAndMakeOrStatus(meterMasterBean.getMeterNumber(),
+                                                    meterMasterBean.getMake(),meterMasterBean.getStatus());
+            System.out.println("isExist : "+isExist);
+            if(isExist==true)
+                return null;
+            //Set the Audit control parameters, Globally
+            new AuditControlServices().setInitialAuditControlParameters(meterMasterBean);
+            //Validate the meterno remove the space.
+            meterMasterBean.setMeterNumber(new ValidatorService().removeSpaceFromString(meterMasterBean.getMeterNumber()));
 
             mmb = meterMasterRepo.save(meterMasterBean);
-
-        }catch (Exception e) {
-            System.out.print(e);
+        }catch (Exception e){
+            System.out.println(e);
             e.printStackTrace();
         }
         return mmb;
@@ -118,5 +132,5 @@ public class MeterMasterDao {
         return result;
     }*/
     
-
+//DIAL MF calculation : var mf = ((getMeCtr()*getMePtr())/(getMtCtr()*getMtPtr()))*getDialBmf();
 }
