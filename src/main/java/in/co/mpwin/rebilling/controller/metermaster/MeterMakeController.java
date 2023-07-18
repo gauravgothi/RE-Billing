@@ -23,10 +23,11 @@ public class MeterMakeController {
     MeterMakeService meterMakeService;
 
     @RequestMapping(method= RequestMethod.GET,value="/list")
-    public ResponseEntity<MeterMake> getAllMeterMake()    {
+    public ResponseEntity<MeterMake> getAllMeterMakeByStatus()    {
         ResponseEntity meterMakeResp = null;
         try {
-            List<MeterMake> meterMakeList = meterMakeService.findAll();
+            String status = "active";
+            List<MeterMake> meterMakeList = meterMakeService.findAllByStatus(status);
 
             if(meterMakeList.size()>0)
             {
@@ -34,7 +35,7 @@ public class MeterMakeController {
             }
             else if(meterMakeList.size()==0)
             {
-                meterMakeResp=new ResponseEntity<>("Meter Make details is absent",HttpStatus.NO_CONTENT);
+                meterMakeResp=new ResponseEntity<>("Meter Make details is not available",HttpStatus.NO_CONTENT);
             }
         }catch (Exception e) {
             System.out.println(e);

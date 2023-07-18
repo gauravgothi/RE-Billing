@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface MeterCtrRepo extends CrudRepository<MeterCtr,Long> {
 
-    public List<MeterCtr> findAll();
+    public List<MeterCtr> findAllByStatus(String status);
 
 //    public MeterCtr findByCapacity(String capacity);
 }

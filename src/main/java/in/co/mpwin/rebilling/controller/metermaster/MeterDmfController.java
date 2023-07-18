@@ -7,10 +7,7 @@ import in.co.mpwin.rebilling.services.metermaster.MeterMakeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,10 +20,11 @@ public class MeterDmfController {
     MeterDmfService meterDmfService;
 
     @RequestMapping(method= RequestMethod.GET,value="/list")
-    public ResponseEntity<MeterDmf> getAllMeterDmf()    {
+    public ResponseEntity<MeterDmf> getAllMeterDmfByStatus()    {
         ResponseEntity meterDmfResp = null;
         try {
-            List<MeterDmf> meterDmfList = meterDmfService.findAll();
+            String status = "active";
+            List<MeterDmf> meterDmfList = meterDmfService.findAllByStatus(status);
 
             if(meterDmfList.size()>0)
             {
@@ -34,7 +32,7 @@ public class MeterDmfController {
             }
             else if(meterDmfList.size()==0)
             {
-                meterDmfResp=new ResponseEntity<>("Meter DMF details is absent",HttpStatus.NO_CONTENT);
+                meterDmfResp=new ResponseEntity<>("Meter DMF details is not available",HttpStatus.NO_CONTENT);
             }
         }catch (Exception e) {
             System.out.println(e);

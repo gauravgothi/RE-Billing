@@ -15,10 +15,10 @@ public class MeterDmfDao {
     @Autowired
     MeterDmfRepo meterDmfRepo;
 
-    public List<MeterDmf> findAll(){
+    public List<MeterDmf> findAllByStatus(String status){
         List<MeterDmf> meterDmfList = new ArrayList<>();
         try {
-            meterDmfList = meterDmfRepo.findAll();
+            meterDmfList = meterDmfRepo.findAllByStatus(status);
         }
         catch (Exception e) {
             e.printStackTrace();

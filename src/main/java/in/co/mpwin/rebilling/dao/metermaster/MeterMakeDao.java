@@ -15,10 +15,10 @@ public class MeterMakeDao {
     @Autowired
     MeterMakeRepo meterMakeRepo;
 
-    public List<MeterMake> findAll(){
+    public List<MeterMake> findAllByStatus(String status){
         List<MeterMake> meterMakeList = new ArrayList<>();
         try {
-            meterMakeList = meterMakeRepo.findAll();
+            meterMakeList = meterMakeRepo.findAllByStatus(status);
         }
         catch (Exception e) {
             e.printStackTrace();

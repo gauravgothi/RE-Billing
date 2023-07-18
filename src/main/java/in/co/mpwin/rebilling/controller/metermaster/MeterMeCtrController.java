@@ -23,10 +23,11 @@ public class MeterMeCtrController {
     MeterMeCtrService meterMeCtrService;
 
     @RequestMapping(method= RequestMethod.GET,value="/list")
-    public ResponseEntity<MeterMeCtr> getAllMeterMeCtr()    {
+    public ResponseEntity<MeterMeCtr> getAllMeterMeCtrByStatus()    {
         ResponseEntity meterMeCtrResp = null;
         try {
-            List<MeterMeCtr> meterMeCtrList = meterMeCtrService.findAll();
+            String status = "inactive";
+            List<MeterMeCtr> meterMeCtrList = meterMeCtrService.findAllByStatus(status);
 
             if(meterMeCtrList.size()>0)
             {
@@ -34,7 +35,7 @@ public class MeterMeCtrController {
             }
             else if(meterMeCtrList.size()==0)
             {
-                meterMeCtrResp=new ResponseEntity<>("Meter Me Ctr details is absent",HttpStatus.NO_CONTENT);
+                meterMeCtrResp=new ResponseEntity<>("Meter Me Ctr details is not available",HttpStatus.NO_CONTENT);
             }
         }catch (Exception e) {
             System.out.println(e);

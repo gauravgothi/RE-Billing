@@ -13,10 +13,10 @@ public class MeterCtrDao {
     @Autowired
     MeterCtrRepo meterCtrRepo;
 
-    public List<MeterCtr> findAll(){
+    public List<MeterCtr> findAllByStatus(String status){
         List<MeterCtr> meterCtrList = new ArrayList<>();
         try {
-            meterCtrList = meterCtrRepo.findAll();
+            meterCtrList = meterCtrRepo.findAllByStatus(status);
         }
         catch (Exception e) {
             e.printStackTrace();

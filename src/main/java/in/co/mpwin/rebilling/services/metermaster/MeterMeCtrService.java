@@ -16,10 +16,10 @@ public class MeterMeCtrService {
     @Autowired
     MeterMeCtrDao meterMeCtrDao;
 
-    public List<MeterMeCtr> findAll(){
+    public List<MeterMeCtr> findAllByStatus(String status){
         List<MeterMeCtr> meterMeCtrList = new ArrayList<>();
         try {
-            meterMeCtrList = meterMeCtrDao.findAll();
+            meterMeCtrList = meterMeCtrDao.findAllByStatus(status);
         }
         catch (Exception e) {
             e.printStackTrace();

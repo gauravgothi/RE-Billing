@@ -6,5 +6,5 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.List;
 
 public interface MeterMakeRepo extends CrudRepository<MeterMake,Long> {
-    public List<MeterMake> findAll();
+    public List<MeterMake> findAllByStatus(String status);
 }
