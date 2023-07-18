@@ -6,6 +6,7 @@ import in.co.mpwin.rebilling.jwt.payload.UserDto;
 import in.co.mpwin.rebilling.jwt.payload.UserResponse;
 import in.co.mpwin.rebilling.jwt.repository.UserRepository;
 import in.co.mpwin.rebilling.jwt.service.UserService;
+import in.co.mpwin.rebilling.miscellanious.DateMethods;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -52,7 +53,7 @@ public class UserServiceImpl implements UserService {
         String currentPrincipalName = authentication.getName();
         //set above current user
         user.setCreatedBy(currentPrincipalName);
-        user.setCreatedOn(LocalDateTime.now());
+        user.setCreatedOn(new DateMethods().getServerTime());
 
         userRepository.save(user);
 
@@ -74,7 +75,7 @@ public class UserServiceImpl implements UserService {
         String currentPrincipalName = authentication.getName();
         //set above current user
         user.setUpdatedBy(currentPrincipalName);
-        user.setUpdatedOn(LocalDateTime.now());
+        user.setUpdatedOn(new DateMethods().getServerTime());
 
         return new UserResponse("User Details updated successfully",HttpStatus.OK);
     }
@@ -106,7 +107,7 @@ public class UserServiceImpl implements UserService {
         String currentPrincipalName = authentication.getName();
         //set above current user
         user.setUpdatedBy(currentPrincipalName);
-        user.setUpdatedOn(LocalDateTime.now());
+        user.setUpdatedOn(new  DateMethods().getServerTime());
 
         return new UserResponse("User Activation status changed successfully",HttpStatus.OK);
     }
