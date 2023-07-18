@@ -143,4 +143,6 @@ public interface MeterMasterRepo extends CrudRepository<MeterMasterBean, Long> {
 
 
     Boolean existsByMeterNumberAndMakeOrStatus(String meterNumber,String make,String status);
+
+
 }
