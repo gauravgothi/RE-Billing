@@ -12,10 +12,10 @@ public class MeterPtrDao {
     @Autowired
     private MeterPtrRepo meterPtrRepo;
 
-    public List<MeterPtr> getMeterPtrDetails() {
+    public List<MeterPtr> getMeterPtrDetails(String status) {
 
         try {
-            return meterPtrRepo.findAll();
+            return meterPtrRepo.findAllByStatus(status);
         } catch (Exception e) {
             System.out.print(e);
             e.printStackTrace();

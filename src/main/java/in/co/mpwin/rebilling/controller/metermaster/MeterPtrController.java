@@ -23,10 +23,10 @@ public class MeterPtrController
 
     @RequestMapping(method= RequestMethod.GET,value="/list")
     public ResponseEntity<List<MeterPtr>> getMeterPtrDetails()
-    {
+    {  String status = "active";
         ResponseEntity meterPtrResp = null;
         try{
-            List<MeterPtr> meterPtr = meterPtrService.getMeterPtrDetails();
+            List<MeterPtr> meterPtr = meterPtrService.getMeterPtrDetails(status);
             if(meterPtr.size()>0)
             {
                 meterPtrResp = new ResponseEntity<>(meterPtr, HttpStatus.OK);

@@ -28,7 +28,8 @@ public class MeterMePtrController {
     {
         ResponseEntity meterMePtrResp = null;
         try{
-            List<MeterMePtr> meterMePtr = meterMePtrService.getMeterMePtrDetails();
+            String status = "active";
+            List<MeterMePtr> meterMePtr = meterMePtrService.getMeterMePtrDetails(status);
             if(meterMePtr.size()>0)
             {
                 meterMePtrResp = new ResponseEntity<>(meterMePtr, HttpStatus.OK);
