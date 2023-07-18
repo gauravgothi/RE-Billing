@@ -11,6 +11,7 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Getter
@@ -43,8 +44,8 @@ public class User {
     @NotNull
     private String updatedBy;
     @NotNull
-    private LocalDateTime createdOn;
+    private Timestamp createdOn;
     @NotNull
-    private LocalDateTime updatedOn;
+    private Timestamp updatedOn;
 
 }
