@@ -1,5 +1,6 @@
 package in.co.mpwin.rebilling.beans.metermaster;
 
+import in.co.mpwin.rebilling.interfaces.BeanInterface;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -7,8 +8,9 @@ import lombok.Setter;
 import java.sql.Timestamp;
 
 @Getter
+@Setter
 @Entity(name="MeterCtr")@Table(name="re_meter_ctr")
-public class MeterCtr {
+public class MeterCtr implements BeanInterface {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")

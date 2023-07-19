@@ -13,9 +13,9 @@ import java.util.List;
 public class MeterMePtrService {
     @Autowired
     MeterMePtrDao meterMePtrDao;
-    public List<MeterMePtr> getMeterMePtrDetails(String status) {
+    public List<MeterMePtr> findAllByStatus(String status) {
         try {
-            return meterMePtrDao.getMeterMePtrDetails(status);
+            return meterMePtrDao.findAllByStatus(status);
         } catch (Exception e) {
             System.out.println(e);
             e.printStackTrace();

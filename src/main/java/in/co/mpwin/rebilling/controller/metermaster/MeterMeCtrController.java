@@ -26,7 +26,7 @@ public class MeterMeCtrController {
     public ResponseEntity<MeterMeCtr> getAllMeterMeCtrByStatus()    {
         ResponseEntity meterMeCtrResp = null;
         try {
-            String status = "inactive";
+            String status = "active";
             List<MeterMeCtr> meterMeCtrList = meterMeCtrService.findAllByStatus(status);
 
             if(meterMeCtrList.size()>0)

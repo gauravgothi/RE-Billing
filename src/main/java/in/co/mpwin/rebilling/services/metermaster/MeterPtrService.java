@@ -12,9 +12,9 @@ public class MeterPtrService {
     @Autowired
     MeterPtrDao meterPtrDao;
 
-    public List<MeterPtr> getMeterPtrDetails(String status) {
+    public List<MeterPtr> findAllByStatus(String status) {
         try {
-            return meterPtrDao.getMeterPtrDetails(status);
+            return meterPtrDao.findAllByStatus(status);
         } catch (Exception e) {
             System.out.println(e);
             e.printStackTrace();

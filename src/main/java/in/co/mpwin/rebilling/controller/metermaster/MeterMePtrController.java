@@ -24,16 +24,16 @@ public class MeterMePtrController {
 
 
     @RequestMapping(method= RequestMethod.GET,value="/list")
-    public ResponseEntity<List<MeterMePtr>> getMeterMePtrDetails()
+    public ResponseEntity<MeterMePtr> getMeterMePtrDetails()
     {
         ResponseEntity meterMePtrResp = null;
         try{
             String status = "active";
-            List<MeterMePtr> meterMePtr = meterMePtrService.getMeterMePtrDetails(status);
-            if(meterMePtr.size()>0)
+            List<MeterMePtr> meterMePtrList = meterMePtrService.findAllByStatus(status);
+            if(meterMePtrList.size()>0)
             {
-                meterMePtrResp = new ResponseEntity<>(meterMePtr, HttpStatus.OK);
-            }else if(meterMePtr.size()==0)
+                meterMePtrResp = new ResponseEntity<>(meterMePtrList, HttpStatus.OK);
+            }else if(meterMePtrList.size()==0)
             {
                 meterMePtrResp =new ResponseEntity<>("Meter Ptr Details not present",HttpStatus.NO_CONTENT);
             } else

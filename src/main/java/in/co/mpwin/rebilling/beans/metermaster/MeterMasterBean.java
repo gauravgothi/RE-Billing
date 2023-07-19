@@ -7,7 +7,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.sql.Timestamp;
-@Getter @Setter
+@Getter
+@Setter
 @Entity(name="MeterMasterBean")@Table(name="re_meter_master")
 public class MeterMasterBean implements MeterMasterInterface {
     @Id
