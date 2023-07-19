@@ -11,7 +11,8 @@ import lombok.Setter;
 import java.sql.Timestamp;
 
 
-@Getter @Setter
+@Getter
+@Setter
 @Entity
 @Table(name="re_meter_me_ptr")
 public class MeterMePtr implements BeanInterface {

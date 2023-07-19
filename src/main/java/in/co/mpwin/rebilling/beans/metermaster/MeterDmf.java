@@ -7,7 +7,9 @@ import lombok.Setter;
 
 import java.sql.Timestamp;
 
-@Getter @Setter
+
+@Getter
+@Setter
 @Entity(name="MeterDmf")@Table(name="re_meter_dmf")
 public class MeterDmf implements BeanInterface {
     @Id

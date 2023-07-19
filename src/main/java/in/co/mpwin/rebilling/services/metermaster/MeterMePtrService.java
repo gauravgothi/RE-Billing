@@ -18,6 +18,7 @@ public class MeterMePtrService {
         List<MeterMePtr> meterMePtrList = new ArrayList<>();
         try {
             meterMePtrList =  meterMePtrDao.findAllByStatus(status);
+
         } catch (Exception e) {
             System.out.println(e);
             e.printStackTrace();
