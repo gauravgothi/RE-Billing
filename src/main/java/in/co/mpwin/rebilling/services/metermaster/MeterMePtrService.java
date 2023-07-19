@@ -7,20 +7,22 @@ import in.co.mpwin.rebilling.repositories.metermaster.MeterMePtrRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class MeterMePtrService {
     @Autowired
     MeterMePtrDao meterMePtrDao;
-    public List<MeterMePtr> getMeterMePtrDetails(String status) {
+    public List<MeterMePtr> findAllByStatus(String status) {
+        List<MeterMePtr> meterMePtrList = new ArrayList<>();
         try {
-            return meterMePtrDao.getMeterMePtrDetails(status);
+            meterMePtrList =  meterMePtrDao.findAllByStatus(status);
         } catch (Exception e) {
             System.out.println(e);
             e.printStackTrace();
         }
-        return null;
+        return meterMePtrList;
     }
 
 

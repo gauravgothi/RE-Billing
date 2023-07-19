@@ -19,7 +19,7 @@ public class MeterDmfController {
     @Autowired
     MeterDmfService meterDmfService;
 
-    @RequestMapping(method= RequestMethod.GET,value="/list")
+    @RequestMapping(method= RequestMethod.GET,value="")
     public ResponseEntity<MeterDmf> getAllMeterDmfByStatus()    {
         ResponseEntity meterDmfResp = null;
         try {

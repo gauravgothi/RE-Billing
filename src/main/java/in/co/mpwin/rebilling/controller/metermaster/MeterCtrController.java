@@ -1,6 +1,7 @@
 package in.co.mpwin.rebilling.controller.metermaster;
 
 import in.co.mpwin.rebilling.beans.metermaster.MeterCtr;
+import in.co.mpwin.rebilling.interfaces.BeanInterface;
 import in.co.mpwin.rebilling.services.metermaster.MeterCtrService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,7 +18,7 @@ public class MeterCtrController {
     @Autowired
     MeterCtrService meterCtrService;
 
-    @RequestMapping(method= RequestMethod.GET,value="/list")
+    @RequestMapping(method= RequestMethod.GET,value="")
     public ResponseEntity<MeterCtr> getAllMeterCtrByStatus()    {
         ResponseEntity meterCtrResp = null;
         try {
