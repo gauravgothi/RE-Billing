@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface MeterPtrRepo extends CrudRepository<MeterPtr, Long> {
 
-    List<MeterPtr> findAllByStatus(String status);
+    public List<MeterPtr> findAllByStatus(String status);
     Optional<MeterPtr> findById(Long id);
 
 }

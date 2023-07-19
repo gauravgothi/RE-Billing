@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import java.sql.Timestamp;
 
+
 @Getter
 @Setter
 @Entity(name="MeterMake")@Table(name="re_meter_make")

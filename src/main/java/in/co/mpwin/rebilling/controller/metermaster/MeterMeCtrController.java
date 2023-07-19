@@ -22,7 +22,7 @@ public class MeterMeCtrController {
     @Autowired
     MeterMeCtrService meterMeCtrService;
 
-    @RequestMapping(method= RequestMethod.GET,value="/list")
+    @RequestMapping(method= RequestMethod.GET,value="")
     public ResponseEntity<MeterMeCtr> getAllMeterMeCtrByStatus()    {
         ResponseEntity meterMeCtrResp = null;
         try {

@@ -22,7 +22,7 @@ public class MeterMakeController {
     @Autowired
     MeterMakeService meterMakeService;
 
-    @RequestMapping(method= RequestMethod.GET,value="/list")
+    @RequestMapping(method= RequestMethod.GET,value="")
     public ResponseEntity<MeterMake> getAllMeterMakeByStatus()    {
         ResponseEntity meterMakeResp = null;
         try {

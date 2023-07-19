@@ -73,7 +73,7 @@ public class MeterMasterController {
         return meterDtlResp;
     }*/
 
-    @RequestMapping(method= RequestMethod.GET,value="/list/status/{status}")
+    @RequestMapping(method= RequestMethod.GET,value="/status/{status}")
     public ResponseEntity<MeterMasterBean> getAllMeterByStatus(@PathVariable("status") String status) {
         ResponseEntity meterDtlResp = null;
         try {

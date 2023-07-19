@@ -21,8 +21,8 @@ public class MeterPtrController
     MeterPtrService meterPtrService;
 
 
-    @RequestMapping(method= RequestMethod.GET,value="/list")
-    public ResponseEntity<MeterPtr> getMeterPtrDetails()
+    @RequestMapping(method= RequestMethod.GET,value="")
+    public ResponseEntity<MeterPtr> getAllMeterPtrByStatus()
     {  String status = "active";
         ResponseEntity meterPtrResp = null;
         try{

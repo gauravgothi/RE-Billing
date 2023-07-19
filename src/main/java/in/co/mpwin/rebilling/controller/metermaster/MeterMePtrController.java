@@ -23,8 +23,8 @@ public class MeterMePtrController {
     MeterMePtrService meterMePtrService;
 
 
-    @RequestMapping(method= RequestMethod.GET,value="/list")
-    public ResponseEntity<MeterMePtr> getMeterMePtrDetails()
+    @RequestMapping(method= RequestMethod.GET,value="")
+    public ResponseEntity<MeterMePtr> getAllMeterMePtrByStatus()
     {
         ResponseEntity meterMePtrResp = null;
         try{
