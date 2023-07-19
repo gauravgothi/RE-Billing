@@ -12,7 +12,7 @@ public class MeterPtrDao {
     @Autowired
     private MeterPtrRepo meterPtrRepo;
 
-    public List<MeterPtr> getMeterPtrDetails(String status) {
+    public List<MeterPtr> findAllByStatus(String status) {
 
         try {
             return meterPtrRepo.findAllByStatus(status);
