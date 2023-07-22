@@ -10,6 +10,7 @@ public interface LocationRepo extends CrudRepository<LocationMaster,String> {
 
     public List<LocationMaster> findAllByStatus(String status);
 
+    public List<LocationMaster> findDistinctRegionByStatus(String status);
     public List<LocationMaster> findDistinctCircleByRegionAndStatus(String region,String status);
 
     public List<LocationMaster> findDistinctDivisionByCircleAndStatus(String circle,String status);

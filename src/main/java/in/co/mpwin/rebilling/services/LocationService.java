@@ -25,6 +25,16 @@ public class LocationService {
         return locationMasterList;
     }
 
+    public List<LocationMaster> findDistinctRegion(String status){
+        List<LocationMaster> regionList = new ArrayList<>();
+        try {
+            regionList = locationRepo.findDistinctRegionByStatus(status);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return regionList;
+    }
+
     public List<LocationMaster> getDistinctCircleByRegionAndStatus(String region,String status){
         List<LocationMaster> circleList = new ArrayList<>();
 

@@ -43,7 +43,7 @@ public class LocationController {
         String status = "0";
         ResponseEntity regionResp = null;
         try{
-            List<LocationMaster> regionList = locationService.findAllByStatus(status);
+            List<LocationMaster> regionList = locationService.findDistinctRegion(status);
 
             Set<String> regions = new HashSet<>();
             for (LocationMaster l:regionList){
