@@ -1,16 +1,13 @@
 package in.co.mpwin.rebilling.controller.metermaster;
 
 import in.co.mpwin.rebilling.beans.metermaster.MeterMasterBean;
+import in.co.mpwin.rebilling.miscellanious.Message;
 import in.co.mpwin.rebilling.services.metermaster.MeterMasterService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Date;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 
 @RestController
@@ -109,11 +106,17 @@ public class MeterMasterController {
 
             if(mmb!=null)
             {
-                meterInsrtResp = new ResponseEntity<>(meterMasterBean.getMeterNumber()+" is created successfully", HttpStatus.OK);
+                //meterInsrtResp = new ResponseEntity<>(meterMasterBean.getMeterNumber()+" is created successfully", HttpStatus.OK);
+              meterInsrtResp =  new ResponseEntity<>(new Message(mmb.getMeterNumber() + " is created successfully."
+                      ,"",""),HttpStatus.OK);
+
             }else if(mmb==null) {
-                meterInsrtResp = new ResponseEntity<>(meterMasterBean.getMeterNumber()+" can not be created may already exist", HttpStatus.BAD_REQUEST);
+
+                meterInsrtResp = new ResponseEntity<>(new Message("",
+                        meterMasterBean.getMeterNumber() + " is already exist.",""), HttpStatus.BAD_REQUEST);
             }else {
-                meterInsrtResp = new ResponseEntity<>("Something went wrong", HttpStatus.BAD_REQUEST);
+                meterInsrtResp = new ResponseEntity<>(new Message("",
+                        "something went wrong",""), HttpStatus.BAD_REQUEST);
             }
             return meterInsrtResp;
 

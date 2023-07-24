@@ -60,7 +60,7 @@ public class MeterMasterDao {
             meterMasterBean.setRemark("NA");*/
 
             //To check the duplicate meter-make-status combination
-            boolean isExist=meterMasterRepo.existsByMeterNumberAndMakeOrStatus(meterMasterBean.getMeterNumber(),
+            boolean isExist=meterMasterRepo.existsByMeterNumberAndMakeAndStatus(meterMasterBean.getMeterNumber(),
                                                     meterMasterBean.getMake(),meterMasterBean.getStatus());
             System.out.println("isExist : "+isExist);
             if(isExist==true)
