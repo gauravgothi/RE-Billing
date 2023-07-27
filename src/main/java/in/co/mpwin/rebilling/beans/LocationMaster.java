@@ -1,10 +1,7 @@
 package in.co.mpwin.rebilling.beans;
 
 import in.co.mpwin.rebilling.interfaces.BeanInterface;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,80 +11,39 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 @Entity
-@Table(name = "bpm_location_master")
+@Table(name = "re_location_master",uniqueConstraints = @UniqueConstraint(name = "divisioncode_status", columnNames={"division_code", "status"}))
 public class LocationMaster implements BeanInterface {
 
     @Id
-    @NotNull @Column(name = "loccode")
-    private String locationCode;
+    @NotNull @Column(name = "id")
+    private Long id;
 
-    @Column(name = "dc_name")
-    private String dcName;
+    @Column(name = "region_code")
+    private String regionCode;
+    @Column(name = "region_name")
+    private String regionName;
 
-    @Column(name = "division")
-    private String division;
+    @Column(name = "circle_code")
+    private String circleCode;
+    @Column(name = "circle_name")
+    private String circleName;
 
-    @Column(name = "circle")
-    private String circle;
-
-    @Column(name = "region")
-    private String region;
-
-    @Column(name = "short_code")
-    private String shortCode;
+    @Column(name = "division_code")
+    private String divisionCode;
+    @Column(name = "division_name")
+    private String divisionName;
 
     @Column(name = "created_by")
     private String createdBy;
-
     @Column(name = "updated_by")
     private String updatedBy;
-
     @Column(name = "updated_on")
     private Timestamp updatedOn;
-
     @Column(name = "created_on")
     private Timestamp createdOn;
-
     @Column(name = "status")
     private String status;
-
     @Column(name = "remark")
     private String remark;
-
-    @Column(name = "region_officer_name")
-    private String regionOfficerName;
-
-    @Column(name = "region_officer_mbno")
-    private String regionOfficerMobile;
-
-    @Column(name = "region_officer_email")
-    private String regionOfficerEmail;
-
-    @Column(name = "circle_officer_name")
-    private String circleOfficerName;
-
-    @Column(name = "circle_officer_mbno")
-    private String circleOfficerMobile;
-
-    @Column(name = "circle_officer_email")
-    private String circleOfficerEmail;
-
-    @Column(name = "division_officer_name")
-    private String divisionOfficerName;
-
-    @Column(name = "division_officer_mbno")
-    private String divisionOfficerMobile;
-
-    @Column(name = "division_officer_email")
-    private String divisionOfficerEmail;
-
-    @Column(name = "dc_officer_name")
-    private String dcOfficerName;
-
-    @Column(name = "dc_officer_mbno")
-    private String dcOfficerMobile;
-
-    @Column(name = "dc_officer_email")
-    private String dcOfficerEmail;
 
 }

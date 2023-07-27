@@ -25,48 +25,24 @@ public class LocationService {
         return locationMasterList;
     }
 
-    public List<LocationMaster> findDistinctRegion(String status){
-        List<LocationMaster> regionList = new ArrayList<>();
+    public LocationMaster getAllLocationMasterByDivisionCode(String divisionCode,String status){
+        LocationMaster location = new LocationMaster();
         try {
-            regionList = locationRepo.findDistinctRegionByStatus(status);
+            location= locationRepo.findByDivisionCodeAndStatus(divisionCode,status);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return regionList;
+        return location;
     }
 
-    public List<LocationMaster> getDistinctCircleByRegionAndStatus(String region,String status){
-        List<LocationMaster> circleList = new ArrayList<>();
-
+    public LocationMaster getLocationMasterById(Long id,String status){
+        LocationMaster location = new LocationMaster();
         try {
-            circleList= locationRepo.findDistinctCircleByRegionAndStatus(region,status);
+            location= locationRepo.findByIdAndStatus(id,status);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return circleList;
-    }
-
-    public List<LocationMaster> getDistinctDivisionByCircleAndStatus(String circle,String status){
-        List<LocationMaster> divisionList = new ArrayList<>();
-
-
-        try {
-            divisionList= locationRepo.findDistinctDivisionByCircleAndStatus(circle,status);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return divisionList;
-    }
-
-    public List<LocationMaster> getDistinctDcNameByDivisionAndStatus(String division,String status){
-        List<LocationMaster> dcNameList = new ArrayList<>();
-
-        try {
-            dcNameList= locationRepo.findDistinctDcNameByDivisionAndStatus(division,status);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return dcNameList;
+        return location;
     }
 
 
