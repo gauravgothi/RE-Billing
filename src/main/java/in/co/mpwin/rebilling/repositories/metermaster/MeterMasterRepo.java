@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.List;
 
 public interface MeterMasterRepo extends CrudRepository<MeterMasterBean, Long> {
 //    @Query(value = "select * from re_meter_master where meterno =:meterno and status=:status", nativeQuery = true)
@@ -142,7 +143,11 @@ public interface MeterMasterRepo extends CrudRepository<MeterMasterBean, Long> {
           public MeterMasterBean save(MeterMasterBean meterMasterBean);
 
 
-    Boolean existsByMeterNumberAndMakeOrStatus(String meterNumber,String make,String status);
+//    @Query(value = "select case when exists (select * from re_meter_master as t where t.meter_number =:meterno"
+//            + " and t.make =:make and t.status =:status) then true else false end",nativeQuery = true)
+//    Boolean existsByMeterNumberAndMakeAndStatus(@Param("meterno") String meterNumber,@Param("make") String make,@Param("status") String status);
+
+    List<MeterMasterBean> findByMeterNumberAndMakeAndStatus(String meterNumber, String make, String status);
 
 
 }

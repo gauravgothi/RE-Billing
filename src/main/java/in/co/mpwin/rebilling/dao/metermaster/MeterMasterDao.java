@@ -1,22 +1,16 @@
 package in.co.mpwin.rebilling.dao.metermaster;
 
 import in.co.mpwin.rebilling.beans.metermaster.MeterMasterBean;
-import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.AuditControlServices;
-import in.co.mpwin.rebilling.miscellanious.DateMethods;
-import in.co.mpwin.rebilling.miscellanious.TokenInfo;
 import in.co.mpwin.rebilling.miscellanious.ValidatorService;
 import in.co.mpwin.rebilling.repositories.metermaster.MeterMasterRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
-import org.springframework.data.repository.query.Param;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class MeterMasterDao {
@@ -60,11 +54,18 @@ public class MeterMasterDao {
             meterMasterBean.setRemark("NA");*/
 
             //To check the duplicate meter-make-status combination
-            boolean isExist=meterMasterRepo.existsByMeterNumberAndMakeOrStatus(meterMasterBean.getMeterNumber(),
-                                                    meterMasterBean.getMake(),meterMasterBean.getStatus());
-            System.out.println("isExist : "+isExist);
-            if(isExist==true)
+//            boolean isExist=meterMasterRepo.existsByMeterNumberAndMakeAndStatus(meterMasterBean.getMeterNumber(),
+//                                                    meterMasterBean.getMake(),meterMasterBean.getStatus());
+
+            //To check the duplicate meter-make-status combination
+            boolean isExist = false;
+            List<MeterMasterBean> meterMasterBeanList = meterMasterRepo.findByMeterNumberAndMakeAndStatus(meterMasterBean.getMeterNumber(),
+                    meterMasterBean.getMake(),meterMasterBean.getStatus());
+            if(meterMasterBeanList.size()>0) {
+                isExist = true;
+                System.out.println("isExist : " + isExist);
                 return null;
+            }
             //Set the Audit control parameters, Globally
             new AuditControlServices().setInitialAuditControlParameters(meterMasterBean);
             //Validate the meterno remove the space.

@@ -1,16 +1,13 @@
 package in.co.mpwin.rebilling.controller.metermaster;
 
 import in.co.mpwin.rebilling.beans.metermaster.MeterMasterBean;
+import in.co.mpwin.rebilling.miscellanious.Message;
 import in.co.mpwin.rebilling.services.metermaster.MeterMasterService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Date;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 
 @RestController
@@ -46,32 +43,6 @@ public class MeterMasterController {
         }
         return meterDtlResp;
     }
-
-    /*@RequestMapping(method= RequestMethod.GET,value="/meterno/{meterno}/type/{type}")
-    public ResponseEntity<MeterMasterBean> getMeterDetails(@PathVariable("meterno") String meterno,
-                                                           @PathVariable("type") String type) {
-        ResponseEntity meterDtlResp = null;
-        try {
-
-            MeterMasterBean meterMasterBean = new MeterMasterBean();
-            meterMasterBean = meterMasterService.getMeterDetailsByMeterNo(meterno, status);
-            if(meterMasterBean!=null)
-            {
-                meterDtlResp = new ResponseEntity<>(meterMasterBean, HttpStatus.OK);
-            }
-            else if(meterMasterBean==null)
-            {
-                meterDtlResp=new ResponseEntity<>("Meter Detail not present",HttpStatus.NO_CONTENT);
-            }
-            else {
-                meterDtlResp=new ResponseEntity<>("Invalid Request",HttpStatus.BAD_REQUEST);
-            }
-        } catch (Exception e) {
-            System.out.println(e);
-            e.printStackTrace();
-        }
-        return meterDtlResp;
-    }*/
 
     @RequestMapping(method= RequestMethod.GET,value="/status/{status}")
     public ResponseEntity<MeterMasterBean> getAllMeterByStatus(@PathVariable("status") String status) {
@@ -109,11 +80,14 @@ public class MeterMasterController {
 
             if(mmb!=null)
             {
-                meterInsrtResp = new ResponseEntity<>(meterMasterBean.getMeterNumber()+" is created successfully", HttpStatus.OK);
+                //meterInsrtResp = new ResponseEntity<>(meterMasterBean.getMeterNumber()+" is created successfully", HttpStatus.OK);
+              meterInsrtResp =  new ResponseEntity<>(new Message(mmb.getMeterNumber() + " is created successfully."),HttpStatus.OK);
+
             }else if(mmb==null) {
-                meterInsrtResp = new ResponseEntity<>(meterMasterBean.getMeterNumber()+" can not be created may already exist", HttpStatus.BAD_REQUEST);
+
+                meterInsrtResp = new ResponseEntity<>(new Message(meterMasterBean.getMeterNumber() + " is already exist."), HttpStatus.BAD_REQUEST);
             }else {
-                meterInsrtResp = new ResponseEntity<>("Something went wrong", HttpStatus.BAD_REQUEST);
+                meterInsrtResp = new ResponseEntity<>(new Message("something went wrong"), HttpStatus.BAD_REQUEST);
             }
             return meterInsrtResp;
 
