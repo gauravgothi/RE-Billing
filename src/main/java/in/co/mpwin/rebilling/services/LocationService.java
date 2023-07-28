@@ -25,7 +25,7 @@ public class LocationService {
         return locationMasterList;
     }
 
-    public LocationMaster getAllLocationMasterByDivisionCode(String divisionCode,String status){
+    public LocationMaster getLocationByDivisionCode(String divisionCode,String status){
         LocationMaster location = new LocationMaster();
         try {
             location= locationRepo.findByDivisionCodeAndStatus(divisionCode,status);
@@ -35,7 +35,7 @@ public class LocationService {
         return location;
     }
 
-    public LocationMaster getLocationMasterById(Long id,String status){
+    public LocationMaster getLocationById(Long id,String status){
         LocationMaster location = new LocationMaster();
         try {
             location= locationRepo.findByIdAndStatus(id,status);

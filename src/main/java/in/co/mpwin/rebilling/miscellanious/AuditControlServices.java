@@ -1,5 +1,6 @@
 package in.co.mpwin.rebilling.miscellanious;
 
+import in.co.mpwin.rebilling.beans.feedermaster.FeederMasterBean;
 import in.co.mpwin.rebilling.beans.metermaster.MeterMasterBean;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,9 +13,18 @@ public class AuditControlServices {
         if(obj instanceof MeterMasterBean){
             this.setInitialAuditControlParametersOfMeter((MeterMasterBean)obj);
         }
-        else {
-
+        else if(obj instanceof FeederMasterBean){
+            this.setInitialAuditControlParametersOfFeeder((FeederMasterBean)obj);
         }
+    }
+
+    private void setInitialAuditControlParametersOfFeeder(FeederMasterBean feederMasterBean) {
+        feederMasterBean.setCreatedOn(new DateMethods().getServerTime());
+        feederMasterBean.setUpdatedOn(new DateMethods().getServerTime());
+        feederMasterBean.setCreatedBy(new TokenInfo().getCurrentUsername());
+        feederMasterBean.setUpdatedBy(new TokenInfo().getCurrentUsername());
+        feederMasterBean.setStatus("active");
+        feederMasterBean.setRemark("NA");
     }
 
     public void setInitialAuditControlParametersOfMeter(MeterMasterBean meterMasterBean) {
