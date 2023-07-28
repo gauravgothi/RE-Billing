@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -20,7 +21,7 @@ public class FeederMasterController {
     FeederMasterService feederMasterService;
 
     @RequestMapping(method= RequestMethod.GET,value="")
-    public ResponseEntity<FeederMasterBean> getAllFeederMaster(){
+    public ResponseEntity<?> getAllFeederMaster(){
         ResponseEntity feederResp = null;
         try {
             String status = "active";
@@ -32,7 +33,28 @@ public class FeederMasterController {
             }
             else if(feederList.size()==0)
             {
-                feederResp=new ResponseEntity<>("Feeder list is not available",HttpStatus.BAD_REQUEST);
+                feederResp=new ResponseEntity<>(new Message("Feeder list is not available"),HttpStatus.BAD_REQUEST);
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+        return feederResp;
+    }
+
+    @RequestMapping(method= RequestMethod.GET,value="/locationId/{locationId}")
+    public ResponseEntity<?> getAllFeederByLocationId(@PathVariable("locationId") String locationId){
+        ResponseEntity feederResp = null;
+        try {
+            String status = "active";
+            List<FeederMasterBean> feederList = feederMasterService.getAllFeederByLocationId(locationId,status);
+
+            if(feederList.size()>0)
+            {
+                feederResp = new ResponseEntity<>(feederList, HttpStatus.OK);
+            }
+            else if(feederList.size()==0)
+            {
+                feederResp=new ResponseEntity<>(new Message("Feeder list is not available"),HttpStatus.BAD_REQUEST);
             }
         }catch (Exception e) {
             e.printStackTrace();
@@ -41,7 +63,7 @@ public class FeederMasterController {
     }
 
     @RequestMapping(method = RequestMethod.POST,value = "")
-    public ResponseEntity<?> createFeederMaster(@RequestBody FeederMasterBean feederMasterBean){
+    public ResponseEntity<?> createFeederMaster(@Valid @RequestBody FeederMasterBean feederMasterBean){
         FeederMasterBean fmb = new FeederMasterBean();
         ResponseEntity feederInsrtResp = null;
         try {

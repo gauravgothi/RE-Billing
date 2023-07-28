@@ -27,6 +27,16 @@ public class FeederMasterService {
         return allFeederList;
     }
 
+    public List<FeederMasterBean> getAllFeederByLocationId(String locationId,String status){
+        List<FeederMasterBean> allFeederByLocation = new ArrayList<>();
+        try {
+            allFeederByLocation= feederMasterRepo.findByLocationIdAndStatus(locationId,status);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return allFeederByLocation;
+    }
+
     public FeederMasterBean createFeederMaster(FeederMasterBean feederMasterBean) {
         //int result = -1;
         FeederMasterBean fmb = new FeederMasterBean();

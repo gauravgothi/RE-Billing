@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 
 @RestController
@@ -69,7 +70,7 @@ public class MeterMasterController {
     }
 
     @RequestMapping(method= RequestMethod.POST,value="")
-    public ResponseEntity<?> createMeterMaster(@RequestBody MeterMasterBean meterMasterBean){
+    public ResponseEntity<?> createMeterMaster(@Valid @RequestBody MeterMasterBean meterMasterBean){
         //int result = -1;
         //String resp = null;
         MeterMasterBean mmb = new MeterMasterBean();
