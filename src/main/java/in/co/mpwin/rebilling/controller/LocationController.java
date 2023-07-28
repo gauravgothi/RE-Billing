@@ -45,12 +45,12 @@ public class LocationController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/division/{division}")
-    public ResponseEntity<LocationMaster> getAllLocationMasterByDivisionCode(@PathVariable("division") String divisionCode) {
+    public ResponseEntity<LocationMaster> getLocationByDivisionCode(@PathVariable("division") String divisionCode) {
         String status = "active";
         ResponseEntity locationResp = null;
         LocationMaster location = null;
         try {
-            location = locationService.getAllLocationMasterByDivisionCode(divisionCode, status);
+            location = locationService.getLocationByDivisionCode(divisionCode, status);
             if (location != null) {
                 locationResp = new ResponseEntity<>(location, HttpStatus.OK);
             } else if (location == null) {
@@ -66,12 +66,12 @@ public class LocationController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/id/{id}")
-    public ResponseEntity<LocationMaster> getLocationMasterById(@PathVariable("id") Long id) {
+    public ResponseEntity<LocationMaster> getLocationById(@PathVariable("id") Long id) {
         String status = "active";
         LocationMaster location = null;
         ResponseEntity locationResp = null;
         try {
-            location = locationService.getLocationMasterById(id, status);
+            location = locationService.getLocationById(id, status);
             if (location != null) {
                 locationResp = new ResponseEntity<>(location, HttpStatus.OK);
             } else if (location == null) {

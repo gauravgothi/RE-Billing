@@ -11,7 +11,7 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 @Entity
-@Table(name = "re_location_master",uniqueConstraints = @UniqueConstraint(name = "divisioncode_status", columnNames={"division_code", "status"}))
+@Table(name = "re_location_master")
 public class LocationMaster implements BeanInterface {
 
     @Id
