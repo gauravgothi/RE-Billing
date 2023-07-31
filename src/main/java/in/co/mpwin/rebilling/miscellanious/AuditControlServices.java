@@ -1,5 +1,6 @@
 package in.co.mpwin.rebilling.miscellanious;
 
+import in.co.mpwin.rebilling.beans.developermaster.DeveloperMasterBean;
 import in.co.mpwin.rebilling.beans.feedermaster.FeederMasterBean;
 import in.co.mpwin.rebilling.beans.machinemaster.MachineMasterBean;
 import in.co.mpwin.rebilling.beans.metermaster.MeterMasterBean;
@@ -8,6 +9,8 @@ import in.co.mpwin.rebilling.services.plantmaster.PlantMasterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import in.co.mpwin.rebilling.beans.investormaster.InvestorMasterBean;
+
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,12 +22,20 @@ public class AuditControlServices {
         }
         else if(obj instanceof FeederMasterBean){
             this.setInitialAuditControlParametersOfFeeder((FeederMasterBean)obj);
+
         } else if(obj instanceof PlantMasterBean)
         {
             this.setInitialAuditControlParametersOfPlant((PlantMasterBean)obj);
         }else if(obj instanceof MachineMasterBean)
         {
             this.setInitialAuditControlParametersOfMachine((MachineMasterBean)obj);
+
+        } else if (obj instanceof DeveloperMasterBean) {
+            this.setInitialAuditControlParametersOfDeveloper((DeveloperMasterBean)obj);
+
+        }else if (obj instanceof InvestorMasterBean) {
+            this.setInitialAuditControlParametersOfInvestor((InvestorMasterBean)obj);
+
         }
 
     }
@@ -46,6 +57,24 @@ public class AuditControlServices {
         plantMasterBean.setUpdatedBy(new TokenInfo().getCurrentUsername());
         plantMasterBean.setStatus("active");
         plantMasterBean.setRemark("NA");
+    }
+
+    private void setInitialAuditControlParametersOfInvestor(InvestorMasterBean investorMasterBean) {
+        investorMasterBean.setCreatedOn(new DateMethods().getServerTime());
+        investorMasterBean.setUpdatedOn(new DateMethods().getServerTime());
+        investorMasterBean.setCreatedBy(new TokenInfo().getCurrentUsername());
+        investorMasterBean.setUpdatedBy(new TokenInfo().getCurrentUsername());
+        investorMasterBean.setStatus("active");
+        investorMasterBean.setRemark("NA");
+    }
+
+    private void setInitialAuditControlParametersOfDeveloper(DeveloperMasterBean developerMasterBean) {
+        developerMasterBean.setCreatedOn(new DateMethods().getServerTime());
+        developerMasterBean.setUpdatedOn(new DateMethods().getServerTime());
+        developerMasterBean.setCreatedBy(new TokenInfo().getCurrentUsername());
+        developerMasterBean.setUpdatedBy(new TokenInfo().getCurrentUsername());
+        developerMasterBean.setStatus("active");
+        developerMasterBean.setRemark("NA");
     }
 
     private void setInitialAuditControlParametersOfFeeder(FeederMasterBean feederMasterBean) {
