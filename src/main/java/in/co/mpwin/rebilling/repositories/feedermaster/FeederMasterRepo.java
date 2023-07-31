@@ -10,6 +10,8 @@ public interface FeederMasterRepo extends CrudRepository<FeederMasterBean,Long> 
 
     List<FeederMasterBean> findAllByStatus(String status);
 
+    List<FeederMasterBean> findByLocationIdAndStatus(String locationId,String status);
+
     FeederMasterBean save(FeederMasterBean feederMasterBean);
 
     FeederMasterBean findByIdAndStatus(Long id,String status);
