@@ -1,4 +1,4 @@
-package in.co.mpwin.rebilling.beans;
+package in.co.mpwin.rebilling.beans.locationmaster;
 
 import in.co.mpwin.rebilling.interfaces.BeanInterface;
 import jakarta.persistence.*;
@@ -16,7 +16,7 @@ public class LocationMaster implements BeanInterface {
 
     @Id
     @NotNull @Column(name = "id")
-    private Long id;
+    private String id;
 
     @Column(name = "region_code")
     private String regionCode;
@@ -45,5 +45,6 @@ public class LocationMaster implements BeanInterface {
     private String status;
     @Column(name = "remark")
     private String remark;
+
 
 }

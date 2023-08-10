@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse updateUserDetails(UserDto userDto) {
 
-        User user = userRepository.findById(userDto.getUsername())
+        User user = userRepository.findByUsername(userDto.getUsername())
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND,userDto.getUsername() + "Username is not found"));
 
 //        user.setOfficeEmail(userDto.getOfficeEmail());
@@ -83,7 +83,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto getUserDtoByUsername(String username) {
 
-        User savedUser = userRepository.findById(username)
+        User savedUser = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND,username + "Username is not found"));
 
         UserDto userDto = modelMapper.map(savedUser,UserDto.class);
@@ -94,7 +94,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse deactivateUser(String username,Boolean isActive) {
 
-        User user = userRepository.findById(username)
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND,username + "Username is not found"));
 
 //        user.setIsActive(isActive);

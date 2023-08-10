@@ -45,6 +45,7 @@ public class MachineMasterService {
            mmb = machineMasterRepo.save(machineMasterBean);
         }catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
         return mmb;
     }

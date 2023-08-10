@@ -52,5 +52,20 @@ public class AuthServiceImpl implements AuthService {
 
         return token;
     }
+
+//    @Override
+//    public String login2(String username) {
+//
+//        if (!userRepository.existsByUsername(username))   {
+//            return "Username is not valid";
+//        }
+//        if(userRepository.findByUsername(username).get().getStatus()=="inactive")   {
+//            return "User account is not active";
+//        }
+//
+//        String token = jwtTokenProvider.generateToken(username);
+//
+//        return token;
+//    }
 }
 

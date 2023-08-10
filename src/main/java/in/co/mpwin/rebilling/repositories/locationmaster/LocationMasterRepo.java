@@ -1,16 +1,15 @@
-package in.co.mpwin.rebilling.repositories;
+package in.co.mpwin.rebilling.repositories.locationmaster;
 
-import in.co.mpwin.rebilling.beans.LocationMaster;
+import in.co.mpwin.rebilling.beans.locationmaster.LocationMaster;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
-import java.util.Set;
 
-public interface LocationRepo extends CrudRepository<LocationMaster,String> {
+public interface LocationMasterRepo extends CrudRepository<LocationMaster,String> {
 
     public List<LocationMaster> findAllByStatus(String status);
 
-    LocationMaster findByIdAndStatus(Long id,String Status);
+    LocationMaster findByIdAndStatus(String id,String Status);
 
 //    public List<LocationMaster> findDistinctRegionByStatus(String status);
 //    public List<LocationMaster> findDistinctCircleByRegionAndStatus(String region,String status);

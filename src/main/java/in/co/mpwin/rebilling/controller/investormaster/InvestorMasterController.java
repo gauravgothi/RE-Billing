@@ -105,7 +105,7 @@ public class InvestorMasterController {
                 //meterInsrtResp = new ResponseEntity<>(meterMasterBean.getMeterNumber()+" is created successfully", HttpStatus.OK);
                 investorInsrtResp =  new ResponseEntity<>(new Message(imb.getInvestorCode() + " is created successfully."),HttpStatus.OK);
             }else if(imb==null) {
-                investorInsrtResp = new ResponseEntity<>(new Message(investorMasterBean.getInvestorCode() + " already exist"), HttpStatus.BAD_REQUEST);
+                investorInsrtResp = new ResponseEntity<>(new Message(investorMasterBean.getInvestorCode() + " already exist or something went wrong"), HttpStatus.BAD_REQUEST);
             }else {
                 investorInsrtResp = new ResponseEntity<>(new Message("something went wrong"), HttpStatus.BAD_REQUEST);
             }

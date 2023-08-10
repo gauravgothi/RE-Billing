@@ -53,6 +53,7 @@ public class FeederMasterService {
             fmb = feederMasterRepo.save(feederMasterBean);
         }catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
         return fmb;
     }
