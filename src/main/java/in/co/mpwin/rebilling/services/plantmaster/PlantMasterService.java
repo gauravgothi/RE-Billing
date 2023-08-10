@@ -52,6 +52,7 @@ public class PlantMasterService {
             pmb = plantMasterRepo.save(plantMasterBean);
         }catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
         return pmb;
     }

@@ -60,6 +60,7 @@ public class DeveloperMasterService {
             dmb = developerMasterRepo.save(developerMasterBean);
         }catch (Exception exception){
             exception.printStackTrace();
+            return null;
         }
 
         return dmb;

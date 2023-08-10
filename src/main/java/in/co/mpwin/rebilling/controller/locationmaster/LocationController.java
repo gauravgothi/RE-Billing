@@ -1,9 +1,9 @@
-package in.co.mpwin.rebilling.controller;
+package in.co.mpwin.rebilling.controller.locationmaster;
 
-import in.co.mpwin.rebilling.beans.LocationMaster;
+import in.co.mpwin.rebilling.beans.locationmaster.LocationMaster;
 import in.co.mpwin.rebilling.miscellanious.Message;
-import in.co.mpwin.rebilling.repositories.LocationRepo;
-import in.co.mpwin.rebilling.services.LocationService;
+import in.co.mpwin.rebilling.repositories.locationmaster.LocationMasterRepo;
+import in.co.mpwin.rebilling.services.locationmaster.LocationMasterService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,19 +18,19 @@ import java.util.List;
 public class LocationController {
 
     @Autowired
-    LocationService locationService;
+    LocationMasterService locationMasterService;
 
     @Autowired
     private ModelMapper mapper;
     @Autowired
-    private LocationRepo locationRepo;
+    private LocationMasterRepo locationMasterRepo;
 
     @RequestMapping(method = RequestMethod.GET, value = "")
     public ResponseEntity<LocationMaster> getAllLocationMaster() {
         String status = "active";
         ResponseEntity locationResp = null;
         try {
-            List<LocationMaster> locationList = locationService.findAllByStatus(status);
+            List<LocationMaster> locationList = locationMasterService.findAllByStatus(status);
             if (!locationList.isEmpty()) {
                 locationResp = new ResponseEntity<>(locationList, HttpStatus.OK);
             } else if (locationList.isEmpty()) {
@@ -50,7 +50,7 @@ public class LocationController {
         ResponseEntity locationResp = null;
         LocationMaster location = null;
         try {
-            location = locationService.getLocationByDivisionCode(divisionCode, status);
+            location = locationMasterService.getLocationByDivisionCode(divisionCode, status);
             if (location != null) {
                 locationResp = new ResponseEntity<>(location, HttpStatus.OK);
             } else if (location == null) {
@@ -66,12 +66,12 @@ public class LocationController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/id/{id}")
-    public ResponseEntity<LocationMaster> getLocationById(@PathVariable("id") Long id) {
+    public ResponseEntity<LocationMaster> getLocationById(@PathVariable("id") String id) {
         String status = "active";
         LocationMaster location = null;
         ResponseEntity locationResp = null;
         try {
-            location = locationService.getLocationById(id, status);
+            location = locationMasterService.getLocationById(id, status);
             if (location != null) {
                 locationResp = new ResponseEntity<>(location, HttpStatus.OK);
             } else if (location == null) {

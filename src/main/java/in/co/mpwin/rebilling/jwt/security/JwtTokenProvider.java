@@ -50,6 +50,26 @@ public class JwtTokenProvider {
 
     }
 
+    public String generateToken(String username)  {
+
+        //String username = authentication.getName();
+        Optional<User> user = userRepository.findByUsername(username);
+        Date currentDate = new Date();
+        Date expireDate = new Date(currentDate.getTime() + expireTimeValue);
+
+        String token = Jwts.builder()
+                .setSubject(username)
+                .claim("user",username)
+                .claim("role",user.get().getRole())
+                .claim("status",user.get().getStatus())
+                .setIssuedAt(currentDate)
+                .setExpiration(expireDate)
+                .signWith(key())
+                .compact();
+        return token;
+
+    }
+
     private Key key()   {
         System.out.println(Decoders.BASE64.decode(jwtSecret));
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));

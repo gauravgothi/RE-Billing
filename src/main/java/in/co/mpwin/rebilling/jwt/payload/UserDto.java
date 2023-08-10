@@ -1,6 +1,8 @@
 package in.co.mpwin.rebilling.jwt.payload;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,7 +24,7 @@ public class UserDto {
     private String username;
 
     @Column(nullable = false)
-    @Size(min = 8)
+    @Size(min = 7)
     private String password;
 
     @Column(nullable = false)

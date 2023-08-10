@@ -1,5 +1,6 @@
 package in.co.mpwin.rebilling.beans.plantmaster;
 
+import in.co.mpwin.rebilling.beans.locationmaster.LocationMaster;
 import in.co.mpwin.rebilling.interfaces.BeanInterface;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -45,9 +46,6 @@ public class PlantMasterBean implements BeanInterface {
     @Column(name="type")
     String  type;
 
-    @Column(name ="location_id")
-    String locationId;
-
     @Column(name ="created_by")
     private String createdBy;
     @Column(name ="updated_by")
@@ -62,4 +60,9 @@ public class PlantMasterBean implements BeanInterface {
     private String remark;
 
 
+    @Column(name = "location_id")
+    String locationId;
+    @OneToOne
+    @JoinColumn(name = "location_id", insertable=false, updatable=false)
+    private LocationMaster locationMaster;
 }

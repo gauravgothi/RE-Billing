@@ -1,5 +1,6 @@
 package in.co.mpwin.rebilling.beans.investormaster;
 
+import in.co.mpwin.rebilling.beans.locationmaster.LocationMaster;
 import in.co.mpwin.rebilling.interfaces.BeanInterface;
 import in.co.mpwin.rebilling.miscellanious.ConstantField;
 import jakarta.persistence.*;
@@ -68,8 +69,6 @@ public class InvestorMasterBean implements BeanInterface {
     @Column(name = "nldc")
     private String nldc;
 
-    @Column(name = "location_id")
-    String locationId;
 
     @Column(name = "created_by")
     private String createdBy;
@@ -83,5 +82,12 @@ public class InvestorMasterBean implements BeanInterface {
     private String status;
     @Column(name = "remark")
     private String remark;
+
+    @Column(name = "location_id")
+    String locationId;
+
+    @OneToOne
+    @JoinColumn(name = "location_id", insertable=false, updatable=false)
+    private LocationMaster locationMaster;
 
 }

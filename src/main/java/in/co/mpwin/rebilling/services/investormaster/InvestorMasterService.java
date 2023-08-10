@@ -81,6 +81,7 @@ public class InvestorMasterService {
             imb = investorMasterRepo.save(investorMasterBean);
         }catch (Exception exception){
             exception.printStackTrace();
+            return null;
         }
         return imb;
     }

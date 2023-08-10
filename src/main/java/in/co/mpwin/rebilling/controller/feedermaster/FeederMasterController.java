@@ -1,6 +1,5 @@
 package in.co.mpwin.rebilling.controller.feedermaster;
 
-import in.co.mpwin.rebilling.beans.LocationMaster;
 import in.co.mpwin.rebilling.beans.feedermaster.FeederMasterBean;
 import in.co.mpwin.rebilling.miscellanious.Message;
 import in.co.mpwin.rebilling.services.feedermaster.FeederMasterService;

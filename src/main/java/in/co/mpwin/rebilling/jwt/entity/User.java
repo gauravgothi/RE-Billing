@@ -1,9 +1,6 @@
 package in.co.mpwin.rebilling.jwt.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,13 +20,14 @@ import java.time.LocalDateTime;
 public class User {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(nullable = false)
     private String username;
 
     @Column(nullable = false)
-    @Size(min = 8)
+    @Size(min = 7)
     private String password;
 
     @Column(nullable = false)
