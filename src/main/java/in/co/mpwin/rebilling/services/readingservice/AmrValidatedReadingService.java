@@ -1,8 +1,8 @@
-package in.co.mpwin.rebilling.services.transactional;
+package in.co.mpwin.rebilling.services.readingservice;
 
-import in.co.mpwin.rebilling.beans.readingoperations.AmrValidatedReading;
+import in.co.mpwin.rebilling.beans.readingbean.AmrValidatedReading;
 import in.co.mpwin.rebilling.miscellanious.AuditControlServices;
-import in.co.mpwin.rebilling.repositories.transactional.AmrValidatedReadingRepo;
+import in.co.mpwin.rebilling.repositories.readingrepo.AmrValidatedReadingRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

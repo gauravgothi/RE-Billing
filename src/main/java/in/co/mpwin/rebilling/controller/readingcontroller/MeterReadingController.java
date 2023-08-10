@@ -1,8 +1,8 @@
-package in.co.mpwin.rebilling.controller.readingoperations;
+package in.co.mpwin.rebilling.controller.readingcontroller;
 
-import in.co.mpwin.rebilling.beans.readingoperations.MeterReading;
+import in.co.mpwin.rebilling.beans.readingbean.MeterReadingBean;
 import in.co.mpwin.rebilling.miscellanious.Message;
-import in.co.mpwin.rebilling.services.transactional.MeterReadingService;
+import in.co.mpwin.rebilling.services.readingservice.MeterReadingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,11 +21,11 @@ public class MeterReadingController {
     public ResponseEntity<?> getAllMeterReadingByStatus(@PathVariable("status") String status){
         ResponseEntity meterReadingResp = null;
         try {
-            List<MeterReading> meterReadingList = meterReadingService.getAllMeterReading(status);
+            List<MeterReadingBean> meterReadingBeanList = meterReadingService.getAllMeterReading(status);
 
-            if (!meterReadingList.isEmpty())
-                meterReadingResp = new ResponseEntity<>(meterReadingList, HttpStatus.OK);
-            else if (meterReadingList.isEmpty())
+            if (!meterReadingBeanList.isEmpty())
+                meterReadingResp = new ResponseEntity<>(meterReadingBeanList, HttpStatus.OK);
+            else if (meterReadingBeanList.isEmpty())
                 meterReadingResp = new ResponseEntity<>(new Message("Meter Reading list is not available."),HttpStatus.BAD_REQUEST);
         }catch (Exception e){
             e.printStackTrace();

@@ -1,6 +1,6 @@
-package in.co.mpwin.rebilling.controller.readingoperations;
+package in.co.mpwin.rebilling.controller.readingcontroller;
 
-import in.co.mpwin.rebilling.services.transactional.AmrValidatedReadingService;
+import in.co.mpwin.rebilling.services.readingservice.AmrValidatedReadingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;

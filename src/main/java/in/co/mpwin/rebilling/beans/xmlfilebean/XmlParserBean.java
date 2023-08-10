@@ -1,4 +1,4 @@
-package in.co.mpwin.rebilling.beans.fileoperations;
+package in.co.mpwin.rebilling.beans.xmlfilebean;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -8,17 +8,17 @@ import lombok.Setter;
 
 import java.util.Date;
 
-@Entity
+//@Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "parsed_data_d1")
-public class ParsedDataEntity {
+//@Table(name = "parsed_data_d1")
+public class XmlParserBean {
 
-    @Id
+    /*@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id;*/
 
     private String g1;
     private Date g2;

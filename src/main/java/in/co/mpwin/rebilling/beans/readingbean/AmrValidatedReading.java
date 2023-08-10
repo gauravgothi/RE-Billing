@@ -1,4 +1,4 @@
-package in.co.mpwin.rebilling.beans.readingoperations;
+package in.co.mpwin.rebilling.beans.readingbean;
 
 import in.co.mpwin.rebilling.interfaces.BeanInterface;
 import jakarta.persistence.*;

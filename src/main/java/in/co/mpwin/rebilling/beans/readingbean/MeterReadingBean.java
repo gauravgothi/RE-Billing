@@ -1,4 +1,4 @@
-package in.co.mpwin.rebilling.beans.readingoperations;
+package in.co.mpwin.rebilling.beans.readingbean;
 
 import in.co.mpwin.rebilling.interfaces.BeanInterface;
 import jakarta.persistence.*;
@@ -13,7 +13,7 @@ import java.util.Date;
 @Setter
 @Entity(name="MeterReading")
 @Table(name="re_meter_reading_trx",uniqueConstraints = @UniqueConstraint(name = "re_meter_reading_trx_ukey", columnNames={"meter_no","reading_date","reading_type","status"}))
-public class MeterReading implements BeanInterface {
+public class MeterReadingBean implements BeanInterface {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -103,6 +103,27 @@ public class MeterReading implements BeanInterface {
     private String status;
     @Column(name = "remark")
     private String remark;
+
+    @Column(name = "e_attribute1")
+    private String eAttribute1;
+    @Column(name = "e_attribute2")
+    private String eAttribute2;
+    @Column(name = "e_attribute3")
+    private String eAttribute3;
+    @Column(name = "e_attribute4")
+    private String eAttribute4;
+    @Column(name = "e_attribute5")
+    private String eAttribute5;
+    @Column(name = "i_attribute1")
+    private String iAttribute1;
+    @Column(name = "i_attribute2")
+    private String iAttribute2;
+    @Column(name = "i_attribute3")
+    private String iAttribute3;
+    @Column(name = "i_attribute4")
+    private String iAttribute4;
+    @Column(name = "i_attribute5")
+    private String iAttribute5;
 
     //e_attribute1 to 10 is reserved for future use
 

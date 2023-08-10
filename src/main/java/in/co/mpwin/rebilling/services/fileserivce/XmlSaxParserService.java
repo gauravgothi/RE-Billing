@@ -1,6 +1,7 @@
-package in.co.mpwin.rebilling.services.fileoperations;
+package in.co.mpwin.rebilling.services.fileserivce;
 
-import in.co.mpwin.rebilling.beans.fileoperations.ParsedDataEntity;
+import in.co.mpwin.rebilling.beans.readingbean.MeterReadingBean;
+import in.co.mpwin.rebilling.beans.xmlfilebean.XmlParserBean;
 import org.springframework.stereotype.Service;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -16,11 +17,12 @@ import java.util.Date;
 
 @Service
 public class XmlSaxParserService {
-    public ParsedDataEntity parseXml(String xmlData) throws ParserConfigurationException, SAXException {
+
+    public XmlParserBean parseXml(String xmlData) throws ParserConfigurationException, SAXException {
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SAXParser saxParser = factory.newSAXParser();
 
-        ParsedDataEntity parsedData = new ParsedDataEntity();
+        XmlParserBean parsedData = new XmlParserBean();
         InputStream inputStream = new ByteArrayInputStream(xmlData.getBytes());
 
         DefaultHandler handler = new DefaultHandler() {
@@ -177,5 +179,58 @@ public class XmlSaxParserService {
         }
 
         return parsedData;
+    }
+
+    public MeterReadingBean convertXmlParserBeanToMeterReadingBean(XmlParserBean xmlParserBean)
+    {
+        MeterReadingBean meterReadingBean=new MeterReadingBean();
+        try {
+            meterReadingBean.setMeterNo(xmlParserBean.getG1());//1
+            meterReadingBean.setMf(xmlParserBean.getG9());//2
+            meterReadingBean.setReadingDate(xmlParserBean.getG2());//3
+            meterReadingBean.setEndDate(xmlParserBean.getG2());//4
+            meterReadingBean.setReadingType("TEST");//5
+            meterReadingBean.setReadSource("test");//6
+
+            meterReadingBean.setETod1(xmlParserBean.getG9());//7
+            meterReadingBean.setETod2(xmlParserBean.getG9());//8
+            meterReadingBean.setETod3(xmlParserBean.getG9());//9
+            meterReadingBean.setETod4(xmlParserBean.getG9());//10
+            meterReadingBean.setEActiveEnergy(xmlParserBean.getG9());//11
+            meterReadingBean.setEReactiveQuad1(xmlParserBean.getG9());//12
+            meterReadingBean.setEReactiveQuad2(xmlParserBean.getG9());//13
+            meterReadingBean.setEReactiveQuad3(xmlParserBean.getG9());//14
+            meterReadingBean.setEReactiveQuad4(xmlParserBean.getG9());//15
+            meterReadingBean.setEAdjustment(xmlParserBean.getG9());//16
+            meterReadingBean.setEMaxDemand(xmlParserBean.getG9());//17
+            meterReadingBean.setEKvah(xmlParserBean.getG9());//18
+            meterReadingBean.setEAssesment(xmlParserBean.getG9());//19
+
+            meterReadingBean.setITod1(xmlParserBean.getG9());//20
+            meterReadingBean.setITod2(xmlParserBean.getG9());//21
+            meterReadingBean.setITod3(xmlParserBean.getG9());//22
+            meterReadingBean.setITod4(xmlParserBean.getG9());//23
+            meterReadingBean.setIActiveEnergy(xmlParserBean.getG9());//24
+            meterReadingBean.setIReactiveQuad1(xmlParserBean.getG9());//25
+            meterReadingBean.setIReactiveQuad2(xmlParserBean.getG9());//26
+            meterReadingBean.setIReactiveQuad3(xmlParserBean.getG9());//27
+            meterReadingBean.setIReactiveQuad4(xmlParserBean.getG9());//28
+            meterReadingBean.setIAdjustment(xmlParserBean.getG9());//29
+            meterReadingBean.setIMaxDemand(xmlParserBean.getG9());//30
+            meterReadingBean.setIKvah(xmlParserBean.getG9());//31
+            meterReadingBean.setIAssesment(xmlParserBean.getG9());//32
+
+            meterReadingBean.setCurrentState("Current setate");//33
+            meterReadingBean.setCreatedBy("SHADAB");//34
+            meterReadingBean.setUpdatedBy("KHAN");//35
+            meterReadingBean.setCreatedOn(null);//36
+            meterReadingBean.setUpdatedOn(null);//37
+            meterReadingBean.setStatus("status");//38
+            meterReadingBean.setRemark("test reamrk");//39
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return meterReadingBean;
     }
 }

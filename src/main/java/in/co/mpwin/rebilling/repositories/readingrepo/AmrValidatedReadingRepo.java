@@ -1,6 +1,6 @@
-package in.co.mpwin.rebilling.repositories.transactional;
+package in.co.mpwin.rebilling.repositories.readingrepo;
 
-import in.co.mpwin.rebilling.beans.readingoperations.AmrValidatedReading;
+import in.co.mpwin.rebilling.beans.readingbean.AmrValidatedReading;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
