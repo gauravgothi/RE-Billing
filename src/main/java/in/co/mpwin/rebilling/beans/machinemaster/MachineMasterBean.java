@@ -40,15 +40,6 @@ public class MachineMasterBean implements BeanInterface {
     String  reactiveRate;
 
 
-    @Column(name="ppa_letter_no")
-    String  ppaLetterNo;
-
-    @Column(name="ppa_date")
-    String   ppaDate;
-
-    @Column(name="particulars")
-    String  particulars;
-
     @Column(name ="created_by")
     private String createdBy;
     @Column(name ="updated_by")

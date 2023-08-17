@@ -12,6 +12,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -70,16 +71,16 @@ public class XmlSaxParserService {
                         parsedData.setG8(Integer.parseInt(value));
                         break;
                     case "G9":
-                        parsedData.setG9(Double.parseDouble(value));
+                        parsedData.setG9(BigDecimal.valueOf(Double.parseDouble(value)));
                         break;
                     case "G10":
-                        parsedData.setG10(Double.parseDouble(value));
+                        parsedData.setG10(BigDecimal.valueOf(Double.parseDouble(value)));
                         break;
                     case "G11":
-                        parsedData.setG11(Double.parseDouble(value));
+                        parsedData.setG11(BigDecimal.valueOf(Double.parseDouble(value)));
                         break;
                     case "G12":
-                        parsedData.setG12(Double.parseDouble(value));
+                        parsedData.setG12(BigDecimal.valueOf(Double.parseDouble(value)));
                         break;
                     case "G13":
                         parsedData.setG13(value);
@@ -100,7 +101,7 @@ public class XmlSaxParserService {
                         parsedData.setG27(value);
                         break;
                     case "G30":
-                        parsedData.setG30(Double.parseDouble(value));
+                        parsedData.setG30(BigDecimal.valueOf(Double.parseDouble(value)));
                         break;
                     case "G31":
                         parsedData.setG31(value);
@@ -139,7 +140,7 @@ public class XmlSaxParserService {
                         parsedData.setG1221(Integer.parseInt(value));
                         break;
                     case "G1222":
-                        parsedData.setG1222(Double.parseDouble(value));
+                        parsedData.setG1222(BigDecimal.valueOf(Double.parseDouble(value)));
                         break;
                     case "G1223":
                         parsedData.setG1223(Integer.parseInt(value));

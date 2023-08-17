@@ -78,7 +78,6 @@ public class InvestorMasterBean implements BeanInterface {
     private Date ppaDate;
 
 
-
     @Column(name = "created_by")
     private String createdBy;
     @Column(name = "updated_by")
