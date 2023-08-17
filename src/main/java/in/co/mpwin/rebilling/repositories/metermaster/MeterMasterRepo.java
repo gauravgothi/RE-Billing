@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -141,6 +142,8 @@ public interface MeterMasterRepo extends CrudRepository<MeterMasterBean, Long> {
 //            ":#{#mmb.remark})", nativeQuery = true)
 //    public int createMeterMaster(@Param("mmb") MeterMasterBean mmb);
           public MeterMasterBean save(MeterMasterBean meterMasterBean);
+
+        Long countByMeterNumberAndStatusAndIsMappedAndMf(String meterNumber, String status, String isMapped, BigDecimal mf);
 
 
 //    @Query(value = "select case when exists (select * from re_meter_master as t where t.meter_number =:meterno"

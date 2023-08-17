@@ -2,10 +2,12 @@ package in.co.mpwin.rebilling.beans.readingbean;
 
 import in.co.mpwin.rebilling.interfaces.BeanInterface;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Digits;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Date;
 
@@ -21,8 +23,8 @@ public class MeterReadingBean implements BeanInterface {
     @Column(name="meter_no")@NotNull
     private String meterNo;
 
-    @Column(name="mf")@NotNull
-    private Double mf;
+    @Column(name="mf")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal mf;
     
     @Column(name = "reading_date")@NotNull
     private Date readingDate;
@@ -33,60 +35,60 @@ public class MeterReadingBean implements BeanInterface {
     @Column(name="read_source")@NotNull
     private String readSource;
 
-    @Column(name="e_tod1")@NotNull
-    private Double eTod1;
-    @Column(name="e_tod2")@NotNull
-    private Double eTod2;
-    @Column(name="e_tod3")@NotNull
-    private Double eTod3;
-    @Column(name="e_tod4")@NotNull
-    private Double eTod4;
-    @Column(name="e_active_energy")@NotNull
-    private Double eActiveEnergy;
-    @Column(name="e_reactive_quad1")@NotNull
-    private Double eReactiveQuad1;
-    @Column(name="e_reactive_quad2")@NotNull
-    private Double eReactiveQuad2;
-    @Column(name="e_reactive_quad3")@NotNull
-    private Double eReactiveQuad3;
-    @Column(name="e_reactive_quad4")@NotNull
-    private Double eReactiveQuad4;
-    @Column(name="e_adjustment")@NotNull
-    private Double eAdjustment;
-    @Column(name="e_max_demand")@NotNull
-    private Double eMaxDemand;
-    @Column(name="e_kvah")@NotNull
-    private Double eKvah;
-    @Column(name="e_assesment")@NotNull
-    private Double eAssesment;
+    @Column(name="e_tod1")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal eTod1;
+    @Column(name="e_tod2")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal eTod2;
+    @Column(name="e_tod3")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal eTod3;
+    @Column(name="e_tod4")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal eTod4;
+    @Column(name="e_active_energy")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal eActiveEnergy;
+    @Column(name="e_reactive_quad1")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal eReactiveQuad1;
+    @Column(name="e_reactive_quad2")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal eReactiveQuad2;
+    @Column(name="e_reactive_quad3")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal eReactiveQuad3;
+    @Column(name="e_reactive_quad4")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal eReactiveQuad4;
+    @Column(name="e_adjustment")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal eAdjustment;
+    @Column(name="e_max_demand")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal eMaxDemand;
+    @Column(name="e_kvah")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal eKvah;
+    @Column(name="e_assesment")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal eAssesment;
 
 
-    @Column(name="i_tod1")@NotNull
-    private Double iTod1;
-    @Column(name="i_tod2")@NotNull
-    private Double iTod2;
-    @Column(name="i_tod3")@NotNull
-    private Double iTod3;
-    @Column(name="i_tod4")@NotNull
-    private Double iTod4;
-    @Column(name="i_active_energy")@NotNull
-    private Double iActiveEnergy;
-    @Column(name="i_reactive_quad1")@NotNull
-    private Double iReactiveQuad1;
-    @Column(name="i_reactive_quad2")@NotNull
-    private Double iReactiveQuad2;
-    @Column(name="i_reactive_quad3")@NotNull
-    private Double iReactiveQuad3;
-    @Column(name="i_reactive_quad4")@NotNull
-    private Double iReactiveQuad4;
-    @Column(name="i_adjustment")@NotNull
-    private Double iAdjustment;
-    @Column(name="i_max_demand")@NotNull
-    private Double iMaxDemand;
-    @Column(name="i_kvah")@NotNull
-    private Double iKvah;
-    @Column(name="i_assesment")@NotNull
-    private Double iAssesment;
+    @Column(name="i_tod1")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal iTod1;
+    @Column(name="i_tod2")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal iTod2;
+    @Column(name="i_tod3")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal iTod3;
+    @Column(name="i_tod4")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal iTod4;
+    @Column(name="i_active_energy")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal iActiveEnergy;
+    @Column(name="i_reactive_quad1")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal iReactiveQuad1;
+    @Column(name="i_reactive_quad2")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal iReactiveQuad2;
+    @Column(name="i_reactive_quad3")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal iReactiveQuad3;
+    @Column(name="i_reactive_quad4")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal iReactiveQuad4;
+    @Column(name="i_adjustment")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal iAdjustment;
+    @Column(name="i_max_demand")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal iMaxDemand;
+    @Column(name="i_kvah")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal iKvah;
+    @Column(name="i_assesment")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal iAssesment;
 
     @Column(name = "current_state")
     private String currentState;

@@ -7,8 +7,10 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+
 import javax.validation.constraints.Email;
 import java.sql.Timestamp;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -68,6 +70,13 @@ public class InvestorMasterBean implements BeanInterface {
     private String micr;
     @Column(name = "nldc")
     private String nldc;
+    @Column(name = "ppa_letter_no")
+    private String ppaLetterNo;
+    @Column(name = "particulars",length = 10000)
+    private String particulars;
+    @Column(name = "ppa_date")
+    private Date ppaDate;
+
 
 
     @Column(name = "created_by")

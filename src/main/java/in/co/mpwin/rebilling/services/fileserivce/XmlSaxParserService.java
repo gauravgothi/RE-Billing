@@ -189,8 +189,8 @@ public class XmlSaxParserService {
             meterReadingBean.setMf(xmlParserBean.getG9());//2
             meterReadingBean.setReadingDate(xmlParserBean.getG2());//3
             meterReadingBean.setEndDate(xmlParserBean.getG2());//4
-            meterReadingBean.setReadingType("TEST");//5
-            meterReadingBean.setReadSource("test");//6
+            meterReadingBean.setReadingType("NR");//5
+            meterReadingBean.setReadSource("file");//6
 
             meterReadingBean.setETod1(xmlParserBean.getG9());//7
             meterReadingBean.setETod2(xmlParserBean.getG9());//8

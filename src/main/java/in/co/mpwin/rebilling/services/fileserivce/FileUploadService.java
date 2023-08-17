@@ -55,7 +55,7 @@ public class FileUploadService {
                     resp = new ResponseEntity<>(new Message("XML file is not in correct format"), HttpStatus.OK);
                 }
                 else {
-                    //saving data into meter reading table
+                    //saving data into meter reading entity or bean
                     MeterReadingBean passMRB=xmlSaxParserService.convertXmlParserBeanToMeterReadingBean(xmlParserBean);
 
                     //Saving XML file data into Meterreading Table

@@ -47,7 +47,10 @@ public class DeveloperMasterBean implements BeanInterface {
     private String siteEmail;
     @Column(name = "site_contact_no")
     private String siteContactNo;
-
+    @Column(name = "rmd_eau_developers")
+    private String rmdEauDevelopers;
+    @Column(name = "generator_type")
+    private String generatorType;
 
     @Column(name = "created_by")
     private String createdBy;
