@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Digits;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 @Getter
 @Setter
@@ -42,8 +45,13 @@ public class MeterMasterBean implements MeterMasterInterface {
     String phase;
     @Column(name="metergrp")
     String meterGroup;
+
+
     @Column(name="mf")
-    String mf;
+    @Digits(integer = 38,fraction = 6)
+    @DecimalMin(value = "0.0",inclusive = true)
+    BigDecimal mf;
+
     @Column(name="install_date")
     String installDate;
     @Column(name="created_by")

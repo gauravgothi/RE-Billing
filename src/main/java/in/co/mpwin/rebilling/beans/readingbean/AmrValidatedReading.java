@@ -2,10 +2,13 @@ package in.co.mpwin.rebilling.beans.readingbean;
 
 import in.co.mpwin.rebilling.interfaces.BeanInterface;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Digits;
 import lombok.Getter;
 import lombok.Setter;
 
+
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 @Getter
@@ -28,42 +31,43 @@ public class AmrValidatedReading implements BeanInterface {
 
     @Column(name="main_meter_no")@NotNull
     private String mainMeterNo;
-    @Column(name="main_current_kwh")@NotNull
-    private Double mainCurrentKwh;
-    @Column(name="main_previous_kwh")@NotNull
-    private Double mainPreviousKwh;
-    @Column(name="main_kwh_difference")@NotNull
-    private Double mainKwhDifference;
-    @Column(name="main_mf")@NotNull
-    private Double mainMf;
-    @Column(name="main_consumption")@NotNull
-    private Double mainConsumption;
-    @Column(name="main_assesment")@NotNull
-    private Double mainAssesment;
-    @Column(name="main_total_consumption")@NotNull
-    private Double mainTotalConsumption;
+
+    @Column(name="main_current_kwh")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal mainCurrentKwh;
+    @Column(name="main_previous_kwh")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal mainPreviousKwh;
+    @Column(name="main_kwh_difference")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal mainKwhDifference;
+    @Column(name="main_mf")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal mainMf;
+    @Column(name="main_consumption")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal mainConsumption;
+    @Column(name="main_assesment")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal mainAssesment;
+    @Column(name="main_total_consumption")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal mainTotalConsumption;
 
     @Column(name="check_meter_no")@NotNull
     private String checkMeterNo;
-    @Column(name="check_current_kwh")@NotNull
-    private Double checkCurrentKwh;
-    @Column(name="check_previous_kwh")@NotNull
-    private Double checkPreviousKwh;
-    @Column(name="check_kwh_difference")@NotNull
-    private Double checkKwhDifference;
-    @Column(name="check_mf")@NotNull
-    private Double checkMf;
-    @Column(name="check_consumption")@NotNull
-    private Double checkConsumption;
-    @Column(name="check_assesment")@NotNull
-    private Double checkAssesment;
-    @Column(name="check_total_consumption")@NotNull
-    private Double checkTotalConsumption;
+    @Column(name="check_current_kwh")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal checkCurrentKwh;
+    @Column(name="check_previous_kwh")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal checkPreviousKwh;
+    @Column(name="check_kwh_difference")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal checkKwhDifference;
+    @Column(name="check_mf")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal checkMf;
+    @Column(name="check_consumption")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal checkConsumption;
+    @Column(name="check_assesment")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal checkAssesment;
+    @Column(name="check_total_consumption")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal checkTotalConsumption;
 
-    @Column(name="percentage")@NotNull
-    private Double percentage;
-    @Column(name="result")@NotNull
-    private Double result;
+    @Column(name="percentage")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal percentage;
+    @Column(name="result")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal result;
 
     @Column(name = "created_by")
     private String createdBy;

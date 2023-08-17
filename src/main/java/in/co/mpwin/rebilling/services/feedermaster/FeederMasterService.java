@@ -17,6 +17,7 @@ public class FeederMasterService {
     @Autowired
     FeederMasterRepo feederMasterRepo;
 
+
     public List<FeederMasterBean> getAllFeederMasterBean(String status){
         List<FeederMasterBean> allFeederList = new ArrayList<>();
         try {
@@ -48,6 +49,7 @@ public class FeederMasterService {
             }
             //Set the Audit control parameters, Globally
             new AuditControlServices().setInitialAuditControlParameters(feederMasterBean);
+
             //Validate the meterno remove the space.
             feederMasterBean.setFeederNumber(new ValidatorService().removeSpaceFromString(feederMasterBean.getFeederNumber()));
             fmb = feederMasterRepo.save(feederMasterBean);

@@ -5,6 +5,7 @@ import in.co.mpwin.rebilling.beans.feedermaster.FeederMasterBean;
 import in.co.mpwin.rebilling.beans.machinemaster.MachineMasterBean;
 import in.co.mpwin.rebilling.beans.metermaster.MeterMasterBean;
 import in.co.mpwin.rebilling.beans.plantmaster.PlantMasterBean;
+import in.co.mpwin.rebilling.beans.readingbean.MeterReadingBean;
 import in.co.mpwin.rebilling.services.plantmaster.PlantMasterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -36,8 +37,20 @@ public class AuditControlServices {
         }else if (obj instanceof InvestorMasterBean) {
             this.setInitialAuditControlParametersOfInvestor((InvestorMasterBean)obj);
 
+        }else if (obj instanceof MeterReadingBean) {
+            this.setInitialAuditControlParametersOfReading((MeterReadingBean)obj);
+
         }
 
+    }
+
+    private void setInitialAuditControlParametersOfReading(MeterReadingBean meterReadingBean) {
+        meterReadingBean.setCreatedOn(new DateMethods().getServerTime());
+        meterReadingBean.setUpdatedOn(new DateMethods().getServerTime());
+        meterReadingBean.setCreatedBy(new TokenInfo().getCurrentUsername());
+        meterReadingBean.setUpdatedBy(new TokenInfo().getCurrentUsername());
+        meterReadingBean.setStatus("active");
+        meterReadingBean.setRemark("NA");
     }
 
     private void setInitialAuditControlParametersOfMachine(MachineMasterBean machineMasterBean) {
@@ -96,6 +109,7 @@ public class AuditControlServices {
             meterMasterBean.setRemark("NA");
             meterMasterBean.setIsMapped("no");
     }
+
 
     public static void main(String arg[])
     {

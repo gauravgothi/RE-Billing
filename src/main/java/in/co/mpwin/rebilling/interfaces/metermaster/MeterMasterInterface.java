@@ -3,6 +3,7 @@ package in.co.mpwin.rebilling.interfaces.metermaster;
 import in.co.mpwin.rebilling.interfaces.BeanInterface;
 import jakarta.persistence.Column;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 public interface MeterMasterInterface extends BeanInterface {
@@ -34,8 +35,8 @@ public interface MeterMasterInterface extends BeanInterface {
     public void setPhase(String phase);
     public String getMeterGroup();
     public void setMeterGroup(String metergrp);
-    public String getMf();
-    public void setMf(String mf);
+    public BigDecimal getMf();
+    public void setMf(BigDecimal mf);
     public String getInstallDate();
     public void setInstallDate(String install_date);
     public String getCreatedBy();

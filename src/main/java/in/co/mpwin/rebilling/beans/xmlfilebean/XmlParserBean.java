@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 //@Entity
@@ -24,39 +25,39 @@ public class XmlParserBean {
     private Date g2;
     private Date g3;
     private Date g4;
-    private int g7;
-    private int g8;
-    private double g9;
-    private double g10;
-    private double g11;
-    private double g12;
+    private Integer g7;
+    private Integer g8;
+    private BigDecimal g9;
+    private BigDecimal g10;
+    private BigDecimal g11;
+    private BigDecimal g12;
     private String g13;
     private String g15;
     private String g17;
-    private int g19;
-    private int g20;
+    private Integer g19;
+    private Integer g20;
     private String g22Code;
     private String g22Name;
     private String g27;
-    private double g30;
+    private BigDecimal g30;
     private String g31;
-    private int g32;
+    private Integer g32;
     private String g33;
-    private int g1209;
+    private Integer g1209;
     private Date g1210;
-    private int g1211;
-    private int g1212;
+    private Integer g1211;
+    private Integer g1212;
     private String g1216;
-    private int g1233;
-    private int g1219;
-    private int g1220;
-    private int g1221;
-    private double g1222;
-    private int g1223;
+    private Integer g1233;
+    private Integer g1219;
+    private Integer g1220;
+    private Integer g1221;
+    private BigDecimal g1222;
+    private Integer g1223;
     private String g1236;
-    private int g1237;
-    private int g1239;
-    private int g1240;
+    private Integer g1237;
+    private Integer g1239;
+    private Integer g1240;
 
     // Constructors, getters, and setters
 }
