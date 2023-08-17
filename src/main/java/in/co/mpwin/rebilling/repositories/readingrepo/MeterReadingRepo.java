@@ -99,10 +99,10 @@ public interface MeterReadingRepo extends CrudRepository<MeterReadingBean,Long> 
 
     List<MeterReadingBean> findAllByStatus(String status);
 
-    @Query(value = "SELECT * FROM re_meter_reading_trx WHERE TO_CHAR(reading_date, 'Mon-YYYY') =:month AND meter_no =:meter AND status=:status",nativeQuery = true)
+    @Query(value = "SELECT * FROM ecell.re_meter_reading_trx WHERE TO_CHAR(reading_date, 'Mon-YYYY') =:month AND meter_no =:meter AND status=:status",nativeQuery = true)
     List<MeterReadingBean> findAllByReadingDateAndMeterNoAndStatus(@Param("month") String readingDate,@Param("meter")String meterNo, @Param("status") String status);
 
-    @Query(value = "SELECT * FROM re_meter_reading_trx WHERE TO_CHAR(reading_date, 'Mon-YYYY') =:month AND status=:status",nativeQuery = true)
+    @Query(value = "SELECT * FROM ecell.re_meter_reading_trx WHERE TO_CHAR(reading_date, 'Mon-YYYY') =:month AND status=:status",nativeQuery = true)
     List<MeterReadingBean> findAllByReadingDateAndStatus(@Param("month") String readingDate,@Param("status") String status);
 
     List<MeterReadingBean> findAllByCurrentStateAndMeterNoAndStatus(String currentState,String meterNo, String status);
@@ -110,11 +110,11 @@ public interface MeterReadingRepo extends CrudRepository<MeterReadingBean,Long> 
     List<MeterReadingBean> findAllByCurrentStateAndStatus(String currentState, String status);
 
     @Modifying(clearAutomatically = true)
-    @Query(value = "UPDATE re_meter_reading_trx t SET t.current_state=:current_state WHERE TO_CHAR(t.reading_date, 'Mon-YYYY') =:month AND t.meter_no=:meter AND t.status=:status",nativeQuery = true)
+    @Query(value = "UPDATE ecell.re_meter_reading_trx t SET t.current_state=:current_state WHERE TO_CHAR(t.reading_date, 'Mon-YYYY') =:month AND t.meter_no=:meter AND t.status=:status",nativeQuery = true)
     MeterReadingBean updateCurrentState(@Param("current_state") String currentState,@Param("month") String month, @Param("meter") String meterNo,@Param("status") String status);
 
     @Modifying(clearAutomatically = true)
-    @Query(value = "UPDATE re_meter_reading_trx t SET t.end_date=:endDate WHERE TO_CHAR(t.reading_date, 'Mon-YYYY') =:month AND t.meter_no=:meterNo AND t.status=:status",nativeQuery = true)
+    @Query(value = "UPDATE ecell.re_meter_reading_trx t SET t.end_date=:endDate WHERE TO_CHAR(t.reading_date, 'Mon-YYYY') =:month AND t.meter_no=:meterNo AND t.status=:status",nativeQuery = true)
     MeterReadingBean updateEndDate(@Param("endDate") Date endDate, @Param("month") String month, @Param("meterNo") String meterNo, @Param("status") String status);
 
     MeterReadingBean save(MeterReadingBean meterReadingBean);

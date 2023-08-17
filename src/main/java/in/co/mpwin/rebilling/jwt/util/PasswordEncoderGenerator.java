@@ -15,12 +15,14 @@ public class PasswordEncoderGenerator {
         System.out.println(passwordEncoder.encode("admin1234"));
         System.out.println(passwordEncoder.encode("HTBill123"));
         //Double a = 0.3,b=0.2;
+        Double b = 25.4545787;
+        System.out.println(BigDecimal.valueOf(b));
         BigDecimal a=new BigDecimal("0.35");
-        BigDecimal b=new BigDecimal("0.2");
+        BigDecimal d=new BigDecimal("0.2");
         System.out.println();
-        System.out.println(a.subtract(b));
-        Double d = 10.24548d;
-        System.out.println(new DecimalFormat("#.000000").format(d));
+        System.out.println(a.subtract(d));
+        Double e = 10.24548d;
+        System.out.println(new DecimalFormat("#.000000").format(e));
 
     }
 }

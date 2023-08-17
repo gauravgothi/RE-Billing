@@ -20,22 +20,12 @@ public class InvestorMachineMappingBean implements BeanInterface
 
     @Column(name="mfp_id")
     private Long mfpId;
-//    @ManyToOne()
-//    @JoinColumn(name = "mfp_id",referencedColumnName = "id", updatable = false, insertable = false)
-//    private MeterFeederPlantMappingBean meterFeederPlantMappingBean;
 
     @Column(name="investor_code")
     private String investorCode;
-//    @ManyToOne()
-//    @JoinColumn(name = "investor_code", referencedColumnName = "investorCode,", updatable = false, insertable = false)
-//    private InvestorMasterBean investorMasterBean;
-
 
    @Column(name="machine_code")
     private String machineCode;
-//    @OneToOne()
- //   @JoinColumn(name = "machine_code", referencedColumnName = "machineCode", updatable = false, insertable = false)
-//    private MachineMasterBean machineMasterBean;
 
     @Column(name = "created_by")
     private String createdBy;

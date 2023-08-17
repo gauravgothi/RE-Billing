@@ -143,7 +143,7 @@ public interface MeterMasterRepo extends CrudRepository<MeterMasterBean, Long> {
 //    public int createMeterMaster(@Param("mmb") MeterMasterBean mmb);
           public MeterMasterBean save(MeterMasterBean meterMasterBean);
 
-        Long countByMeterNumberAndStatusAndIsMappedAndMf(String meterNumber, String status, String isMapped, BigDecimal mf);
+        Long countByMeterNumberAndStatusAndIsMapped(String meterNumber, String status, String isMapped);
 
 
 //    @Query(value = "select case when exists (select * from re_meter_master as t where t.meter_number =:meterno"
