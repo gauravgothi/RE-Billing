@@ -35,7 +35,7 @@ public class LocationService {
         return location;
     }
 
-    public LocationMaster getLocationById(Long id,String status){
+    public LocationMaster getLocationById(String id,String status){
         LocationMaster location = new LocationMaster();
         try {
             location= locationRepo.findByIdAndStatus(id,status);

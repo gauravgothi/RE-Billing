@@ -1,5 +1,6 @@
 package in.co.mpwin.rebilling.beans.machinemaster;
 
+import in.co.mpwin.rebilling.beans.mapping.InvestorMachineMappingBean;
 import in.co.mpwin.rebilling.interfaces.BeanInterface;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -18,6 +19,7 @@ public class MachineMasterBean implements BeanInterface {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
     private Long id;
+
 
     @Column(name = "machine_code")
     String  machineCode;
@@ -63,4 +65,6 @@ public class MachineMasterBean implements BeanInterface {
     private String status;
     @Column(name ="remark")
     private String remark;
+
+
 }

@@ -66,7 +66,7 @@ public class LocationController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/id/{id}")
-    public ResponseEntity<LocationMaster> getLocationById(@PathVariable("id") Long id) {
+    public ResponseEntity<LocationMaster> getLocationById(@PathVariable("id") String id) {
         String status = "active";
         LocationMaster location = null;
         ResponseEntity locationResp = null;

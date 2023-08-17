@@ -2,14 +2,17 @@ package in.co.mpwin.rebilling.beans.metermaster;
 
 import in.co.mpwin.rebilling.interfaces.metermaster.MeterMasterInterface;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Digits;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 @Getter
 @Setter
-@Entity(name="MeterMasterBean")@Table(name="re_meter_master")
+@Entity(name="MeterMasterBean")
+@Table(name="re_meter_master", uniqueConstraints = @UniqueConstraint(name = "re_meter_master_ukey", columnNames={"meter_number", "status"}))
 public class MeterMasterBean implements MeterMasterInterface {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,8 +45,10 @@ public class MeterMasterBean implements MeterMasterInterface {
     String phase;
     @Column(name="metergrp")
     String meterGroup;
+
     @Column(name="mf")
-    String mf;
+    BigDecimal mf;
+
     @Column(name="install_date")
     String installDate;
     @Column(name="created_by")
@@ -60,6 +65,5 @@ public class MeterMasterBean implements MeterMasterInterface {
     String remark;
     @Column(name = "is_mapped")
     String isMapped="no";
-
 
 }

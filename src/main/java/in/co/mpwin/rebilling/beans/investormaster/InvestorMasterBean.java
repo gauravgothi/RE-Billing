@@ -1,5 +1,6 @@
 package in.co.mpwin.rebilling.beans.investormaster;
 
+import in.co.mpwin.rebilling.beans.mapping.InvestorMachineMappingBean;
 import in.co.mpwin.rebilling.interfaces.BeanInterface;
 import in.co.mpwin.rebilling.miscellanious.ConstantField;
 import jakarta.persistence.*;
@@ -84,4 +85,4 @@ public class InvestorMasterBean implements BeanInterface {
     @Column(name = "remark")
     private String remark;
 
-}
+    }

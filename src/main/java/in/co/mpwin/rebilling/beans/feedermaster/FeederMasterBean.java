@@ -8,7 +8,8 @@ import lombok.Setter;
 import java.sql.Timestamp;
 
 @Getter @Setter
-@Entity(name="FeederMasterBean")@Table(name="re_feeder_master",uniqueConstraints = @UniqueConstraint(name = "re_feeder_master_ukey", columnNames={"feeder_no", "status"}))
+@Entity(name="FeederMasterBean")
+@Table(name="re_feeder_master",uniqueConstraints = @UniqueConstraint(name = "re_feeder_master_ukey", columnNames={"feeder_no", "status"}))
 public class FeederMasterBean implements BeanInterface {
 
     @Id

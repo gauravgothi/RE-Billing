@@ -1,5 +1,6 @@
 package in.co.mpwin.rebilling.beans.developermaster;
 
+import in.co.mpwin.rebilling.beans.LocationMaster;
 import in.co.mpwin.rebilling.interfaces.BeanInterface;
 import in.co.mpwin.rebilling.miscellanious.ConstantField;
 import jakarta.persistence.*;
@@ -19,23 +20,23 @@ public class DeveloperMasterBean implements BeanInterface {
     private Long id;
 
     @Column(name="developer_name")
-    String developerName;
+    private String developerName;
 
     @Column(name="cin")
-    String cin;
+    private String cin;
 
     @Column(name="office_address")
-    String officeAddress;
+    private String officeAddress;
 
     @Column(name="office_contact_person")
-    String officeContactPerson;
+    private String officeContactPerson;
 
     @Column(name="office_email")
     @Email(regexp = ConstantField.emailRegex,message = "Email must be valid")
-    String officeEmail;
+    private String officeEmail;
 
     @Column(name = "office_contact_no")
-    String officeContactNo;
+    private String officeContactNo;
 
     @Column(name = "site_address")
     private String siteAddress;
@@ -47,8 +48,6 @@ public class DeveloperMasterBean implements BeanInterface {
     @Column(name = "site_contact_no")
     private String siteContactNo;
 
-    @Column(name = "location_id")
-    String locationId;
 
     @Column(name = "created_by")
     private String createdBy;
@@ -62,5 +61,13 @@ public class DeveloperMasterBean implements BeanInterface {
     private String status;
     @Column(name = "remark")
     private String remark;
+
+    @Column(name = "location_id")
+    private String locationId;
+
+    @OneToOne()
+    @JoinColumn(name = "location_id", updatable = false, insertable = false)
+    private LocationMaster locationMaster;
+
 
 }

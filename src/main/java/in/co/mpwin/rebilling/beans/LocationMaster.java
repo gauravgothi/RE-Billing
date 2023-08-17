@@ -16,7 +16,7 @@ public class LocationMaster implements BeanInterface {
 
     @Id
     @NotNull @Column(name = "id")
-    private Long id;
+    private String id;
 
     @Column(name = "region_code")
     private String regionCode;

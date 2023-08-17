@@ -3,6 +3,8 @@ package in.co.mpwin.rebilling.miscellanious;
 import in.co.mpwin.rebilling.beans.developermaster.DeveloperMasterBean;
 import in.co.mpwin.rebilling.beans.feedermaster.FeederMasterBean;
 import in.co.mpwin.rebilling.beans.machinemaster.MachineMasterBean;
+import in.co.mpwin.rebilling.beans.mapping.InvestorMachineMappingBean;
+import in.co.mpwin.rebilling.beans.mapping.MeterFeederPlantMappingBean;
 import in.co.mpwin.rebilling.beans.metermaster.MeterMasterBean;
 import in.co.mpwin.rebilling.beans.plantmaster.PlantMasterBean;
 import in.co.mpwin.rebilling.services.plantmaster.PlantMasterService;
@@ -36,8 +38,32 @@ public class AuditControlServices {
         }else if (obj instanceof InvestorMasterBean) {
             this.setInitialAuditControlParametersOfInvestor((InvestorMasterBean)obj);
 
+        } else if(obj instanceof InvestorMachineMappingBean){
+            this.setInitialAuditControlParametersOfInvestor((InvestorMachineMappingBean)obj);
+        } else if(obj instanceof MeterFeederPlantMappingBean){
+            this.setInitialAuditControlParametersOfInvestor((MeterFeederPlantMappingBean)obj);
         }
 
+    }
+
+
+
+
+    private void setInitialAuditControlParametersOfInvestor(MeterFeederPlantMappingBean meterFeederPlantMappingBean) {
+        meterFeederPlantMappingBean.setCreatedOn(new DateMethods().getServerTime());
+        meterFeederPlantMappingBean.setUpdatedOn(new DateMethods().getServerTime());
+        meterFeederPlantMappingBean.setCreatedBy(new TokenInfo().getCurrentUsername());
+        meterFeederPlantMappingBean.setUpdatedBy(new TokenInfo().getCurrentUsername());
+        meterFeederPlantMappingBean.setStatus("active");
+        meterFeederPlantMappingBean.setRemark("NA");
+    }
+    private void setInitialAuditControlParametersOfInvestor(InvestorMachineMappingBean investorMachineMappingBean) {
+        investorMachineMappingBean.setCreatedOn(new DateMethods().getServerTime());
+        investorMachineMappingBean.setUpdatedOn(new DateMethods().getServerTime());
+        investorMachineMappingBean.setCreatedBy(new TokenInfo().getCurrentUsername());
+        investorMachineMappingBean.setUpdatedBy(new TokenInfo().getCurrentUsername());
+        investorMachineMappingBean.setStatus("active");
+        investorMachineMappingBean.setRemark("NA");
     }
 
     private void setInitialAuditControlParametersOfMachine(MachineMasterBean machineMasterBean) {

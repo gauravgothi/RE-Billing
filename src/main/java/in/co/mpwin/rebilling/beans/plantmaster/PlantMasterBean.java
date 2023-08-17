@@ -13,7 +13,7 @@ import java.sql.Timestamp;
 @Setter
 
 @Entity(name="PlantMasterBean")
-@Table(name="re_plant_master",uniqueConstraints = @UniqueConstraint(name = "re_plant_master_ukey", columnNames={"plant_code", "status"}))
+@Table(name="re_plant_master",uniqueConstraints =@UniqueConstraint(name = "re_plant_master_ukey", columnNames={"plant_code","status"}))
 public class PlantMasterBean implements BeanInterface {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -60,6 +60,5 @@ public class PlantMasterBean implements BeanInterface {
     private String status;
     @Column(name ="remark")
     private String remark;
-
 
 }
