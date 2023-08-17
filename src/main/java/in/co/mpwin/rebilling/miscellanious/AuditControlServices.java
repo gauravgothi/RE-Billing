@@ -39,9 +39,9 @@ public class AuditControlServices {
             this.setInitialAuditControlParametersOfInvestor((InvestorMasterBean)obj);
 
         } else if(obj instanceof InvestorMachineMappingBean){
-            this.setInitialAuditControlParametersOfInvestor((InvestorMachineMappingBean)obj);
+            this.setInitialAuditControlParametersOfIMMapping((InvestorMachineMappingBean)obj);
         } else if(obj instanceof MeterFeederPlantMappingBean){
-            this.setInitialAuditControlParametersOfInvestor((MeterFeederPlantMappingBean)obj);
+            this.setInitialAuditControlParametersOfMFPMapping((MeterFeederPlantMappingBean)obj);
         }
 
     }
@@ -49,7 +49,7 @@ public class AuditControlServices {
 
 
 
-    private void setInitialAuditControlParametersOfInvestor(MeterFeederPlantMappingBean meterFeederPlantMappingBean) {
+    private void setInitialAuditControlParametersOfMFPMapping(MeterFeederPlantMappingBean meterFeederPlantMappingBean) {
         meterFeederPlantMappingBean.setCreatedOn(new DateMethods().getServerTime());
         meterFeederPlantMappingBean.setUpdatedOn(new DateMethods().getServerTime());
         meterFeederPlantMappingBean.setCreatedBy(new TokenInfo().getCurrentUsername());
@@ -57,7 +57,7 @@ public class AuditControlServices {
         meterFeederPlantMappingBean.setStatus("active");
         meterFeederPlantMappingBean.setRemark("NA");
     }
-    private void setInitialAuditControlParametersOfInvestor(InvestorMachineMappingBean investorMachineMappingBean) {
+    private void setInitialAuditControlParametersOfIMMapping(InvestorMachineMappingBean investorMachineMappingBean) {
         investorMachineMappingBean.setCreatedOn(new DateMethods().getServerTime());
         investorMachineMappingBean.setUpdatedOn(new DateMethods().getServerTime());
         investorMachineMappingBean.setCreatedBy(new TokenInfo().getCurrentUsername());
