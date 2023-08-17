@@ -3,6 +3,8 @@ package in.co.mpwin.rebilling.miscellanious;
 import in.co.mpwin.rebilling.beans.developermaster.DeveloperMasterBean;
 import in.co.mpwin.rebilling.beans.feedermaster.FeederMasterBean;
 import in.co.mpwin.rebilling.beans.machinemaster.MachineMasterBean;
+import in.co.mpwin.rebilling.beans.mapping.InvestorMachineMappingBean;
+import in.co.mpwin.rebilling.beans.mapping.MeterFeederPlantMappingBean;
 import in.co.mpwin.rebilling.beans.metermaster.MeterMasterBean;
 import in.co.mpwin.rebilling.beans.plantmaster.PlantMasterBean;
 import in.co.mpwin.rebilling.beans.readingbean.MeterReadingBean;
@@ -40,6 +42,10 @@ public class AuditControlServices {
         }else if (obj instanceof MeterReadingBean) {
             this.setInitialAuditControlParametersOfReading((MeterReadingBean)obj);
 
+        }else if(obj instanceof InvestorMachineMappingBean){
+            this.setInitialAuditControlParametersOfIMMapping((InvestorMachineMappingBean)obj);
+        } else if(obj instanceof MeterFeederPlantMappingBean){
+            this.setInitialAuditControlParametersOfMFPMapping((MeterFeederPlantMappingBean)obj);
         }
 
     }
@@ -108,6 +114,22 @@ public class AuditControlServices {
             meterMasterBean.setStatus("active");
             meterMasterBean.setRemark("NA");
             meterMasterBean.setIsMapped("no");
+    }
+    private void setInitialAuditControlParametersOfMFPMapping(MeterFeederPlantMappingBean meterFeederPlantMappingBean) {
+        meterFeederPlantMappingBean.setCreatedOn(new DateMethods().getServerTime());
+        meterFeederPlantMappingBean.setUpdatedOn(new DateMethods().getServerTime());
+        meterFeederPlantMappingBean.setCreatedBy(new TokenInfo().getCurrentUsername());
+        meterFeederPlantMappingBean.setUpdatedBy(new TokenInfo().getCurrentUsername());
+        meterFeederPlantMappingBean.setStatus("active");
+        meterFeederPlantMappingBean.setRemark("NA");
+    }
+    private void setInitialAuditControlParametersOfIMMapping(InvestorMachineMappingBean investorMachineMappingBean) {
+        investorMachineMappingBean.setCreatedOn(new DateMethods().getServerTime());
+        investorMachineMappingBean.setUpdatedOn(new DateMethods().getServerTime());
+        investorMachineMappingBean.setCreatedBy(new TokenInfo().getCurrentUsername());
+        investorMachineMappingBean.setUpdatedBy(new TokenInfo().getCurrentUsername());
+        investorMachineMappingBean.setStatus("active");
+        investorMachineMappingBean.setRemark("NA");
     }
 
 
