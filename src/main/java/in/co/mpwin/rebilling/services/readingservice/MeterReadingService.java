@@ -78,9 +78,8 @@ public class MeterReadingService {
         MeterReadingBean meterReadingBean=new MeterReadingBean();
         try {
             //check for meter exist, active and mapped with respect to meter master
-            Long validationCount = meterMasterRepo.countByMeterNumberAndStatusAndIsMappedAndMf(passMRB.getMeterNo(),
-                                                                                            "active","yes",
-                                                                                     passMRB.getMf());
+            Long validationCount = meterMasterRepo.countByMeterNumberAndStatusAndIsMapped(passMRB.getMeterNo(),
+                                                                                            "active","yes");
             if (validationCount>0){
 
                 //Set the Audit control parameters, Globally
