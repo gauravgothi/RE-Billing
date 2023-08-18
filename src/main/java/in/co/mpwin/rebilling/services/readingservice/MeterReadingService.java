@@ -142,6 +142,17 @@ public class MeterReadingService {
         }return meterReadingBean;
     }
 
+    public MeterReadingBean getReadingByMeterNoAndReadingDateAndStatus(String meterNo, Date readingDate, String status){
+        MeterReadingBean meterReadingBean = new MeterReadingBean();
+        try {
+                meterReadingBean = meterReadingRepo.findByMeterNoAndReadingDateAndStatus(meterNo,readingDate,status);
+        }catch (NullPointerException exception){
+            return null;
+        } catch (Exception exception){
+            return null;
+        }return meterReadingBean;
+    }
+
 //    public MeterReadingBean createReadingByPunching(MeterReadingBean meterReadingBean){
 //        try {
 //                // Before inserting check for unique constraint
