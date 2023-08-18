@@ -120,5 +120,7 @@ public interface MeterReadingRepo extends CrudRepository<MeterReadingBean,Long> 
     MeterReadingBean save(MeterReadingBean meterReadingBean);
 
     //unique constraint
+
+    MeterReadingBean findByMeterNoAndReadingDateAndStatus(String meterNo, Date readingDate, String status);
     MeterReadingBean findByMeterNoAndReadingDateAndReadingTypeAndStatus(String meterNo, Date readingDate, String readingType, String status);
 }
