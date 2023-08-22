@@ -7,7 +7,6 @@ import in.co.mpwin.rebilling.dto.ConsumptionPercentageDto;
 import in.co.mpwin.rebilling.miscellanious.DateMethods;
 import in.co.mpwin.rebilling.services.developermaster.DeveloperMasterService;
 import in.co.mpwin.rebilling.services.feedermaster.FeederMasterService;
-import in.co.mpwin.rebilling.services.investormaster.InvestorMasterService;
 import in.co.mpwin.rebilling.services.mapping.MeterFeederPlantMappingService;
 import in.co.mpwin.rebilling.services.metermaster.MeterMasterService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,216 +21,95 @@ import java.util.List;
 
 @Service
 public class ConsumptionPercentageService {
-
     @Autowired
-    DeveloperMasterService developerMasterService;
-
-    @Autowired
-    MeterFeederPlantMappingService meterFeederPlantMappingService;
-
-    @Autowired
-    MeterMasterService meterMasterService;
-
-    @Autowired
-    FeederMasterService feederMasterService;
-
-    @Autowired
-    InvestorMasterService investorMasterService;
-
-    @Autowired
-    DateMethods dateMethods;
-    @Autowired
-    MeterReadingService meterReadingService;
+    private DeveloperMasterService developerMasterService;
+    @Autowired private MeterFeederPlantMappingService meterFeederPlantMappingService;
+    @Autowired private FeederMasterService feederMasterService;
+    @Autowired private DateMethods dateMethods;
+    @Autowired private MeterReadingService meterReadingService;
+    @Autowired MeterMasterService meterMasterService;
 
     public List<ConsumptionPercentageDto> calculatePercentageReport(String month) throws ParseException {
-        try {
-            List<ConsumptionPercentageDto> dtoList = new ArrayList<>();
-            List<DeveloperMasterBean> developerList = developerMasterService.getAllDeveloperMasterBean("active");
-
-            for (int i = 0; i < developerList.size(); i++) {
-
-                List<MeterFeederPlantMappingBean> MFPmappings = meterFeederPlantMappingService.getMappingByDeveloperId(String.valueOf(developerList.get(i).getId()), "active");
-                for (int k = 0; k < MFPmappings.size(); k++) {
-                    ConsumptionPercentageDto percentageDto = new ConsumptionPercentageDto();
-                    percentageDto.setDeveloperId(String.valueOf(developerList.get(i).getId())); //developer id set
-                    percentageDto.setDeveloperName(developerList.get(i).getDeveloperName());  //set developer name
-                    percentageDto.setDeveloperSiteAddress(developerList.get(i).getSiteAddress());  //set developer site address
-                    percentageDto.setMainMeterNumber(MFPmappings.get(k).getMainMeterNo()); //set developer main meter number
-                    percentageDto.setCheckMeterNumber(MFPmappings.get(k).getCheckMeterNo()); //set developer check meter number
-                    percentageDto.setFeederCode(MFPmappings.get(k).getFeederCode());  //get feeder code from mfp mapping
-                    percentageDto.setFeederName(feederMasterService.getFeederByFeederNumber(percentageDto.getFeederCode(),"active").getFeederName());
-
-                    setMainMeterParameters(percentageDto,month);
-                    setCheckMeterParameters(percentageDto,month);
-
-                    if (    !(percentageDto.getMainCurrentReading().compareTo(BigDecimal.valueOf(-1)) == 0) &&
-                            !(percentageDto.getMainPreviousReading().compareTo(BigDecimal.valueOf(-1)) == 0) &&
-                            !(percentageDto.getCheckCurrentReading().compareTo(BigDecimal.valueOf(-1)) == 0) &&
-                            !(percentageDto.getCheckPreviousReading().compareTo(BigDecimal.valueOf(-1)) == 0))
-                        {
-                        //calculate percentage(main total consumption - check total consumption *100)
-                        percentageDto.setPercentage((percentageDto.getMainTotalConsumption().subtract(percentageDto.getCheckTotalConsumption())
-                                .divide(percentageDto.getMainConsumption(), 6, RoundingMode.HALF_UP)).multiply(BigDecimal.valueOf(100)).abs());
-                        percentageDto.setResult((percentageDto.getPercentage().compareTo(BigDecimal.valueOf(0.5)) <= 0) ? "pass" : "fail");
-                    }else
-                        percentageDto.setResult("withheld");
-                    // add dto to list
-                    dtoList.add(percentageDto);
+        List<ConsumptionPercentageDto> dtoList = new ArrayList<>();
+        for (DeveloperMasterBean developer : developerMasterService.getAllDeveloperMasterBean("active")) {
+            for (MeterFeederPlantMappingBean mapping : meterFeederPlantMappingService.getMappingByDeveloperId(String.valueOf(developer.getId()), "active")) {
+                ConsumptionPercentageDto percentageDto = new ConsumptionPercentageDto();
+                percentageDto.setDeveloperId(String.valueOf(developer.getId()));
+                percentageDto.setDeveloperName(developer.getDeveloperName());
+                percentageDto.setDeveloperSiteAddress(developer.getSiteAddress());
+                percentageDto.setMainMeterNumber(mapping.getMainMeterNo());
+                percentageDto.setCheckMeterNumber(mapping.getCheckMeterNo());
+                percentageDto.setFeederCode(mapping.getFeederCode());
+                percentageDto.setFeederName(feederMasterService.getFeederByFeederNumber(percentageDto.getFeederCode(),"active").getFeederName());
+                // set meter parameters
+                setMeterParameters(percentageDto, mapping.getMainMeterNo(), month, true);
+                setMeterParameters(percentageDto, mapping.getCheckMeterNo(), month, false);
+                if (    percentageDto.getMainPreviousReading().compareTo(BigDecimal.valueOf(-1)) != 0 &&
+                        percentageDto.getMainCurrentReading().compareTo(BigDecimal.valueOf(-1)) != 0 &&
+                        percentageDto.getCheckPreviousReading().compareTo(BigDecimal.valueOf(-1)) != 0 &&
+                        percentageDto.getCheckCurrentReading().compareTo(BigDecimal.valueOf(-1)) != 0)  {
+                    //calculate percentage(main total consumption - check total consumption *100)
+                    percentageDto.setPercentage((percentageDto.getMainTotalConsumption().subtract(percentageDto.getCheckTotalConsumption())
+                            .divide(percentageDto.getMainTotalConsumption(), 6, RoundingMode.HALF_DOWN)).multiply(BigDecimal.valueOf(100)).abs());
+                    percentageDto.setResult((percentageDto.getPercentage().compareTo(BigDecimal.valueOf(0.5)) <= 0) ? "pass" : "fail");
+                } else {
+                    percentageDto.setPercentage(BigDecimal.valueOf(-1));
+                    percentageDto.setResult("withheld");
                 }
-
+                dtoList.add(percentageDto);
             }
-            return dtoList;
-        }catch (ParseException e){
-            throw e;
         }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-
+        return dtoList;
     }
 
+    private void setMeterParameters(ConsumptionPercentageDto percentageDto, String meterNumber, String month, boolean isMain) throws ParseException {
+        Date currentReadDate = dateMethods.getCurrentAndPreviousDate(month).get(0);
+        Date previousReadDate = dateMethods.getCurrentAndPreviousDate(month).get(1);
 
-    //local methods to set main meter parameters
-    private void setMainMeterParameters(ConsumptionPercentageDto percentageDto,String month) throws ParseException {
-        try {
-                Date currentReadDate = dateMethods.getCurrentAndPreviousDate(month).get(0);
-                Date previousReadDate = dateMethods.getCurrentAndPreviousDate(month).get(1);
+        MeterReadingBean previousReading = meterReadingService.getReadingByMeterNoAndReadingDateAndStatus(meterNumber, previousReadDate, "active");
+        MeterReadingBean currentReading = meterReadingService.getReadingByMeterNoAndReadingDateAndStatus(meterNumber, currentReadDate, "active");
 
-            MeterReadingBean previousReading = meterReadingService.getReadingByMeterNoAndReadingDateAndStatus(percentageDto.getMainMeterNumber()
-                                        ,previousReadDate , "active");
-            MeterReadingBean currentReading = meterReadingService.getReadingByMeterNoAndReadingDateAndStatus(
-                                 percentageDto.getMainMeterNumber(),currentReadDate , "active");
-                //set current and previous reading of main meter
-                mainMeterReadingValidation(percentageDto,previousReading,currentReading);
+        BigDecimal previous = previousReading != null ? previousReading.getEActiveEnergy() : BigDecimal.valueOf(-1);
+        BigDecimal current = currentReading != null ? currentReading.getEActiveEnergy() : BigDecimal.valueOf(-1);
 
-                if (!(percentageDto.getMainCurrentReading().compareTo(BigDecimal.valueOf(-1)) == 0) &&
-                    !(percentageDto.getMainPreviousReading().compareTo(BigDecimal.valueOf(-1)) == 0)) {
-                    //set main meter assessment from main meter current read
-                    percentageDto.setMainAssessment((meterReadingService.getReadingByMeterNoAndReadingDateAndStatus(
-                            percentageDto.getMainMeterNumber(),currentReadDate,"active").getEAssesment()
-                    ));
-                    //set main meter readings difference (current read - previous read)
-                    percentageDto.setMainReadingDifference((percentageDto.getMainCurrentReading().subtract(percentageDto.getMainPreviousReading())));
-                    //set main meter mf from meter master by active meter number
-                    percentageDto.setMainMf(meterMasterService.getMeterDetailsByMeterNo(percentageDto.getMainMeterNumber(), "active").getMf());
-                    //set main meter consumption (main reading difference multiply with mf)
-                    percentageDto.setMainConsumption(percentageDto.getMainReadingDifference().multiply(percentageDto.getMainMf()));
-                    //set main meter total consumption (main meter consumption + main meter assessment)
-                    percentageDto.setMainTotalConsumption(percentageDto.getMainConsumption().add(percentageDto.getMainAssessment()));
-                }
-        }catch (ParseException e){
-            throw e;
-        }catch (Exception e){
-            throw e;
+        Boolean isBothReadingAvailable = (previous.compareTo(BigDecimal.valueOf(-1)) != 0 && current.compareTo(BigDecimal.valueOf(-1)) != 0);
+        if (isMain ) {
+            percentageDto.setMainPreviousReading(previous);
+            percentageDto.setMainCurrentReading(current);
+            if (isBothReadingAvailable) {
+                percentageDto.setMainAssessment(currentReading.getEAssesment());
+                percentageDto.setMainReadingDifference(current.subtract(previous).abs());
+                percentageDto.setMainMf(meterMasterService.getMeterDetailsByMeterNo(meterNumber, "active").getMf());
+                percentageDto.setMainConsumption(percentageDto.getMainReadingDifference().multiply(percentageDto.getMainMf())
+                        .setScale(6,RoundingMode.HALF_DOWN));
+                percentageDto.setMainTotalConsumption(percentageDto.getMainConsumption().add(percentageDto.getMainAssessment()));
+
+            }else{
+                percentageDto.setMainAssessment(BigDecimal.valueOf(-1));
+                percentageDto.setMainReadingDifference(BigDecimal.valueOf(-1));
+                percentageDto.setMainMf(meterMasterService.getMeterDetailsByMeterNo(meterNumber, "active").getMf());
+                percentageDto.setMainConsumption(BigDecimal.valueOf(-1));
+                percentageDto.setMainTotalConsumption(BigDecimal.valueOf(-1));
+            }
+
+        } else if(!isMain) {
+            percentageDto.setCheckPreviousReading(previous);
+            percentageDto.setCheckCurrentReading(current);
+            if (isBothReadingAvailable) {
+                percentageDto.setCheckAssessment(currentReading.getEAssesment());
+                percentageDto.setCheckReadingDifference(current.subtract(previous));
+                percentageDto.setCheckMf(meterMasterService.getMeterDetailsByMeterNo(meterNumber, "active").getMf());
+                percentageDto.setCheckConsumption(percentageDto.getCheckReadingDifference().multiply(percentageDto.getCheckMf())
+                        .setScale(6,RoundingMode.HALF_DOWN));
+                percentageDto.setCheckTotalConsumption(percentageDto.getCheckConsumption().add(percentageDto.getCheckAssessment()));
+            }else{
+                percentageDto.setCheckAssessment(BigDecimal.valueOf(-1));
+                percentageDto.setCheckReadingDifference(BigDecimal.valueOf(-1));
+                percentageDto.setCheckMf(meterMasterService.getMeterDetailsByMeterNo(meterNumber, "active").getMf());
+                percentageDto.setCheckConsumption(BigDecimal.valueOf(-1));
+                percentageDto.setCheckTotalConsumption(BigDecimal.valueOf(-1));
+            }
         }
 
-        
     }
-
-    //local methods to set check meter parameters
-    private void setCheckMeterParameters(ConsumptionPercentageDto percentageDto,String month) throws ParseException {
-        try {
-                Date currentReadDate = dateMethods.getCurrentAndPreviousDate(month).get(0);
-                Date previousReadDate = dateMethods.getCurrentAndPreviousDate(month).get(1);
-
-
-                MeterReadingBean previousReading = meterReadingService.getReadingByMeterNoAndReadingDateAndStatus(percentageDto.getCheckMeterNumber()
-                                                                            ,previousReadDate , "active");
-                MeterReadingBean currentReading = meterReadingService.getReadingByMeterNoAndReadingDateAndStatus(
-                        percentageDto.getCheckMeterNumber(),currentReadDate , "active");
-
-                    //set current and previous reading of check meter
-                    checkMeterReadingValidation(percentageDto,previousReading,currentReading);
-
-                    if (!(percentageDto.getCheckCurrentReading().compareTo(BigDecimal.valueOf(-1)) == 0) &&
-                            !(percentageDto.getCheckPreviousReading().compareTo(BigDecimal.valueOf(-1)) == 0)) {
-                        //set Check meter assessment from Check meter current read
-                        percentageDto.setCheckAssessment((meterReadingService.getReadingByMeterNoAndReadingDateAndStatus(
-                                percentageDto.getCheckMeterNumber(), currentReadDate, "active").getEAssesment()
-                        ));
-                        //set Check meter readings difference (current read - previous read)
-                        percentageDto.setCheckReadingDifference((percentageDto.getCheckCurrentReading().subtract(percentageDto.getCheckPreviousReading())));
-                        //set Check meter mf from meter master by active meter number
-                        percentageDto.setCheckMf(meterMasterService.getMeterDetailsByMeterNo(percentageDto.getCheckMeterNumber(), "active").getMf());
-                        //set Check meter consumption (Check reading difference multiply with mf)
-                        percentageDto.setCheckConsumption(percentageDto.getCheckReadingDifference().multiply(percentageDto.getCheckMf()));
-                        //set Check meter total consumption (Check meter consumption + Check meter assessment)
-                        percentageDto.setCheckTotalConsumption(percentageDto.getCheckConsumption().add(percentageDto.getCheckAssessment()));
-                    }
-        }catch (ParseException e){
-            throw e;
-        }catch (NullPointerException e){
-            e.printStackTrace();
-        }catch (Exception e){
-            throw e;
-        }
-    }
-
-    private void checkMeterReadingValidation(ConsumptionPercentageDto percentageDto,MeterReadingBean previousReading,
-                                             MeterReadingBean currentReading){
-        if (previousReading != null && currentReading !=null) {
-
-            //set check meter previous reading
-            percentageDto.setCheckPreviousReading(previousReading.getEActiveEnergy());
-            //set Check meter current reading
-            percentageDto.setCheckCurrentReading(currentReading.getEActiveEnergy());
-
-        }else if (previousReading ==null && currentReading !=null) {
-
-            //set check meter previous reading
-            percentageDto.setCheckPreviousReading(BigDecimal.valueOf(-1));
-            //set Check meter current reading
-            percentageDto.setCheckCurrentReading(currentReading.getEActiveEnergy());
-
-        } else if (previousReading !=null && currentReading ==null) {
-
-            //set check meter previous reading
-            percentageDto.setCheckPreviousReading(previousReading.getEActiveEnergy());
-            //set check current meter reading
-            percentageDto.setCheckCurrentReading(BigDecimal.valueOf(-1));
-
-        } else if (previousReading ==null && currentReading ==null) {
-
-            //set check meter previous reading
-            percentageDto.setCheckPreviousReading(BigDecimal.valueOf(-1));
-            //set check current meter reading
-            percentageDto.setCheckCurrentReading(BigDecimal.valueOf(-1));
-
-        }
-    }
-
-    private void mainMeterReadingValidation(ConsumptionPercentageDto percentageDto,MeterReadingBean previousReading,
-                                             MeterReadingBean currentReading){
-        if (previousReading != null && currentReading !=null) {
-
-            //set check meter previous reading
-            percentageDto.setMainPreviousReading(previousReading.getEActiveEnergy());
-            //set Check meter current reading
-            percentageDto.setMainCurrentReading(currentReading.getEActiveEnergy());
-
-        }else if (previousReading ==null && currentReading !=null) {
-
-            //set check meter previous reading
-            percentageDto.setMainPreviousReading(BigDecimal.valueOf(-1));
-            //set Check meter current reading
-            percentageDto.setMainCurrentReading(currentReading.getEActiveEnergy());
-
-        } else if (previousReading !=null && currentReading ==null) {
-
-            //set check meter previous reading
-            percentageDto.setMainPreviousReading(previousReading.getEActiveEnergy());
-            //set check current meter reading
-            percentageDto.setMainCurrentReading(BigDecimal.valueOf(-1));
-
-        } else if (previousReading ==null && currentReading ==null) {
-
-            //set check meter previous reading
-            percentageDto.setMainPreviousReading(BigDecimal.valueOf(-1));
-            //set check current meter reading
-            percentageDto.setMainCurrentReading(BigDecimal.valueOf(-1));
-
-        }
-    }
-
 }

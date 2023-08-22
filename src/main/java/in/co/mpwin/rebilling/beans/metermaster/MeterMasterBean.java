@@ -48,7 +48,7 @@ public class MeterMasterBean implements MeterMasterInterface {
 
 
     @Column(name="mf")
-    @Digits(integer = 38,fraction = 6)
+    @Digits(integer = 20,fraction = 6)
     @DecimalMin(value = "0.0",inclusive = true)
     BigDecimal mf;
 
