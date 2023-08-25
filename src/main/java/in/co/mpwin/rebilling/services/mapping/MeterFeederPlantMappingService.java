@@ -7,7 +7,9 @@ import in.co.mpwin.rebilling.repositories.mapping.MeterFeederPlantMappingRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -131,5 +133,38 @@ public class MeterFeederPlantMappingService {
            throw e;
         }
         return mappingBean;
+    }
+
+    public MeterFeederPlantMappingBean getLastMFPMappingByMeterNo(String meterNumber, String type, String status) {
+
+        MeterFeederPlantMappingBean mfpMapping = null;
+        switch(type)
+        {
+            case "MAIN":
+                System.out.println("switch case : main to find last mapping by main meter");
+                mfpMapping = meterFeederPlantMappingRepo.findLastMFPMappingByMainMeterNo(meterNumber,status);
+                break;
+            case "CHECK":
+                mfpMapping =   meterFeederPlantMappingRepo.findLastMFPMappingByCheckMeterNo(meterNumber,status);
+                break;
+            case "STANDBY":
+                mfpMapping =  meterFeederPlantMappingRepo.findLastMFPMappingByStandbyMeterNo(meterNumber,status);
+                break;
+            default:
+                break;
+        }
+     return mfpMapping;
+    }
+
+    public void updateMFPMapping(Long id, Date replaceDate) {
+
+        System.out.println("calling mfp end date update method");
+
+       meterFeederPlantMappingRepo.updateMappingEndDatebyId(id,replaceDate);
+    }
+
+    public MeterFeederPlantMappingBean updateMFPMapping(MeterFeederPlantMappingBean newMFPMapping) {
+        System.out.println("calling new mfp save method");
+         return meterFeederPlantMappingRepo.save(newMFPMapping);
     }
 }
