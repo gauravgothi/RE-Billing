@@ -127,7 +127,7 @@ public interface MeterReadingRepo extends CrudRepository<MeterReadingBean,Long> 
     @Query(value = "SELECT * FROM ecell.re_meter_reading_trx WHERE meter_no =:meterNo and reading_date >:readingDate and status='active' order by reading_date limit 1;",nativeQuery = true)
     MeterReadingBean findJustNext(String meterNo, Date readingDate);
 
-    @Query(value = "SELECT * FROM ecell.re_meter_reading_trx WHERE meter_no =:meterNo and reading_date <:readingDate and status='active' order by reading_date limit 1;",nativeQuery = true)
+    @Query(value = "SELECT * FROM ecell.re_meter_reading_trx WHERE meter_no =:meterNo and reading_date <:readingDate and status='active' order by reading_date desc limit 1;",nativeQuery = true)
     MeterReadingBean findJustBefore(String meterNo, Date readingDate);
 
 }
