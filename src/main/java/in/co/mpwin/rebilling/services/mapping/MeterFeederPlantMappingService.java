@@ -132,4 +132,25 @@ public class MeterFeederPlantMappingService {
         }
         return mappingBean;
     }
+
+    public List<String> getDistinctPlantCodeByDeveloperId(String developerId, String status) {
+        List<String> plants = new ArrayList<>();
+        try {
+            plants = meterFeederPlantMappingRepo.findDistinctPlantCodeByDeveloperIdAndStatus(developerId,status);
+        }catch (Exception e){
+            throw e;
+        }
+        return plants;
+    }
+
+    public List<MeterFeederPlantMappingBean> getMappingByDeveloperIdOrderByEndDate(String di, String status) {
+        List<MeterFeederPlantMappingBean> mappingBean = new ArrayList<>();
+        try{
+            mappingBean= meterFeederPlantMappingRepo.findAllByDeveloperIdAndStatusOrderByEndDateAsc(di,status);
+        }catch (Exception e){
+            throw e;
+        }
+        return mappingBean;
+
+    }
 }

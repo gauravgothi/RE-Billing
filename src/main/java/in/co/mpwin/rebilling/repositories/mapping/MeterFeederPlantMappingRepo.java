@@ -22,6 +22,7 @@ public interface MeterFeederPlantMappingRepo extends CrudRepository<MeterFeederP
 
     List<MeterFeederPlantMappingBean> findByStandbyMeterNoAndStatus(String smn, String status);
 
+
     List<MeterFeederPlantMappingBean> findByDeveloperIdAndStatus(String di, String status);
 
     List<MeterFeederPlantMappingBean>findByFeederCodeAndStatus(String fcode, String status);
@@ -29,4 +30,9 @@ public interface MeterFeederPlantMappingRepo extends CrudRepository<MeterFeederP
     List<MeterFeederPlantMappingBean> findByPlantCodeAndStatus(String plantCode, String status);
 
     List<MeterFeederPlantMappingBean> findByStatus(String status);
+
+    @Query(value = "select distinct t.plant_code from ecell.re_meter_feeder_plant_mapping t where t.developer_id='1' and status='active' order by t.plant_code",nativeQuery = true)
+    List<String> findDistinctPlantCodeByDeveloperIdAndStatus(String di, String status);
+
+    List<MeterFeederPlantMappingBean> findAllByDeveloperIdAndStatusOrderByEndDateAsc(String di, String status);
 }
