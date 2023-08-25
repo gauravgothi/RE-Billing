@@ -4,11 +4,13 @@ import in.co.mpwin.rebilling.beans.developermaster.DeveloperMasterBean;
 import in.co.mpwin.rebilling.beans.mapping.MeterFeederPlantMappingBean;
 import in.co.mpwin.rebilling.beans.readingbean.MeterReadingBean;
 import in.co.mpwin.rebilling.dto.ConsumptionPercentageDto;
+import in.co.mpwin.rebilling.dto.FivePercentageDto;
 import in.co.mpwin.rebilling.miscellanious.DateMethods;
 import in.co.mpwin.rebilling.services.developermaster.DeveloperMasterService;
 import in.co.mpwin.rebilling.services.feedermaster.FeederMasterService;
 import in.co.mpwin.rebilling.services.mapping.MeterFeederPlantMappingService;
 import in.co.mpwin.rebilling.services.metermaster.MeterMasterService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,9 +20,11 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ConsumptionPercentageService {
+    @Autowired private ModelMapper mapper;
     @Autowired
     private DeveloperMasterService developerMasterService;
     @Autowired private MeterFeederPlantMappingService meterFeederPlantMappingService;
@@ -111,5 +115,34 @@ public class ConsumptionPercentageService {
             }
         }
 
+    }
+
+    public List<FivePercentageDto> percentageBeanToDto(List<ConsumptionPercentageDto> consumptionPercentageDtoList){
+
+        return consumptionPercentageDtoList.stream().map((bean)->convertBeanToDto(bean)).collect(Collectors.toList());
+    }
+
+    private FivePercentageDto convertBeanToDto(ConsumptionPercentageDto bean){
+        FivePercentageDto dto = mapper.map(bean,FivePercentageDto.class);
+
+        //set all big decimal parameters to string for report purpose
+        dto.setMainCurrentReading(dto.getMainCurrentReading().replaceAll("-1","Reading Not Available"));
+        dto.setMainPreviousReading(dto.getMainPreviousReading().replaceAll("-1","Reading Not Available"));
+        dto.setMainReadingDifference(dto.getMainReadingDifference().replaceAll("-1","Reading Not Available"));
+        //dto.getMainMf().replaceAll("-1","Reading Not Available");
+        dto.setMainAssessment(dto.getMainAssessment().replaceAll("-1","Reading Not Available"));
+        dto.setMainConsumption(dto.getMainConsumption().replaceAll("-1","Reading Not Available"));
+        dto.setMainTotalConsumption(dto.getMainTotalConsumption().replaceAll("-1","Reading Not Available"));
+
+        //set all big decimal parameters to string for report purpose
+        dto.setCheckCurrentReading(dto.getCheckCurrentReading().replaceAll("-1","Reading Not Available"));
+        dto.setCheckPreviousReading(dto.getCheckPreviousReading().replaceAll("-1","Reading Not Available"));
+        dto.setCheckReadingDifference(dto.getCheckReadingDifference().replaceAll("-1","Reading Not Available"));
+        //dto.getCheckMf().replaceAll("-1","Reading Not Available");
+        dto.setCheckAssessment(dto.getCheckAssessment().replaceAll("-1","Reading Not Available"));
+        dto.setCheckConsumption(dto.getCheckConsumption().replaceAll("-1","Reading Not Available"));
+        dto.setCheckTotalConsumption(dto.getCheckTotalConsumption().replaceAll("-1","Reading Not Available"));
+
+        return dto;
     }
 }

@@ -153,4 +153,5 @@ public interface MeterMasterRepo extends CrudRepository<MeterMasterBean, Long> {
     List<MeterMasterBean> findByMeterNumberAndMakeAndStatus(String meterNumber, String make, String status);
 
 
+
 }
