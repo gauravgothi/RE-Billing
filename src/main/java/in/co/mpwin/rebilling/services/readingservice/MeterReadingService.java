@@ -1,20 +1,22 @@
 package in.co.mpwin.rebilling.services.readingservice;
 
-import in.co.mpwin.rebilling.beans.metermaster.MeterMasterBean;
 import in.co.mpwin.rebilling.beans.readingbean.MeterReadingBean;
-import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.AuditControlServices;
 import in.co.mpwin.rebilling.repositories.metermaster.MeterMasterRepo;
 import in.co.mpwin.rebilling.repositories.readingrepo.MeterReadingRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.repository.query.Param;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.DecimalFormat;
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -160,6 +162,11 @@ public class MeterReadingService {
         }return meterReadingBean;
     }
 
+    public MeterReadingBean GetLastReadingByMeterNoAndStatus(String oldMeterNumber, String str) {
+
+        return meterReadingRepo.findLastReadByMeterNoAndStatus(oldMeterNumber, str);
+    }
+
 //    public MeterReadingBean createReadingByPunching(MeterReadingBean meterReadingBean){
 //        try {
 //                // Before inserting check for unique constraint
@@ -193,4 +200,5 @@ public class MeterReadingService {
 //            throw e;
 //        }
 //    }
-}
+
+   }

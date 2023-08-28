@@ -2,6 +2,7 @@ package in.co.mpwin.rebilling.services.metermaster;
 
 import in.co.mpwin.rebilling.beans.metermaster.MeterMasterBean;
 import in.co.mpwin.rebilling.dao.metermaster.MeterMasterDao;
+import in.co.mpwin.rebilling.repositories.metermaster.MeterMasterRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,9 @@ import java.util.ArrayList;
 public class MeterMasterService {
     @Autowired
     MeterMasterDao meterMasterDao;
+
+    @Autowired
+    MeterMasterRepo meterMasterRepo;
 
     public MeterMasterBean getMeterDetailsByMeterNo(String meterno, String status) {
         MeterMasterBean meterMasterBean = new MeterMasterBean();
@@ -103,5 +107,9 @@ public class MeterMasterService {
                 e.printStackTrace();
         }
         return mmb;
+    }
+
+    public void updateMeterStatusAndMappingByMeterNo(String oldMeterNumber, String status, String isMapped) {
+    meterMasterRepo.updateMeterStatusAndMappingByMeterNo(oldMeterNumber, status, isMapped);
     }
 }

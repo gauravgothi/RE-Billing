@@ -16,6 +16,10 @@ import in.co.mpwin.rebilling.beans.investormaster.InvestorMasterBean;
 
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 @Service
 public class AuditControlServices {
     public void setInitialAuditControlParameters(Object obj) {
@@ -133,8 +137,7 @@ public class AuditControlServices {
     }
 
 
-    public static void main(String arg[])
-    {
+    public static void main(String arg[]) throws ParseException {
 //        MeterMasterBean meterMasterBean = new MeterMasterBean();
 //        meterMasterBean.setMeterNumber("TESTER");
 //        new AuditControlServices().setInitialAuditControlParameters(meterMasterBean);
@@ -144,5 +147,6 @@ public class AuditControlServices {
 //        PlantMasterService plantMasterService = new PlantMasterService();
 //        System.out.println("max id of plant table is ="+plantMasterService.getMaxId());
         //System.out.println("max id of plant table is =" + plantMasterService.getAllPlantMasterBean("active"));
+
     }
 }
