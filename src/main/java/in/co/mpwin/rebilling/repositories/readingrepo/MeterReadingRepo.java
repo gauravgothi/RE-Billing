@@ -2,12 +2,12 @@ package in.co.mpwin.rebilling.repositories.readingrepo;
 
 import in.co.mpwin.rebilling.beans.xmlfilebean.XmlParserBean;
 import in.co.mpwin.rebilling.beans.readingbean.MeterReadingBean;
-import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -123,6 +123,14 @@ public interface MeterReadingRepo extends CrudRepository<MeterReadingBean,Long> 
     //unique constraint
 
     MeterReadingBean findByMeterNoAndReadingDateAndStatus(String meterNo, Date readingDate, String status);
+
+    MeterReadingBean findByMeterNoAndReadingDateAndReadingTypeAndStatus(String meterNo, Date readingDate, String readingType, String status);
+
+
+
+    @Query(value = "SELECT * FROM ecell.re_meter_reading_trx WHERE meter_no=:meterNo AND status=:status ORDER BY reading_date DESC LIMIT 1", nativeQuery = true)
+    MeterReadingBean findLastReadByMeterNoAndStatus( @Param("meterNo") String meterNo, @Param("status") String status);
+
 
     @Query(value = "SELECT * FROM ecell.re_meter_reading_trx WHERE meter_no =:meterNo and reading_date >:readingDate and status='active' order by reading_date limit 1;",nativeQuery = true)
     MeterReadingBean findJustNext(String meterNo, Date readingDate);
