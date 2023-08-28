@@ -1,5 +1,6 @@
 package in.co.mpwin.rebilling.beans.readingbean;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import in.co.mpwin.rebilling.interfaces.BeanInterface;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Digits;
@@ -26,9 +27,9 @@ public class MeterReadingBean implements BeanInterface {
     @Column(name="mf")@NotNull @Digits(integer = 14,fraction = 6)
     private BigDecimal mf;
     
-    @Column(name = "reading_date")@NotNull
+    @Column(name = "reading_date")@NotNull@JsonFormat(timezone = "IST")
     private Date readingDate;
-    @Column(name = "end_date")@NotNull
+    @Column(name = "end_date")@NotNull@JsonFormat(timezone = "IST")
     private Date endDate;
     @Column(name="reading_type")@NotNull
     private String readingType;
@@ -97,9 +98,9 @@ public class MeterReadingBean implements BeanInterface {
     private String createdBy;
     @Column(name = "updated_by")
     private String updatedBy;
-    @Column(name = "updated_on")
+    @Column(name = "updated_on")@JsonFormat(timezone = "IST")
     private Timestamp updatedOn;
-    @Column(name = "created_on")
+    @Column(name = "created_on")@JsonFormat(timezone = "IST")
     private Timestamp createdOn;
     @Column(name = "status")
     private String status;

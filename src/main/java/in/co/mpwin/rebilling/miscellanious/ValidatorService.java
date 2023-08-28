@@ -1,5 +1,6 @@
 package in.co.mpwin.rebilling.miscellanious;
 
+import in.co.mpwin.rebilling.beans.readingbean.MeterReadingBean;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -10,4 +11,6 @@ public class ValidatorService {
     {
         return data.replace(" ","");
     }
+
+
 }

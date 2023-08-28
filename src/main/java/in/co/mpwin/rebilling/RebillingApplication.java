@@ -8,6 +8,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import java.util.TimeZone;
+
 @SpringBootApplication
 public class RebillingApplication {
 
@@ -19,7 +21,9 @@ public class RebillingApplication {
 
 	public static void main(String[] args) {
 
+		//TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 		SpringApplication.run(RebillingApplication.class, args);
+
 		//logger.info("Project REBilling have been started");
 	}
 
