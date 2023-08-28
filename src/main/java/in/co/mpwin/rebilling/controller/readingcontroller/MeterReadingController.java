@@ -153,9 +153,9 @@ public class MeterReadingController {
 
             if (bean!=null)
                 createReadResp = new ResponseEntity<>(new Message(bean.getId() + " reading saved successfully"),HttpStatus.OK);
-//            else if (bean==null)
-//                createReadResp = new ResponseEntity<>(new Message(" Reading is already present for given month and meter OR" +
-//                        "Meter number is not in active and mapped"),HttpStatus.BAD_REQUEST);
+
+        }catch (ApiException apiException){
+            createReadResp = new ResponseEntity<>(apiException.getMessage(),apiException.getHttpStatus());
         }catch (DataIntegrityViolationException d)
         {
             Throwable rootCause = d.getRootCause();
