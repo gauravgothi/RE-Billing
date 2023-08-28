@@ -82,22 +82,29 @@ public class MeterReadingService {
             //check for meter exist, active and mapped with respect to meter master
             Long validationCount = meterMasterRepo.countByMeterNumberAndStatusAndIsMapped(passMRB.getMeterNo(),
                                                                                             "active","yes");
-            if (validationCount>0){
+            //check next reading date wrt to input reading date and compare value
+            MeterReadingBean nextReading = meterReadingRepo.findJustNext(passMRB.getMeterNo(),passMRB.getReadingDate());
+
+            //check previous reading date wrt to input reading date and compare value
+            MeterReadingBean previousReading = meterReadingRepo.findJustBefore(passMRB.getMeterNo(),passMRB.getReadingDate());
+
+            if (validationCount>0 &&
+                    (nextReading==null || nextReading.getEActiveEnergy().compareTo(passMRB.getEActiveEnergy())>=0) &&
+                    (previousReading.getEActiveEnergy().compareTo(passMRB.getEActiveEnergy())<=0)
+                ){
 
                 //Set the Audit control parameters, Globally
                 new AuditControlServices().setInitialAuditControlParameters(meterReadingBean);
 
                 meterReadingBean = meterReadingRepo.save(passMRB);
-            }
-        }
-
-        catch (DataIntegrityViolationException d)
-        {
+            }else
+                throw new ApiException(HttpStatus.BAD_REQUEST,"Meter is not actively mapped OR reading is not greater than previous");
+        } catch (ApiException apiException){
+            throw apiException;
+        }  catch (DataIntegrityViolationException d) {
             throw d;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw e;
-
             // Handle the exception or log the error as needed
         }
         return meterReadingBean;

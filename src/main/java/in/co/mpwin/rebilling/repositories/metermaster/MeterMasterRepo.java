@@ -158,4 +158,5 @@ public interface MeterMasterRepo extends CrudRepository<MeterMasterBean, Long> {
     @Transactional
     @Query(value = "UPDATE ecell.re_meter_master SET status=:status, is_Mapped=:isMapped where meter_number=:meterNo", nativeQuery = true)
     void updateMeterStatusAndMappingByMeterNo(@Param("meterNo") String meterNo, @Param("status") String status, @Param("isMapped") String isMapped);
+
 }
