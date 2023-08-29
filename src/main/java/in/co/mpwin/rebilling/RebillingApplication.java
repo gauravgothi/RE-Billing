@@ -9,6 +9,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import java.util.TimeZone;
+
 @SpringBootApplication
 @EnableTransactionManagement
 public class RebillingApplication {
@@ -21,7 +23,9 @@ public class RebillingApplication {
 
 	public static void main(String[] args) {
 
+		//TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 		SpringApplication.run(RebillingApplication.class, args);
+
 		//logger.info("Project REBilling have been started");
 	}
 
