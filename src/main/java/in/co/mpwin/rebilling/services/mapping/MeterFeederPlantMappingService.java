@@ -135,10 +135,10 @@ public class MeterFeederPlantMappingService {
         return mappingBean;
     }
 
-    public MeterFeederPlantMappingBean getLastMFPMappingByMeterNo(String meterNumber, String type, String status) {
+    public MeterFeederPlantMappingBean getLastMFPMappingByMeterNo(String meterNumber, String category, String status) {
 
         MeterFeederPlantMappingBean mfpMapping = null;
-        switch(type)
+        switch(category)
         {
             case "MAIN":
                 System.out.println("switch case : main to find last mapping by main meter");
@@ -165,27 +165,29 @@ public class MeterFeederPlantMappingService {
 
     public MeterFeederPlantMappingBean updateMFPMapping(MeterFeederPlantMappingBean newMFPMapping) {
         System.out.println("calling new mfp save method");
-         return meterFeederPlantMappingRepo.save(newMFPMapping);
-
-    public List<String> getDistinctPlantCodeByDeveloperId(String developerId, String status) {
-        List<String> plants = new ArrayList<>();
-        try {
-            plants = meterFeederPlantMappingRepo.findDistinctPlantCodeByDeveloperIdAndStatus(developerId,status);
-        }catch (Exception e){
-            throw e;
-        }
-        return plants;
+        return meterFeederPlantMappingRepo.save(newMFPMapping);
     }
 
-    public List<MeterFeederPlantMappingBean> getMappingByDeveloperIdOrderByEndDate(String di, String status) {
-        List<MeterFeederPlantMappingBean> mappingBean = new ArrayList<>();
-        try{
-            mappingBean= meterFeederPlantMappingRepo.findAllByDeveloperIdAndStatusOrderByEndDateAsc(di,status);
-        }catch (Exception e){
-            throw e;
+        public List<String> getDistinctPlantCodeByDeveloperId (String developerId, String status){
+            List<String> plants = new ArrayList<>();
+            try {
+                plants = meterFeederPlantMappingRepo.findDistinctPlantCodeByDeveloperIdAndStatus(developerId, status);
+            } catch (Exception e) {
+                throw e;
+            }
+            return plants;
         }
-        return mappingBean;
 
+        public List<MeterFeederPlantMappingBean> getMappingByDeveloperIdOrderByEndDate (String di, String status){
+            List<MeterFeederPlantMappingBean> mappingBean = new ArrayList<>();
+            try {
+                mappingBean = meterFeederPlantMappingRepo.findAllByDeveloperIdAndStatusOrderByEndDateAsc(di, status);
+            } catch (Exception e) {
+                throw e;
+            }
+            return mappingBean;
+
+
+        }
 
     }
-}

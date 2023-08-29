@@ -1,11 +1,13 @@
 package in.co.mpwin.rebilling.services.readingservice;
 
 import in.co.mpwin.rebilling.beans.readingbean.MeterReadingBean;
+import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.AuditControlServices;
 import in.co.mpwin.rebilling.repositories.metermaster.MeterMasterRepo;
 import in.co.mpwin.rebilling.repositories.readingrepo.MeterReadingRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -167,38 +169,5 @@ public class MeterReadingService {
         return meterReadingRepo.findLastReadByMeterNoAndStatus(oldMeterNumber, str);
     }
 
-//    public MeterReadingBean createReadingByPunching(MeterReadingBean meterReadingBean){
-//        try {
-//                // Before inserting check for unique constraint
-//                MeterReadingBean bean = meterReadingRepo.findByMeterNoAndReadingDateAndReadingTypeAndStatus(meterReadingBean.getMeterNo(),
-//                                                                                meterReadingBean.getReadingDate(),
-//                                                                                meterReadingBean.getReadingType(),
-//                                                                                meterReadingBean.getStatus());
-//
-//                //if reading is not already exist then only insert or punch reading
-//                if (bean == null)   {
-//                    //check for meter exist, active and mapped with respect to meter master
-//                    MeterMasterBean meter = meterMasterRepo.findByMeterNumberAndStatus(meterReadingBean.getMeterNo(),"active");
-//                    if(!meter.equals(null) && meter.getIsMapped().equals("yes") && meter.getMf().equals(meterReadingBean.getMf()))
-//                           {
-//                            //Set the Audit control parameters, Globally
-//                            new AuditControlServices().setInitialAuditControlParameters(meterReadingBean);
-//
-//                            return meterReadingRepo.save(meterReadingBean);
-//
-//                        } else
-//                            throw new ApiException(HttpStatus.BAD_REQUEST,"Meter Number must be present, active and mapped state in meter master.");
-//
-//                }else
-//                    throw new ApiException(HttpStatus.BAD_REQUEST,"Meter reading is already exist");
-//
-//        }catch (ApiException apiException){
-//            throw apiException;
-//        }catch (DataIntegrityViolationException d){
-//            throw d;
-//        }catch (Exception e){
-//            throw e;
-//        }
-//    }
 
-   }
+}
