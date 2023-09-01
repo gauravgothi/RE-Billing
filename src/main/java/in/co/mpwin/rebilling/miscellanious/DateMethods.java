@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -39,6 +40,13 @@ public class DateMethods {
             throw e;
         }
 
+    }
+    public String getMonthYear(Date date){
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.DATE, -1);
+        Date oneDayBefore = cal.getTime();
+        return new SimpleDateFormat("MMM-yyyy").format(oneDayBefore);
     }
 
 }

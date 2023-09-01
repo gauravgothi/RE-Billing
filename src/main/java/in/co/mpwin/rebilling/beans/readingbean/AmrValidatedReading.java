@@ -31,7 +31,6 @@ public class AmrValidatedReading implements BeanInterface {
 
     @Column(name="main_meter_no")@NotNull
     private String mainMeterNo;
-
     @Column(name="main_current_kwh")@NotNull @Digits(integer = 14,fraction = 6)
     private BigDecimal mainCurrentKwh;
     @Column(name="main_previous_kwh")@NotNull @Digits(integer = 14,fraction = 6)

@@ -131,7 +131,6 @@ public interface MeterReadingRepo extends CrudRepository<MeterReadingBean,Long> 
     @Query(value = "SELECT * FROM ecell.re_meter_reading_trx WHERE meter_no=:meterNo AND status=:status ORDER BY reading_date DESC LIMIT 1", nativeQuery = true)
     MeterReadingBean findLastReadByMeterNoAndStatus( @Param("meterNo") String meterNo, @Param("status") String status);
 
-
     @Query(value = "SELECT * FROM ecell.re_meter_reading_trx WHERE meter_no =:meterNo and reading_date >:readingDate and status='active' order by reading_date limit 1;",nativeQuery = true)
     MeterReadingBean findJustNext(String meterNo, Date readingDate);
 

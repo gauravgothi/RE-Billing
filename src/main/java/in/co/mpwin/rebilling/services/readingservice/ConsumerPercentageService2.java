@@ -2,6 +2,7 @@ package in.co.mpwin.rebilling.services.readingservice;
 
 import in.co.mpwin.rebilling.beans.developermaster.DeveloperMasterBean;
 import in.co.mpwin.rebilling.beans.mapping.MeterFeederPlantMappingBean;
+import in.co.mpwin.rebilling.beans.readingbean.FivePercentBean;
 import in.co.mpwin.rebilling.beans.readingbean.MeterReadingBean;
 import in.co.mpwin.rebilling.dto.*;
 import in.co.mpwin.rebilling.miscellanious.DateMethods;
@@ -10,6 +11,7 @@ import in.co.mpwin.rebilling.services.feedermaster.FeederMasterService;
 import in.co.mpwin.rebilling.services.mapping.MeterFeederPlantMappingService;
 import in.co.mpwin.rebilling.services.metermaster.MeterMasterService;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,17 +25,18 @@ import java.util.stream.Stream;
 
 @Service
 public class ConsumerPercentageService2 {
-    @Autowired private ModelMapper mapper;
     @Autowired private DeveloperMasterService developerMasterService;
     @Autowired private MeterFeederPlantMappingService meterFeederPlantMappingService;
     @Autowired private FeederMasterService feederMasterService;
     @Autowired private DateMethods dateMethods;
     @Autowired private MeterReadingService meterReadingService;
     @Autowired MeterMasterService meterMasterService;
+    @Autowired FivePercentService fivePercentService;
 
     public List<ConsumptionPercentageDto2> calculatePercentageReport2(Date startDate, Date endDate) throws ParseException{
         List<ConsumptionPercentageDto2> dtoList = new ArrayList<>();
         Date futureEndDate = new SimpleDateFormat("dd-MM-yyyy").parse("01-12-2023");
+        String monthYear = new DateMethods().getMonthYear(endDate);
         List<DeveloperMasterBean> developerList = developerMasterService.getAllDeveloperMasterBean("active");
         for (int k =0;developerList.size()>k;k++){
 
@@ -43,6 +46,12 @@ public class ConsumerPercentageService2 {
             List<Map<String,List<MeterFeederPlantMappingBean>>> plantMFPList = new ArrayList<>();
             List<String> distinctPlants = meterFeederPlantMappingService.getDistinctPlantCodeByDeveloperId(String.valueOf(developerList.get(k).getId()), "active");
             for (String plant : distinctPlants){
+                //If calculation is already done for plant then simple continue
+                Boolean isAlreadyExist = fivePercentService.isAlreadyExistRecord(plant,monthYear);
+                if (isAlreadyExist)
+                    continue;
+
+                //for each plant we have list of mapping, calculate the consumption for each plant
                 Map<String,List<MeterFeederPlantMappingBean>> singlePlantMap = new HashMap<>();
                 singlePlantMap.put(plant,mappingBeanList.stream().filter(bean -> ((bean.getPlantCode().equals(plant)) &&
                         (((bean.getEndDate().after(startDate)) && (bean.getEndDate().before(endDate))) ||
@@ -58,6 +67,8 @@ public class ConsumerPercentageService2 {
                 consumptionPercentageDto2.setDeveloperId(String.valueOf(developerList.get(k).getId()));
                 consumptionPercentageDto2.setDeveloperName(developerList.get(k).getDeveloperName());
                 consumptionPercentageDto2.setDeveloperSiteAddress(developerList.get(k).getSiteAddress());
+                consumptionPercentageDto2.setPlantCode(plantMFP.keySet().toArray()[0].toString());
+                consumptionPercentageDto2.setMonthYear(monthYear);
                 
                 List<MainMeterDto> mainMeterDtos = new ArrayList<>();
                 List<CheckMeterDto> checkMeterDtos = new ArrayList<>();
@@ -193,38 +204,55 @@ public class ConsumerPercentageService2 {
         return checkMeterDto;
     }
 
-    //Convert list value beans to string DTOs by passing value bean one by one
-    public List<FivePercentageDto> percentageBeanToDto(List<ConsumptionPercentageDto2> consumptionPercentageDto2List){
+    //Convert list ConsumptionPercentDto to string FivePercentBean by passing value bean one by one
+    public List<FivePercentBean> consumptionPercentageDto2ToFivePercentageBean(List<ConsumptionPercentageDto2> consumptionPercentageDto2List, String month){
+        //If calculation is already done for plant then simple fetch beans and convert to dto, after combine and collect in set
+        List<FivePercentBean> alreadyExistBeans = fivePercentService.getByMonth(month);
+        List<FivePercentBean> newlyCalculatedBeans = consumptionPercentageDto2List.stream().map((value)->convertDtoToBean(value)).collect(Collectors.toList());
+        List<FivePercentBean> combinedBeans = new ArrayList<>(alreadyExistBeans);
+                            combinedBeans.addAll(newlyCalculatedBeans);
+        Set<FivePercentBean> fivePercentBeanSet = new HashSet<>(combinedBeans);
 
-        return consumptionPercentageDto2List.stream().map((bean)->convertBeanToDto(bean)).collect(Collectors.toList());
+        return fivePercentBeanSet.stream().sorted(Comparator.comparing(FivePercentBean::getDeveloperId)).collect(Collectors.toList());
+
     }
 
-    //Convert single value bean to string DTO
-    private FivePercentageDto convertBeanToDto(ConsumptionPercentageDto2 bean){
-        FivePercentageDto dto = mapper.map(bean,FivePercentageDto.class);
+    //Convert single consumptionpercentagedto to string consumptionpercentagebean
+    private FivePercentBean convertDtoToBean(ConsumptionPercentageDto2 dto2){
+        //Setup of type map because destination have extra property
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.addMappings(new PropertyMap<ConsumptionPercentageDto2, FivePercentBean>() {
+            @Override
+            protected void configure() {
+                skip(destination.getId());
+//                skip(destination.getMonthYear());
+            }
+        });
 
-        List<MainMeterDto> mainMeters =  bean.getMainMeterDtos();
-        List<CheckMeterDto> checkMeters = bean.getCheckMeterDtos();
+        FivePercentBean bean = modelMapper.map(dto2, FivePercentBean.class);
 
-        dto.setMainMeterNumber(concatDelim(mainMeters.stream().map(MainMeterDto::getMainMeterNumber)));
-        dto.setMainCurrentReading(concatDelim(mainMeters.stream().map(MainMeterDto::getMainCurrentReading)).replaceAll("-1","Reading Not Available"));
-        dto.setMainPreviousReading(concatDelim(mainMeters.stream().map(MainMeterDto::getMainPreviousReading)).replaceAll("-1","Reading Not Available"));
-        dto.setMainReadingDifference(concatDelim(mainMeters.stream().map(MainMeterDto::getMainReadingDifference)).replaceAll("-1","NA"));
-        dto.setMainMf(concatDelim(mainMeters.stream().map(MainMeterDto::getMainMf)).replaceAll("-1","NA"));
-        dto.setMainAssessment(concatDelim(mainMeters.stream().map(MainMeterDto::getMainAssessment)).replaceAll("-1","NA"));
-        dto.setMainConsumption(concatDelim(mainMeters.stream().map(MainMeterDto::getMainConsumption)).replaceAll("-1","NA"));
-        dto.setMainTotalConsumption(String.valueOf(bean.getMainGrandTotalConsumption()).replaceAll("-1","NA"));
+        List<MainMeterDto> mainMeters =  dto2.getMainMeterDtos();
+        List<CheckMeterDto> checkMeters = dto2.getCheckMeterDtos();
 
-        dto.setCheckMeterNumber(concatDelim(checkMeters.stream().map(CheckMeterDto::getCheckMeterNumber)));
-        dto.setCheckCurrentReading(concatDelim(checkMeters.stream().map(CheckMeterDto::getCheckCurrentReading)).replaceAll("-1","Reading Not Available"));
-        dto.setCheckPreviousReading(concatDelim(checkMeters.stream().map(CheckMeterDto::getCheckPreviousReading)).replaceAll("-1","Reading Not Available"));
-        dto.setCheckReadingDifference(concatDelim(checkMeters.stream().map(CheckMeterDto::getCheckReadingDifference)).replaceAll("-1","NA"));
-        dto.setCheckMf(concatDelim(checkMeters.stream().map(CheckMeterDto::getCheckMf)).replaceAll("-1","NA"));
-        dto.setCheckAssessment(concatDelim(checkMeters.stream().map(CheckMeterDto::getCheckAssessment)).replaceAll("-1","NA"));
-        dto.setCheckConsumption(concatDelim(checkMeters.stream().map(CheckMeterDto::getCheckConsumption)).replaceAll("-1","NA"));
-        dto.setCheckTotalConsumption(String.valueOf(bean.getCheckGrandTotalConsumption()).replaceAll("-1","NA"));
+        bean.setMainMeterNumber(concatDelim(mainMeters.stream().map(MainMeterDto::getMainMeterNumber)));
+        bean.setMainCurrentReading(concatDelim(mainMeters.stream().map(MainMeterDto::getMainCurrentReading)).replaceAll("-1","Reading Not Available"));
+        bean.setMainPreviousReading(concatDelim(mainMeters.stream().map(MainMeterDto::getMainPreviousReading)).replaceAll("-1","Reading Not Available"));
+        bean.setMainReadingDifference(concatDelim(mainMeters.stream().map(MainMeterDto::getMainReadingDifference)).replaceAll("-1","NA"));
+        bean.setMainMf(concatDelim(mainMeters.stream().map(MainMeterDto::getMainMf)).replaceAll("-1","NA"));
+        bean.setMainAssessment(concatDelim(mainMeters.stream().map(MainMeterDto::getMainAssessment)).replaceAll("-1","NA"));
+        bean.setMainConsumption(concatDelim(mainMeters.stream().map(MainMeterDto::getMainConsumption)).replaceAll("-1","NA"));
+        bean.setMainTotalConsumption(String.valueOf(dto2.getMainGrandTotalConsumption()).replaceAll("-1","NA"));
+
+        bean.setCheckMeterNumber(concatDelim(checkMeters.stream().map(CheckMeterDto::getCheckMeterNumber)));
+        bean.setCheckCurrentReading(concatDelim(checkMeters.stream().map(CheckMeterDto::getCheckCurrentReading)).replaceAll("-1","Reading Not Available"));
+        bean.setCheckPreviousReading(concatDelim(checkMeters.stream().map(CheckMeterDto::getCheckPreviousReading)).replaceAll("-1","Reading Not Available"));
+        bean.setCheckReadingDifference(concatDelim(checkMeters.stream().map(CheckMeterDto::getCheckReadingDifference)).replaceAll("-1","NA"));
+        bean.setCheckMf(concatDelim(checkMeters.stream().map(CheckMeterDto::getCheckMf)).replaceAll("-1","NA"));
+        bean.setCheckAssessment(concatDelim(checkMeters.stream().map(CheckMeterDto::getCheckAssessment)).replaceAll("-1","NA"));
+        bean.setCheckConsumption(concatDelim(checkMeters.stream().map(CheckMeterDto::getCheckConsumption)).replaceAll("-1","NA"));
+        bean.setCheckTotalConsumption(String.valueOf(dto2.getCheckGrandTotalConsumption()).replaceAll("-1","NA"));
         
-        return dto;
+        return bean;
     }
 
     // for converting string and Concatnate # for multiple entry present

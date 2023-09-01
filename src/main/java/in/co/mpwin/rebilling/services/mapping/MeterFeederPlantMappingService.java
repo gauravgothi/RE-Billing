@@ -165,7 +165,8 @@ public class MeterFeederPlantMappingService {
 
     public MeterFeederPlantMappingBean updateMFPMapping(MeterFeederPlantMappingBean newMFPMapping) {
         System.out.println("calling new mfp save method");
-         return meterFeederPlantMappingRepo.save(newMFPMapping);
+        return meterFeederPlantMappingRepo.save(newMFPMapping);
+    }
 
     public List<String> getDistinctPlantCodeByDeveloperId(String developerId, String status) {
         List<String> plants = new ArrayList<>();
