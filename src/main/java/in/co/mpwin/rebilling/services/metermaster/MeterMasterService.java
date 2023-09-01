@@ -4,11 +4,13 @@ import in.co.mpwin.rebilling.beans.metermaster.MeterMasterBean;
 import in.co.mpwin.rebilling.dao.metermaster.MeterMasterDao;
 import in.co.mpwin.rebilling.repositories.metermaster.MeterMasterRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class MeterMasterService {
@@ -111,5 +113,13 @@ public class MeterMasterService {
 
     public void updateMeterStatusAndMappingByMeterNo(String oldMeterNumber, String status, String isMapped) {
     meterMasterRepo.updateMeterStatusAndMappingByMeterNo(oldMeterNumber, status, isMapped);
+    }
+
+    public List<MeterMasterBean> getMeterDetailsByCategory(String category, String status, String isMapped) {
+        try {
+            return meterMasterRepo.findByCategoryAndStatusAndIsMapped(category, status, isMapped);
+        } catch (DataIntegrityViolationException ex) {
+            throw ex;
+        }
     }
 }

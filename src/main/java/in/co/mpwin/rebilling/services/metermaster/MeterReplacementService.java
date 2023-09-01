@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.util.Date;
-
+import java.util.List;
 
 
 @Service
@@ -74,7 +74,7 @@ public class MeterReplacementService {
         mfpMapped = updateMFPMapping(oldMFPMapping, newMFPMapping, meterReplacementDto.getNewMeterNumber(), oldMeter.getType(), meterReplacementDto.getReplaceDate());
         oldMeterUnmapped = updateMeterStatusAndMappingByMeterNo(meterReplacementDto.getOldMeterNumber(), "active", "replaced");
         newMeterMapped = updateMeterStatusAndMappingByMeterNo(meterReplacementDto.getNewMeterNumber(), "active", "yes");
-        meterReplacementHistory = meterReplacementTable(meterReplacementDto.getOldMeterNumber(), meterReplacementDto.getNewMeterNumber(), meterReplacementDto.getReplaceDate());
+        meterReplacementHistory = meterReplacementTable(meterReplacementDto.getOldMeterNumber(), meterReplacementDto.getNewMeterNumber(), meterReplacementDto.getReplaceDate(),oldMFPMapping);
 
         if (mfpMapped && oldMeterUnmapped && newMeterMapped && meterReplacementHistory)
             return "meter replacement done.";
@@ -144,11 +144,15 @@ public class MeterReplacementService {
     }
 
     @Transactional
-    private Boolean meterReplacementTable(String oldMeterNumber, String newMeterNumber, Date replaceDate) {
+    private Boolean meterReplacementTable(String oldMeterNumber, String newMeterNumber, Date replaceDate, MeterFeederPlantMappingBean oldMFPMapping) {
         MeterReplacementBean meterReplacementBean = new MeterReplacementBean();
         meterReplacementBean.setOldMeterNumber(oldMeterNumber);
         meterReplacementBean.setNewMeterNumber(newMeterNumber);
         meterReplacementBean.setReplaceDate(replaceDate);
+        meterReplacementBean.setDeveloperId(oldMFPMapping.getDeveloperId());
+        meterReplacementBean.setPlantCode(oldMFPMapping.getPlantCode());
+        meterReplacementBean.setFeederCode(oldMFPMapping.getFeederCode());
+
         auditControlServices.setInitialAuditControlParameters(meterReplacementBean);
         try {
             MeterReplacementBean resp = meterReplacementRepo.save(meterReplacementBean);
@@ -161,7 +165,7 @@ public class MeterReplacementService {
     }
 
     @Transactional
-    public String replaceMeter2(MeterReadingBean oldMeterBean, MeterReadingBean newMeterBean) {
+    public String replaceMeterMethod(MeterReadingBean oldMeterBean, MeterReadingBean newMeterBean) {
 
         MeterMasterBean oldMeter = meterMasterService.getMeterDetailsByMeterNo(oldMeterBean.getMeterNo(), "active");
         MeterMasterBean newMeter = meterMasterService.getMeterDetailsByMeterNo(newMeterBean.getMeterNo(), "active");
@@ -191,11 +195,10 @@ public class MeterReplacementService {
             Boolean readingSRFR = false;
 
             mfpMapped = updateMFPMapping(oldMFPMapping, newMFPMapping, newMeterBean.getMeterNo(), oldMeter.getCategory(), newMeterBean.getReadingDate());
-            oldMeterUnmapped = updateMeterStatusAndMappingByMeterNo(oldMeterBean.getMeterNo(), "active", "replaced");
             newMeterMapped = updateMeterStatusAndMappingByMeterNo(newMeterBean.getMeterNo(), "active", "yes");
-            meterReplacementHistory = meterReplacementTable(oldMeterBean.getMeterNo(), newMeterBean.getMeterNo(), oldMeterBean.getReadingDate());
+            meterReplacementHistory = meterReplacementTable(oldMeterBean.getMeterNo(), newMeterBean.getMeterNo(), oldMeterBean.getReadingDate(), oldMFPMapping);
             readingSRFR = insertReadingForSRFR(oldMeterBean, newMeterBean);
-
+            oldMeterUnmapped = updateMeterStatusAndMappingByMeterNo(oldMeterBean.getMeterNo(), "active", "replaced");
             if (mfpMapped && oldMeterUnmapped && newMeterMapped && meterReplacementHistory && readingSRFR)
                 return "meter replacement done.";
             else
@@ -226,5 +229,11 @@ public class MeterReplacementService {
             return true;
         else
             return false;
+    }
+
+    public List<MeterReplacementBean> getMeterReplacementList(String status) {
+
+      return meterReplacementRepo.findAllByStatus(status);
+
     }
 }

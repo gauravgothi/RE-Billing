@@ -153,11 +153,7 @@ public class MeterReadingService {
         return meterReadingBean;
     }
 
-}
-
-
     public MeterReadingBean GetLastReadingByMeterNoAndStatus(String oldMeterNumber, String str) {
-
         return meterReadingRepo.findLastReadByMeterNoAndStatus(oldMeterNumber, str);
     }
 
