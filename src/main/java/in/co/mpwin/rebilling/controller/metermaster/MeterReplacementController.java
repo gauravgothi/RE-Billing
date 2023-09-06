@@ -3,7 +3,6 @@ package in.co.mpwin.rebilling.controller.metermaster;
 import in.co.mpwin.rebilling.beans.metermaster.MeterMasterBean;
 import in.co.mpwin.rebilling.beans.metermaster.MeterReplacementBean;
 import in.co.mpwin.rebilling.beans.readingbean.MeterReadingBean;
-import in.co.mpwin.rebilling.dto.MeterReplacementDto;
 import in.co.mpwin.rebilling.dto.MeterReplacementRequest;
 import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.Message;
