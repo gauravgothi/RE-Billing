@@ -1,6 +1,9 @@
 package in.co.mpwin.rebilling.repositories.readingrepo;
 
 import in.co.mpwin.rebilling.beans.readingbean.FivePercentBean;
+import jakarta.transaction.Transactional;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
@@ -18,4 +21,19 @@ public interface FivePercentRepo extends CrudRepository<FivePercentBean,Long> {
     List<FivePercentBean> findByPlantCodeAndMonthYear(String plantCode, String monthYear);
 
     List<FivePercentBean> findByMonthYear(String monthYear);
+
+    @Query(value = "select * from ecell.re_5perc_report_trx AS t where t.month_year = ?1 AND t.remark = ?2",nativeQuery = true)
+    List<FivePercentBean> findByMonthAndRemarkEqualTo(String monthYear,String remark);
+
+    //FivePercentBean updateMeterSelectedFlagById(String meterSelectedFlag, Long id);
+
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE ecell.re_5perc_report_trx AS u SET remark = ?1 WHERE u.id = ?2",nativeQuery = true)
+    void setRemarkById(String remark, Long id);
+
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE ecell.re_5perc_report_trx AS u SET meter_selected_flag = ?1 WHERE u.id = ?2",nativeQuery = true)
+    void setMeterSelectedFlagById(String meterSelectedFlag, Long id);
 }

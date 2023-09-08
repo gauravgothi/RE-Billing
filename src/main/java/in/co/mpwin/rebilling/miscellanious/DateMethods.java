@@ -6,10 +6,9 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @Service
 public class DateMethods {
@@ -32,8 +31,8 @@ public class DateMethods {
             Date currentReadDate = calendar.getTime();
 
             List<Date> dateList = new ArrayList<>();
-            dateList.add(currentReadDate);
             dateList.add(previousReadDate);
+            dateList.add(currentReadDate);
 
             return dateList;
         } catch (ParseException e) {
@@ -47,6 +46,27 @@ public class DateMethods {
         cal.add(Calendar.DATE, -1);
         Date oneDayBefore = cal.getTime();
         return new SimpleDateFormat("MMM-yyyy").format(oneDayBefore);
+    }
+
+    public Date getOneDayBefore(Date date){
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.DATE, -1);
+        Date oneDayBefore = cal.getTime();
+        return oneDayBefore;
+    }
+
+    public List<String> getMonthsBetweenDates(String startMonth,String endMonth){
+        List<String> monthList = new ArrayList<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM-yyyy", Locale.ENGLISH);
+        YearMonth startDate = YearMonth.parse(startMonth, formatter);
+        YearMonth endDate = YearMonth.parse(endMonth, formatter);
+
+        while(startDate.isBefore(endDate)) {
+            monthList.add(startDate.format(formatter));
+            startDate = startDate.plusMonths(1);
+        }
+        return monthList;
     }
 
 }

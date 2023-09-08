@@ -2,6 +2,7 @@ package in.co.mpwin.rebilling.services.fileserivce;
 
 import in.co.mpwin.rebilling.beans.readingbean.MeterReadingBean;
 import in.co.mpwin.rebilling.beans.xmlfilebean.XmlParserBean;
+import in.co.mpwin.rebilling.miscellanious.DateMethods;
 import org.springframework.stereotype.Service;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -189,7 +190,8 @@ public class XmlSaxParserService {
             meterReadingBean.setMeterNo(xmlParserBean.getG1());//1
             meterReadingBean.setMf(new BigDecimal(0.00));//2
             meterReadingBean.setReadingDate(xmlParserBean.getG2());//3
-            meterReadingBean.setEndDate(xmlParserBean.getG2());//4
+            //make end date by -1 day in reading date
+            meterReadingBean.setEndDate(new DateMethods().getOneDayBefore(xmlParserBean.getG2()));//4
             meterReadingBean.setReadingType("NR");//5
             meterReadingBean.setReadSource("file");//6
 

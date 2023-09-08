@@ -67,8 +67,8 @@ public class ConsumptionPercentageService {
     }
 
     private void setMeterParameters(ConsumptionPercentageDto percentageDto, String meterNumber, String month, boolean isMain) throws ParseException {
-        Date currentReadDate = dateMethods.getCurrentAndPreviousDate(month).get(0);
-        Date previousReadDate = dateMethods.getCurrentAndPreviousDate(month).get(1);
+        Date previousReadDate = dateMethods.getCurrentAndPreviousDate(month).get(0);
+        Date currentReadDate = dateMethods.getCurrentAndPreviousDate(month).get(1);
 
         MeterReadingBean previousReading = meterReadingService.getReadingByMeterNoAndReadingDateAndStatus(meterNumber, previousReadDate, "active");
         MeterReadingBean currentReading = meterReadingService.getReadingByMeterNoAndReadingDateAndStatus(meterNumber, currentReadDate, "active");

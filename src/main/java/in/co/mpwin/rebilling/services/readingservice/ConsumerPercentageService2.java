@@ -6,6 +6,7 @@ import in.co.mpwin.rebilling.beans.readingbean.FivePercentBean;
 import in.co.mpwin.rebilling.beans.readingbean.MeterReadingBean;
 import in.co.mpwin.rebilling.dto.*;
 import in.co.mpwin.rebilling.miscellanious.DateMethods;
+import in.co.mpwin.rebilling.repositories.readingrepo.FivePercentRepo;
 import in.co.mpwin.rebilling.services.developermaster.DeveloperMasterService;
 import in.co.mpwin.rebilling.services.feedermaster.FeederMasterService;
 import in.co.mpwin.rebilling.services.mapping.MeterFeederPlantMappingService;
@@ -32,6 +33,8 @@ public class ConsumerPercentageService2 {
     @Autowired private MeterReadingService meterReadingService;
     @Autowired MeterMasterService meterMasterService;
     @Autowired FivePercentService fivePercentService;
+    @Autowired
+    private FivePercentRepo fivePercentRepo;
 
     public List<ConsumptionPercentageDto2> calculatePercentageReport2(Date startDate, Date endDate) throws ParseException{
         List<ConsumptionPercentageDto2> dtoList = new ArrayList<>();
@@ -112,7 +115,7 @@ public class ConsumerPercentageService2 {
                         .anyMatch(b -> (b.getMainTotalConsumption().compareTo(BigDecimal.valueOf(-1)) == 0));
                 Boolean anyCheckMeterReadAbsent = consumptionPercentageDto2.getCheckMeterDtos().stream()
                                 .anyMatch(b->(b.getCheckTotalConsumption().compareTo(BigDecimal.valueOf(-1)) == 0));
-                if (anyCheckMeterReadAbsent || anyCheckMeterReadAbsent )    {
+                if (anyMainMeterReadAbsent || anyCheckMeterReadAbsent )    {
                     consumptionPercentageDto2.setMainGrandTotalConsumption(BigDecimal.valueOf(-1));
                     consumptionPercentageDto2.setCheckGrandTotalConsumption(BigDecimal.valueOf(-1));
                     consumptionPercentageDto2.setPercentage(BigDecimal.valueOf(-1));
@@ -129,6 +132,8 @@ public class ConsumerPercentageService2 {
                             .divide(consumptionPercentageDto2.getMainGrandTotalConsumption(), 6, RoundingMode.HALF_DOWN))
                             .multiply(BigDecimal.valueOf(100)).abs());
                     consumptionPercentageDto2.setResult((consumptionPercentageDto2.getPercentage().compareTo(BigDecimal.valueOf(0.5)) <= 0) ? "pass" : "fail");
+                    consumptionPercentageDto2.setRemark("calculated");
+                    consumptionPercentageDto2.setMeterSelectedFlag("NA");
                 }
                 dtoList.add(consumptionPercentageDto2);
             }
@@ -207,9 +212,10 @@ public class ConsumerPercentageService2 {
     //Convert list ConsumptionPercentDto to string FivePercentBean by passing value bean one by one
     public List<FivePercentBean> consumptionPercentageDto2ToFivePercentageBean(List<ConsumptionPercentageDto2> consumptionPercentageDto2List, String month){
         //If calculation is already done for plant then simple fetch beans and convert to dto, after combine and collect in set
-        List<FivePercentBean> alreadyExistBeans = fivePercentService.getByMonth(month);
+        //List<FivePercentBean> alreadyExistBeans = fivePercentService.getByMonth(month);
+        List<FivePercentBean> alreadyExistButNotApproved = fivePercentService.getByMonthAndRemarkEqualTo(month,"calculated");
         List<FivePercentBean> newlyCalculatedBeans = consumptionPercentageDto2List.stream().map((value)->convertDtoToBean(value)).collect(Collectors.toList());
-        List<FivePercentBean> combinedBeans = new ArrayList<>(alreadyExistBeans);
+        List<FivePercentBean> combinedBeans = new ArrayList<>(alreadyExistButNotApproved);
                             combinedBeans.addAll(newlyCalculatedBeans);
         Set<FivePercentBean> fivePercentBeanSet = new HashSet<>(combinedBeans);
 
@@ -263,6 +269,7 @@ public class ConsumerPercentageService2 {
                         result -> result.isEmpty() ? "" : result
                 ));
     }
+
 
 }
 
