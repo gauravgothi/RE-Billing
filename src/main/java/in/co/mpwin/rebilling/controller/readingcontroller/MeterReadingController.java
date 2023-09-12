@@ -1,6 +1,7 @@
 package in.co.mpwin.rebilling.controller.readingcontroller;
 
 import in.co.mpwin.rebilling.beans.readingbean.MeterReadingBean;
+import in.co.mpwin.rebilling.dto.MeterConsumptionDto;
 import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.Message;
 import in.co.mpwin.rebilling.services.readingservice.MeterReadingService;
@@ -14,6 +15,7 @@ import javax.validation.Valid;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -113,9 +115,10 @@ public class MeterReadingController {
         return meterReadingResp;
     }
 
-    @RequestMapping(method = RequestMethod.PUT,value = {"/currentState/{currentState}/{month}/{meterNo}/{status}",
+    @RequestMapping(method = RequestMethod.PUT,value = {"/currentState/{currentState}/updateState/{updateState}/{month}/{meterNo}/{status}",
                                                         "/endDate/{endDate}/{month}/{meterNo}/{status}"})
     public ResponseEntity<?> updateCurrentStateOrEndDate(@PathVariable(name = "currentState") Optional<String> currentState,
+                                                         @PathVariable(name = "updateState") Optional<String> updateState,
                                                 @PathVariable(name = "endDate") Optional<String> endDate,
                                                 @PathVariable(name = "month") String month,
                                                 @PathVariable(name = "meterNo") String meterNo,
@@ -123,10 +126,11 @@ public class MeterReadingController {
 
         ResponseEntity updateResp = null;
         try {
-            if(currentState.isPresent() && !endDate.isPresent()){
+            if(currentState.isPresent() && updateState.isPresent() && !endDate.isPresent()){
 
-                MeterReadingBean bean = meterReadingService.updateCurrentState(String.valueOf(currentState),month,meterNo,status);
-                updateResp = new ResponseEntity<>(bean,HttpStatus.OK);
+                List<MeterReadingBean> beans = meterReadingService.updateCurrentState(String.valueOf(currentState),
+                                                                                    String.valueOf(updateState),month,meterNo,status);
+                updateResp = new ResponseEntity<>(beans,HttpStatus.OK);
 
             } else if (endDate.isPresent() && !currentState.isPresent()) {
 
@@ -169,5 +173,75 @@ public class MeterReadingController {
 
         }
         return createReadResp;
+    }
+
+    //this is used by HT to view AMR approved or forced approved meter reading
+    @GetMapping("/acceptORforce/monthYear/{monthYear}")
+    public ResponseEntity<?> getAcceptOrForceAcceptReadingsByAmr(@PathVariable("monthYear") String monthYear){
+        ResponseEntity readingDtosResp = null;
+        try {
+                List<MeterReadingBean> readings = meterReadingService.getAcceptOrForceAcceptReadingsByAmr(monthYear);
+            readingDtosResp = new ResponseEntity<>(readings,HttpStatus.OK);
+        }catch (ApiException apiException){
+            readingDtosResp = new ResponseEntity<>(new Message(apiException.getMessage()),apiException.getHttpStatus());
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            readingDtosResp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+        }
+        return readingDtosResp;
+    }
+
+    //this is used by HT to accept AMR approved or forced approved meter reading
+    @PostMapping("/acceptORforce/htAccept")
+    public ResponseEntity<?> htUserAccept(@RequestBody List<MeterReadingBean> meterReadingBeanList){
+        ResponseEntity readingActionResp = null;
+        try {
+                meterReadingService.htUserAccept(meterReadingBeanList);
+                readingActionResp = new ResponseEntity<>(new Message("Readings approved successfully.."),HttpStatus.OK);
+
+        }catch (ApiException apiException){
+            readingActionResp = new ResponseEntity<>(new Message(apiException.getMessage()),apiException.getHttpStatus());
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            readingActionResp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+        }
+        return readingActionResp;
+    }
+
+    //Ht report meter consumption report month wise, This controller will fetch ht accept meters of a month
+    @GetMapping("/currentStates/{currentStates}")
+    public ResponseEntity<?> getMeterListByCurrentStateIn(@PathVariable("currentStates") List<String> currentStateList){
+        ResponseEntity meterListResp = null;
+        try {
+                List<Map<String,String>> meterList = meterReadingService.getMeterListByCurrentStateIn(currentStateList);
+                meterListResp = new ResponseEntity<>(meterList,HttpStatus.OK);
+        }catch (ApiException apiException){
+            meterListResp = new ResponseEntity<>(new Message(apiException.getMessage()),apiException.getHttpStatus());
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            meterListResp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+        }
+        return meterListResp;
+    }
+
+    //Passing Meter Number and Month in MMM-yyyy format to get consumption details
+    @GetMapping("/meterConsumption/meterNo/{meterNo}/monthYear/{monthYear}")
+    public ResponseEntity<?> getMeterConsumptionByMonth(@PathVariable("meterNo") String meterNo,
+                                                        @PathVariable("monthYear") String monthYear){
+        ResponseEntity meterConsumptionResp = null;
+        try {
+            MeterConsumptionDto meterConsumptionDto = meterReadingService.getMeterConsumptionByMonth(meterNo,monthYear);
+            meterConsumptionResp = new ResponseEntity<>(meterConsumptionDto,HttpStatus.OK);
+        }catch (ApiException apiException){
+            meterConsumptionResp = new ResponseEntity<>(new Message(apiException.getMessage()),apiException.getHttpStatus());
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            meterConsumptionResp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+        }
+        return meterConsumptionResp;
     }
 }

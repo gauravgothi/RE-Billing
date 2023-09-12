@@ -1,9 +1,15 @@
 package in.co.mpwin.rebilling.services.readingservice;
 
+import in.co.mpwin.rebilling.beans.metermaster.MeterMasterBean;
 import in.co.mpwin.rebilling.beans.readingbean.MeterReadingBean;
+import in.co.mpwin.rebilling.dto.MeterConsumptionDto;
+import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.AuditControlServices;
+import in.co.mpwin.rebilling.miscellanious.DateMethods;
+import in.co.mpwin.rebilling.miscellanious.TokenInfo;
 import in.co.mpwin.rebilling.repositories.metermaster.MeterMasterRepo;
 import in.co.mpwin.rebilling.repositories.readingrepo.MeterReadingRepo;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -11,21 +17,23 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class MeterReadingService {
     @Autowired
     MeterReadingRepo meterReadingRepo;
+    @Autowired private DateMethods dateMethods;
 
+    @Autowired private ModelMapper modelMapper;
     @Autowired
     MeterMasterRepo meterMasterRepo;
 
@@ -52,7 +60,7 @@ public class MeterReadingService {
     public List<MeterReadingBean> getAllReadingByMonthAndMeterNoAndStatus(String month, String meterNo, String status) {
         List<MeterReadingBean> meterReadingBeanList = new ArrayList<>();
         try {
-            meterReadingBeanList = meterReadingRepo.findAllByReadingDateAndMeterNoAndStatus(month, meterNo, status);
+            meterReadingBeanList = meterReadingRepo.findAllByReadingDateMonthAndMeterNoAndStatus(month, meterNo, status);
         } catch (Exception exception) {
             exception.printStackTrace();
         }
@@ -118,21 +126,28 @@ public class MeterReadingService {
         return meterReadingBeanList;
     }
 
-    public MeterReadingBean updateCurrentState(String currentState, String month, String meterNo, String status) {
-        MeterReadingBean meterReadingBean = new MeterReadingBean();
+    public List<MeterReadingBean> updateCurrentState(String currentState,String updateState, String month, String meterNo, String status) {
+        List<MeterReadingBean> meterReadingBeanList = new ArrayList<>();
         try {
-            if (!meterReadingRepo.findAllByReadingDateAndMeterNoAndStatus(month, meterNo, status).isEmpty())
-                meterReadingBean = meterReadingRepo.updateCurrentState(currentState, month, meterNo, status);
+                String username = new TokenInfo().getCurrentUsername();
+                Timestamp updateTime = new DateMethods().getServerTime();
+                meterReadingBeanList = meterReadingRepo.findAllByEndDateMonthAndMeterNoAndStatus(month, meterNo, status);
+                List<MeterReadingBean> beansWithStateInitialRead = meterReadingBeanList.stream().filter(read -> read.getCurrentState().equals("initial_read")).collect(Collectors.toList());
+                beansWithStateInitialRead.forEach(read -> { read.setCurrentState(updateState);
+                                                        read.setUpdatedBy(username);
+                                                        read.setUpdatedOn(updateTime);
+                                                     });
+                beansWithStateInitialRead = (List<MeterReadingBean>) meterReadingRepo.saveAll(beansWithStateInitialRead);
+                return beansWithStateInitialRead;
         } catch (Exception exception) {
-            exception.printStackTrace();
+           throw  exception;
         }
-        return meterReadingBean;
     }
 
     public MeterReadingBean updateEndDate(Date endDate, String month, String meterNo, String status) {
         MeterReadingBean meterReadingBean = new MeterReadingBean();
         try {
-            if (!meterReadingRepo.findAllByReadingDateAndMeterNoAndStatus(month, meterNo, status).isEmpty())
+            if (!meterReadingRepo.findAllByReadingDateMonthAndMeterNoAndStatus(month, meterNo, status).isEmpty())
                 meterReadingBean = meterReadingRepo.updateEndDate(endDate, month, meterNo, status);
         } catch (Exception exception) {
             exception.printStackTrace();
@@ -152,46 +167,93 @@ public class MeterReadingService {
         return meterReadingBean;
     }
 
-}
-
 
     public MeterReadingBean GetLastReadingByMeterNoAndStatus(String oldMeterNumber, String str) {
 
         return meterReadingRepo.findLastReadByMeterNoAndStatus(oldMeterNumber, str);
     }
 
-//    public MeterReadingBean createReadingByPunching(MeterReadingBean meterReadingBean){
-//        try {
-//                // Before inserting check for unique constraint
-//                MeterReadingBean bean = meterReadingRepo.findByMeterNoAndReadingDateAndReadingTypeAndStatus(meterReadingBean.getMeterNo(),
-//                                                                                meterReadingBean.getReadingDate(),
-//                                                                                meterReadingBean.getReadingType(),
-//                                                                                meterReadingBean.getStatus());
-//
-//                //if reading is not already exist then only insert or punch reading
-//                if (bean == null)   {
-//                    //check for meter exist, active and mapped with respect to meter master
-//                    MeterMasterBean meter = meterMasterRepo.findByMeterNumberAndStatus(meterReadingBean.getMeterNo(),"active");
-//                    if(!meter.equals(null) && meter.getIsMapped().equals("yes") && meter.getMf().equals(meterReadingBean.getMf()))
-//                           {
-//                            //Set the Audit control parameters, Globally
-//                            new AuditControlServices().setInitialAuditControlParameters(meterReadingBean);
-//
-//                            return meterReadingRepo.save(meterReadingBean);
-//
-//                        } else
-//                            throw new ApiException(HttpStatus.BAD_REQUEST,"Meter Number must be present, active and mapped state in meter master.");
-//
-//                }else
-//                    throw new ApiException(HttpStatus.BAD_REQUEST,"Meter reading is already exist");
-//
-//        }catch (ApiException apiException){
-//            throw apiException;
-//        }catch (DataIntegrityViolationException d){
-//            throw d;
-//        }catch (Exception e){
-//            throw e;
-//        }
-//    }
+    public List<MeterReadingBean> getAcceptOrForceAcceptReadingsByAmr(String monthYear) {
+        try {
+               return meterReadingRepo.getAcceptOrForceAcceptReadingsByAmr(monthYear)
+                    .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST,"Reading is not present for month" + monthYear));
+        }catch (ApiException apiException){
+            throw apiException;
+        }catch (Exception exception){
+            throw exception;
+        }
+    }
 
-   }
+    @Transactional
+    public void htUserAccept(List<MeterReadingBean> meterReadingBeanList) {
+        try {
+                if(meterReadingBeanList.size()==0) throw new ApiException(HttpStatus.BAD_REQUEST,"Select atleast one..");
+
+                String username = new TokenInfo().getCurrentUsername();
+                Timestamp updateTime = new DateMethods().getServerTime();
+                // here we dont need to check existing current state because view reading have only amr_accept or force_accept
+                meterReadingBeanList.forEach(read -> {  read.setCurrentState("ht_accept");
+                                                        read.setUpdatedBy(username);
+                                                        read.setUpdatedOn(updateTime);
+                                                    });
+                meterReadingRepo.saveAll(meterReadingBeanList);
+        }catch (ApiException apiException){
+            throw apiException;
+        }catch (Exception exception){
+            throw exception;
+        }
+    }
+
+    public List<Map<String,String>> getMeterListByCurrentStateIn(List<String> currentStateList) {
+        try {
+                List<Map<String,String>> meterList = new ArrayList<>();
+                List<String> meters = meterReadingRepo.findAllDistinctMeterNoByCurrentStateInAndStatus(currentStateList,"active");
+                if(meters.size()==0) throw new ApiException(HttpStatus.BAD_REQUEST,"Not any meter left.");
+                for (String meter : meters){
+                        Map<String,String> m = new HashMap<>();
+                        String meterCategory = meterMasterRepo.findByMeterNumberAndStatus(meter,"active").getCategory();
+                        m.put("meterNo",meter);
+                        m.put("meterCategory",meterCategory);
+                        meterList.add(m);
+                }
+
+                return meterList;
+        }catch (ApiException apiException){
+            throw apiException;
+        }catch (Exception exception){
+            throw exception;
+        }
+    }
+
+    @Transactional
+    public MeterConsumptionDto getMeterConsumptionByMonth(String meterNo, String monthYear) throws ParseException {
+        MeterConsumptionDto meterConsumptionDto = new MeterConsumptionDto();
+        try {
+                List<String> currentStates = List.of("ht_accept");
+                Date startReadDate = dateMethods.getCurrentAndPreviousDate(monthYear).get(0);
+                Date endReadDate = dateMethods.getCurrentAndPreviousDate(monthYear).get(1);
+                List<MeterReadingBean> meterReadingBeanList = meterReadingRepo.findByMeterNoAndCurrentStatesInBetween
+                        (meterNo,currentStates,startReadDate,endReadDate,"active");
+                if (meterReadingBeanList.size()==0) throw new ApiException(HttpStatus.BAD_REQUEST,"Not any Reading Present in month");
+                if (meterReadingBeanList.size()>2) throw new ApiException(HttpStatus.BAD_REQUEST,"More than 2 reading in given month");
+                if (meterReadingBeanList.size()<2) throw new ApiException(HttpStatus.BAD_REQUEST,"Less than 2 reading in given month");
+
+                if (meterReadingBeanList.size()==2){
+                    MeterMasterBean meterMasterBean = meterMasterRepo.findByMeterNumberAndStatus(meterNo,"active");
+                    if(meterMasterBean == null) throw new ApiException(HttpStatus.BAD_REQUEST,"meter must be active");
+
+                    meterConsumptionDto = meterConsumptionDto.setMeterConsumptionDto(meterReadingBeanList.get(0),meterReadingBeanList.get(1),meterMasterBean.getMf());
+                    meterConsumptionDto.setCategory(meterMasterBean.getCategory());
+
+            }
+        }catch (ApiException apiException){
+            throw apiException;
+        }catch (Exception exception){
+            throw exception;
+        }
+        return meterConsumptionDto;
+    }
+}
+
+
+

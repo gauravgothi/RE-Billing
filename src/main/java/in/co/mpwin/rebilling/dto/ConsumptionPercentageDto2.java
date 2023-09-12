@@ -19,6 +19,11 @@ public class ConsumptionPercentageDto2 {
     private String developerSiteAddress;
     private String feederCode,feederName;
 
+    //plant code inserted in extra
+    private String plantCode;
+    //flag for is main meter ,check meter or both selected
+    private String meterSelectedFlag;
+
     private List<MainMeterDto> mainMeterDtos;
     private List<CheckMeterDto> checkMeterDtos;
 
@@ -29,6 +34,7 @@ public class ConsumptionPercentageDto2 {
     @Digits(integer = 20,fraction = 6)
     private BigDecimal percentage;
 
+    private String monthYear;
     private String result;
     private String remark;
 }

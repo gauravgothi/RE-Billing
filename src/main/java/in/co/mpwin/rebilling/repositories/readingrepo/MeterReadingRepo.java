@@ -15,93 +15,14 @@ import java.util.Optional;
 public interface MeterReadingRepo extends CrudRepository<MeterReadingBean,Long> {
 
     MeterReadingBean save(XmlParserBean xmlParserBean);
-    /*@Transactional
-    @Modifying
-    @Query(value = "INSERT into re_meter_reading_trx (" +
-            "meter_no," +
-            "mf," +
-            "reading_date," +
-            "end_date," +
-            "reading_type," +
-            "read_source," +
-            "e_tod1," +
-            "e_tod2," +
-            "e_tod3," +
-            "e_tod4," +
-            "e_active_energy," +
-            "e_reactive_quad1," +
-            "e_reactive_quad2," +
-            "e_reactive_quad3," +
-            "e_reactive_quad4," +
-            "e_adjustment," +
-            "e_max_demand," +
-            "e_kvah," +
-            "e_assesment," +
-            "i_tod1," +
-            "i_tod2," +
-            "i_tod3," +
-            "i_tod4," +
-            "i_active_energy," +
-            "i_reactive_quad1," +
-            "i_reactive_quad2," +
-            "i_reactive_quad3," +
-            "i_reactive_quad4," +
-            "i_adjustment," +
-            "i_max_demand," +
-            "i_kvah," +
-            "i_assesment," +
-            "current_state," +
-            "created_by," +
-            "updated_by," +
-            "created_on," +
-            "updated_on," +
-            "status," +
-            "remark) " +
-            "values(" +
-            ":#{#xpb.meter}," +
-            ":#{#xpb.g9}," +
-            ":#{#xpb.g2}," +
-            ":#{#xpb.g2}," +
-            ":#{#xpb.g13}," +
-            ":#{#xpb.g13}," +
-            ":#{#xpb.g9}," +
-            ":#{#xpb.g9}," +
-            ":#{#xpb.g9}," +
-            ":#{#xpb.g9}," +
-            ":#{#xpb.g9}," +
-            ":#{#xpb.g9}," +
-            ":#{#xpb.g9}," +
-            ":#{#xpb.g9}," +
-            ":#{#xpb.g9}," +
-            ":#{#xpb.g9}," +
-            ":#{#xpb.g9}," +
-            ":#{#xpb.g9}," +
-            ":#{#xpb.g9}," +
-            ":#{#xpb.g9}," +
-            ":#{#xpb.g9}," +
-            ":#{#xpb.g9}," +
-            ":#{#xpb.g9}," +
-            ":#{#xpb.g9}," +
-            ":#{#xpb.g9}," +
-            ":#{#xpb.g9}," +
-            ":#{#xpb.g9}," +
-            ":#{#xpb.g9}," +
-            ":#{#xpb.g9}," +
-            ":#{#xpb.g9}," +
-            ":#{#xpb.g9}," +
-            ":#{#xpb.g9}," +
-            ":#{#xpb.g13}," +
-            ":#{#xpb.g13}," +
-            ":#{#xpb.g2}," +
-            ":#{#xpb.g2}," +
-            ":#{#xpb.g13}," +
-            ":#{#xpb.g13})", nativeQuery = true)
-    public int createMeterReading(@Param("xpb") MeterReadingBean xmlParserBean);*/
 
     List<MeterReadingBean> findAllByStatus(String status);
 
-    @Query(value = "SELECT * FROM ecell.re_meter_reading_trx WHERE TO_CHAR(reading_date, 'Mon-YYYY') =:month AND meter_no =:meter AND status=:status",nativeQuery = true)
-    List<MeterReadingBean> findAllByReadingDateAndMeterNoAndStatus(@Param("month") String readingDate,@Param("meter")String meterNo, @Param("status") String status);
+    @Query(value = "SELECT * FROM ecell.re_meter_reading_trx WHERE TO_CHAR(reading_date, 'Mon-YYYY') =:mon AND meter_no =:meter AND status=:status",nativeQuery = true)
+    List<MeterReadingBean> findAllByReadingDateMonthAndMeterNoAndStatus(@Param("mon") String readingDateMonth,@Param("meter")String meterNo, @Param("status") String status);
+
+    @Query(value = "SELECT * FROM ecell.re_meter_reading_trx WHERE TO_CHAR(end_date, 'Mon-YYYY') =:mon AND meter_no =:meter AND status=:status",nativeQuery = true)
+    List<MeterReadingBean> findAllByEndDateMonthAndMeterNoAndStatus(@Param("mon") String EndDateMonth,@Param("meter")String meterNo, @Param("status") String status);
 
     @Query(value = "SELECT * FROM ecell.re_meter_reading_trx WHERE TO_CHAR(reading_date, 'Mon-YYYY') =:month AND status=:status",nativeQuery = true)
     List<MeterReadingBean> findAllByReadingDateAndStatus(@Param("month") String readingDate,@Param("status") String status);
@@ -110,13 +31,16 @@ public interface MeterReadingRepo extends CrudRepository<MeterReadingBean,Long> 
 
     List<MeterReadingBean> findAllByCurrentStateAndStatus(String currentState, String status);
 
-    @Modifying(clearAutomatically = true)
-    @Query(value = "UPDATE ecell.re_meter_reading_trx t SET t.current_state=:current_state WHERE TO_CHAR(t.reading_date, 'Mon-YYYY') =:month AND t.meter_no=:meter AND t.status=:status",nativeQuery = true)
-    MeterReadingBean updateCurrentState(@Param("current_state") String currentState,@Param("month") String month, @Param("meter") String meterNo,@Param("status") String status);
+    @Query(value = "SELECT DISTINCT meter_no FROM ecell.re_meter_reading_trx where current_state in (:currentStates) and status =:status",nativeQuery = true)
+    List<String> findAllDistinctMeterNoByCurrentStateInAndStatus(@Param("currentStates") List<String> currentState,String status);
 
     @Modifying(clearAutomatically = true)
-    @Query(value = "UPDATE ecell.re_meter_reading_trx t SET t.end_date=:endDate WHERE TO_CHAR(t.reading_date, 'Mon-YYYY') =:month AND t.meter_no=:meterNo AND t.status=:status",nativeQuery = true)
-    MeterReadingBean updateEndDate(@Param("endDate") Date endDate, @Param("month") String month, @Param("meterNo") String meterNo, @Param("status") String status);
+    @Query(value = "UPDATE ecell.re_meter_reading_trx t SET t.current_state=:current_state WHERE TO_CHAR(t.end_date, 'Mon-YYYY') =:monthYear AND t.meter_no=:meter AND t.status=:status",nativeQuery = true)
+    MeterReadingBean updateCurrentState(@Param("current_state") String currentState,@Param("monthYear") String monthYear, @Param("meter") String meterNo,@Param("status") String status);
+
+    @Modifying(clearAutomatically = true)
+    @Query(value = "UPDATE ecell.re_meter_reading_trx t SET t.end_date=:endDate WHERE TO_CHAR(t.reading_date, 'Mon-YYYY') =:monthYear AND t.meter_no=:meterNo AND t.status=:status",nativeQuery = true)
+    MeterReadingBean updateEndDate(@Param("endDate") Date endDate, @Param("monthYear") String monthYear, @Param("meterNo") String meterNo, @Param("status") String status);
 
     MeterReadingBean save(MeterReadingBean meterReadingBean);
 
@@ -129,13 +53,17 @@ public interface MeterReadingRepo extends CrudRepository<MeterReadingBean,Long> 
 
 
     @Query(value = "SELECT * FROM ecell.re_meter_reading_trx WHERE meter_no=:meterNo AND status=:status ORDER BY reading_date DESC LIMIT 1", nativeQuery = true)
-    MeterReadingBean findLastReadByMeterNoAndStatus( @Param("meterNo") String meterNo, @Param("status") String status);
-
+    MeterReadingBean findLastReadByMeterNoAndStatus(@Param("meterNo") String meterNo, @Param("status") String status);
 
     @Query(value = "SELECT * FROM ecell.re_meter_reading_trx WHERE meter_no =:meterNo and reading_date >:readingDate and status='active' order by reading_date limit 1;",nativeQuery = true)
-    MeterReadingBean findJustNext(String meterNo, Date readingDate);
+    MeterReadingBean findJustNext(@Param("meterNo") String meterNo,@Param("readingDate") Date readingDate);
 
     @Query(value = "SELECT * FROM ecell.re_meter_reading_trx WHERE meter_no =:meterNo and reading_date <:readingDate and status='active' order by reading_date desc limit 1;",nativeQuery = true)
-    MeterReadingBean findJustBefore(String meterNo, Date readingDate);
+    MeterReadingBean findJustBefore(@Param("meterNo") String meterNo,@Param("readingDate") Date readingDate);
 
+    @Query(value = "SELECT * FROM ecell.re_meter_reading_trx t WHERE TO_CHAR(t.end_date, 'Mon-YYYY') =:monthYear AND t.current_state in ('amr_accept','amr_force_accept') AND t.status='active';",nativeQuery = true)
+    Optional<List<MeterReadingBean>> getAcceptOrForceAcceptReadingsByAmr(@Param("monthYear") String monthYear);
+
+    @Query(value = "SELECT * FROM ecell.re_meter_reading_trx where meter_no =:meterNo AND current_state IN (:currentStates) AND status =:status AND reading_date BETWEEN :sd AND :ed ORDER BY reading_date ASC",nativeQuery = true)
+    List<MeterReadingBean> findByMeterNoAndCurrentStatesInBetween(@Param("meterNo") String meterNo,@Param("currentStates") List<String> currentStates,@Param("sd") Date sd,@Param("ed") Date ed,@Param("status") String staus);
 }
