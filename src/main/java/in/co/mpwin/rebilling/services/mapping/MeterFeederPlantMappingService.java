@@ -168,6 +168,16 @@ public class MeterFeederPlantMappingService {
         return meterFeederPlantMappingRepo.save(newMFPMapping);
     }
 
+    public List<String> getDistinctPlantCodeByDeveloperId(String developerId, String status) {
+        List<String> plants = new ArrayList<>();
+        try {
+            plants = meterFeederPlantMappingRepo.findDistinctPlantCodeByDeveloperIdAndStatus(developerId,status);
+        }catch (Exception e){
+            throw e;
+        }
+        return plants;
+    }
+
         public List<String> getDistinctPlantCodeByDeveloperId (String developerId, String status){
             List<String> plants = new ArrayList<>();
             try {

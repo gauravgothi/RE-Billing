@@ -2,11 +2,12 @@ package in.co.mpwin.rebilling.jwt.exception;
 
 import org.springframework.http.HttpStatus;
 
-public class ApiException extends RuntimeException{
+import java.util.function.Supplier;
+
+public class ApiException extends RuntimeException {
 
     private HttpStatus httpStatus;
     private String message;
-    private ApiException apiException;
 
     public ApiException(HttpStatus httpStatus, String message) {
         this.httpStatus = httpStatus;
@@ -28,5 +29,6 @@ public class ApiException extends RuntimeException{
     public String getMessage() {
         return message;
     }
+
 }
 

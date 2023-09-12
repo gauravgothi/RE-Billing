@@ -4,7 +4,7 @@ import in.co.mpwin.rebilling.beans.developermaster.DeveloperMasterBean;
 import in.co.mpwin.rebilling.beans.mapping.MeterFeederPlantMappingBean;
 import in.co.mpwin.rebilling.beans.readingbean.MeterReadingBean;
 import in.co.mpwin.rebilling.dto.ConsumptionPercentageDto;
-import in.co.mpwin.rebilling.dto.FivePercentageDto;
+import in.co.mpwin.rebilling.beans.readingbean.FivePercentBean;
 import in.co.mpwin.rebilling.miscellanious.DateMethods;
 import in.co.mpwin.rebilling.services.developermaster.DeveloperMasterService;
 import in.co.mpwin.rebilling.services.feedermaster.FeederMasterService;
@@ -67,8 +67,8 @@ public class ConsumptionPercentageService {
     }
 
     private void setMeterParameters(ConsumptionPercentageDto percentageDto, String meterNumber, String month, boolean isMain) throws ParseException {
-        Date currentReadDate = dateMethods.getCurrentAndPreviousDate(month).get(0);
-        Date previousReadDate = dateMethods.getCurrentAndPreviousDate(month).get(1);
+        Date previousReadDate = dateMethods.getCurrentAndPreviousDate(month).get(0);
+        Date currentReadDate = dateMethods.getCurrentAndPreviousDate(month).get(1);
 
         MeterReadingBean previousReading = meterReadingService.getReadingByMeterNoAndReadingDateAndStatus(meterNumber, previousReadDate, "active");
         MeterReadingBean currentReading = meterReadingService.getReadingByMeterNoAndReadingDateAndStatus(meterNumber, currentReadDate, "active");
@@ -117,13 +117,13 @@ public class ConsumptionPercentageService {
 
     }
 
-    public List<FivePercentageDto> percentageBeanToDto(List<ConsumptionPercentageDto> consumptionPercentageDtoList){
+    public List<FivePercentBean> percentageBeanToDto(List<ConsumptionPercentageDto> consumptionPercentageDtoList){
 
         return consumptionPercentageDtoList.stream().map((bean)->convertBeanToDto(bean)).collect(Collectors.toList());
     }
 
-    private FivePercentageDto convertBeanToDto(ConsumptionPercentageDto bean){
-        FivePercentageDto dto = mapper.map(bean,FivePercentageDto.class);
+    private FivePercentBean convertBeanToDto(ConsumptionPercentageDto bean){
+        FivePercentBean dto = mapper.map(bean, FivePercentBean.class);
 
         //set all big decimal parameters to string for report purpose
         dto.setMainCurrentReading(dto.getMainCurrentReading().replaceAll("-1","Reading Not Available"));
