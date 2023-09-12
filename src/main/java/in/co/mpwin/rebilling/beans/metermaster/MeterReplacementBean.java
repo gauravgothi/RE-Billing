@@ -26,6 +26,14 @@ public class MeterReplacementBean implements BeanInterface {
     @Column(name="replace_date")
     private Date replaceDate;
 
+    @Column(name="developer_id")
+    private String developerId;
+
+    @Column(name="feeder_code")
+    private String feederCode;
+
+    @Column(name="plant_code")
+    private String plantCode;
     @Column(name="created_by")
     String createdBy;
     @Column(name="updated_by")

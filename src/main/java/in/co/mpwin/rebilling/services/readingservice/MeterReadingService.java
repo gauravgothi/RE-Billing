@@ -16,6 +16,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -167,11 +171,10 @@ public class MeterReadingService {
         return meterReadingBean;
     }
 
-
     public MeterReadingBean GetLastReadingByMeterNoAndStatus(String oldMeterNumber, String str) {
-
         return meterReadingRepo.findLastReadByMeterNoAndStatus(oldMeterNumber, str);
     }
+
 
     public List<MeterReadingBean> getAcceptOrForceAcceptReadingsByAmr(String monthYear) {
         try {
@@ -254,6 +257,5 @@ public class MeterReadingService {
         return meterConsumptionDto;
     }
 }
-
 
 

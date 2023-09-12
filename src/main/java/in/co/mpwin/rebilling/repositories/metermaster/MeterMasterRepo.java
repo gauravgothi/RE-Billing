@@ -13,12 +13,13 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public interface MeterMasterRepo extends CrudRepository<MeterMasterBean, Long> {
 //    @Query(value = "select * from re_meter_master where meterno =:meterno and status=:status", nativeQuery = true)
 //    public MeterMasterBean getMeterDetailsByMeterNo(@Param("meterno") String meterno,
 //                                             @Param("status") String status);
-      public MeterMasterBean findByMeterNumberAndStatus(String meterNumber,String status);
+      public MeterMasterBean findByMeterNumberAndStatus(String meterNumber, String status);
 
 //    @Query(value = "select * from re_meter_master where status = :status", nativeQuery = true)
 //    public ArrayList<MeterMasterBean> getAllMeterByStatus(@Param("status") String status);
@@ -159,4 +160,5 @@ public interface MeterMasterRepo extends CrudRepository<MeterMasterBean, Long> {
     @Query(value = "UPDATE ecell.re_meter_master SET status=:status, is_Mapped=:isMapped where meter_number=:meterNo", nativeQuery = true)
     void updateMeterStatusAndMappingByMeterNo(@Param("meterNo") String meterNo, @Param("status") String status, @Param("isMapped") String isMapped);
 
+  List<MeterMasterBean> findByCategoryAndStatusAndIsMapped(String category, String status,String isMapped);
 }

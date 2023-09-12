@@ -6,6 +6,7 @@ import in.co.mpwin.rebilling.beans.machinemaster.MachineMasterBean;
 import in.co.mpwin.rebilling.beans.mapping.InvestorMachineMappingBean;
 import in.co.mpwin.rebilling.beans.mapping.MeterFeederPlantMappingBean;
 import in.co.mpwin.rebilling.beans.metermaster.MeterMasterBean;
+import in.co.mpwin.rebilling.beans.metermaster.MeterReplacementBean;
 import in.co.mpwin.rebilling.beans.plantmaster.PlantMasterBean;
 import in.co.mpwin.rebilling.beans.readingbean.MeterReadingBean;
 import in.co.mpwin.rebilling.services.plantmaster.PlantMasterService;
@@ -50,9 +51,14 @@ public class AuditControlServices {
             this.setInitialAuditControlParametersOfIMMapping((InvestorMachineMappingBean)obj);
         } else if(obj instanceof MeterFeederPlantMappingBean){
             this.setInitialAuditControlParametersOfMFPMapping((MeterFeederPlantMappingBean)obj);
+        } else if (obj instanceof MeterReplacementBean) {
+            this.setInitialAuditControlParametersOfMeterReplacementBean((MeterReplacementBean) obj);
+
         }
 
     }
+
+
 
     private void setInitialAuditControlParametersOfReading(MeterReadingBean meterReadingBean) {
         meterReadingBean.setCreatedOn(new DateMethods().getServerTime());
@@ -135,7 +141,14 @@ public class AuditControlServices {
         investorMachineMappingBean.setStatus("active");
         investorMachineMappingBean.setRemark("NA");
     }
-
+    private void setInitialAuditControlParametersOfMeterReplacementBean(MeterReplacementBean meterReplacementBean) {
+        meterReplacementBean.setCreatedOn(new DateMethods().getServerTime());
+        meterReplacementBean.setUpdatedOn(new DateMethods().getServerTime());
+        meterReplacementBean.setCreatedBy(new TokenInfo().getCurrentUsername());
+        meterReplacementBean.setUpdatedBy(new TokenInfo().getCurrentUsername());
+        meterReplacementBean.setStatus("active");
+        meterReplacementBean.setRemark("NA");
+    }
 
     public static void main(String arg[]) throws ParseException {
 //        MeterMasterBean meterMasterBean = new MeterMasterBean();

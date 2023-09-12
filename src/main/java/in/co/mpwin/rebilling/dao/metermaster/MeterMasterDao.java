@@ -11,15 +11,16 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MeterMasterDao {
     @Autowired
     MeterMasterRepo meterMasterRepo;
-    public MeterMasterBean getMeterDetailsByMeterNo(String meterno, String status) {
+    public MeterMasterBean getMeterDetailsByMeterNo(String meterNo, String status) {
         MeterMasterBean meterMasterBean = new MeterMasterBean();
         try {
-                meterMasterBean = meterMasterRepo.findByMeterNumberAndStatus(meterno,status);
+                meterMasterBean = meterMasterRepo.findByMeterNumberAndStatus(meterNo,status);
         }
         catch (Exception e) {
             System.out.print(e);
