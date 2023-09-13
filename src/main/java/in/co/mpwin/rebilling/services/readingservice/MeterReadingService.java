@@ -95,7 +95,7 @@ public class MeterReadingService {
                     (previousReading == null || previousReading.getEActiveEnergy().compareTo(passMRB.getEActiveEnergy()) <= 0)
             ) {
                 //Set the Audit control parameters, Globally
-                new AuditControlServices().setInitialAuditControlParameters(meterReadingBean);
+                new AuditControlServices().setInitialAuditControlParameters(passMRB);
 
                 meterReadingBean = meterReadingRepo.save(passMRB);
             }
