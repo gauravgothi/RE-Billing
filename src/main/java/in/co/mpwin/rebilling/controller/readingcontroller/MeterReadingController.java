@@ -159,7 +159,7 @@ public class MeterReadingController {
                 createReadResp = new ResponseEntity<>(new Message(bean.getId() + " reading saved successfully"),HttpStatus.OK);
 
         }catch (ApiException apiException){
-            createReadResp = new ResponseEntity<>(apiException.getMessage(),apiException.getHttpStatus());
+            createReadResp = new ResponseEntity<>(new Message(apiException.getMessage()),apiException.getHttpStatus());
         }catch (DataIntegrityViolationException d)
         {
             Throwable rootCause = d.getRootCause();

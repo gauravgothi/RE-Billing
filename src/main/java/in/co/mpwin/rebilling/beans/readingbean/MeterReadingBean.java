@@ -27,9 +27,9 @@ public class MeterReadingBean implements BeanInterface {
     @Column(name="mf")@NotNull @Digits(integer = 14,fraction = 6)
     private BigDecimal mf;
     
-    @Column(name = "reading_date")@NotNull@JsonFormat(timezone = "IST")
+    @Column(name = "reading_date")@NotNull@JsonFormat(pattern = "yyyy-MM-dd",timezone = "IST")
     private Date readingDate;
-    @Column(name = "end_date")@NotNull@JsonFormat(timezone = "IST")
+    @Column(name = "end_date")@NotNull@JsonFormat(pattern = "yyyy-MM-dd",timezone = "IST")
     private Date endDate;
     @Column(name="reading_type")@NotNull
     private String readingType;
