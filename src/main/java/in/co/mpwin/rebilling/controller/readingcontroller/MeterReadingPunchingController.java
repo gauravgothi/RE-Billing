@@ -43,7 +43,7 @@ public class MeterReadingPunchingController {
            res = new ResponseEntity<>(new Message(msg),HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (Exception e){
             e.printStackTrace();
-            res = new ResponseEntity<>(new Message(" something went wrong or some exception occurred "),HttpStatus.INTERNAL_SERVER_ERROR);
+            res = new ResponseEntity<>(new Message("something went wrong or some exception occurred "),HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return res;
     }

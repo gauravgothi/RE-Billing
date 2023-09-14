@@ -53,12 +53,13 @@ public class MeterReplacementController {
             String res = meterReplacementService.replaceMeterMethod(meterReplacementRequest.getOldMeterBean(), meterReplacementRequest.getNewMeterBean());
             return ResponseEntity.status(HttpStatus.OK).body(res);
         } catch (ApiException apiException) {
-            return ResponseEntity.status(apiException.getHttpStatus()).body(apiException.getMessage());
+            return ResponseEntity.status(apiException.getHttpStatus()).body(new Message(apiException.getMessage()));
         } catch (DataIntegrityViolationException d) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(d.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message(d.getMessage()));
+        } catch (NullPointerException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message(e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message(e.getMessage()));
         }
     }
     @RequestMapping(method= RequestMethod.GET,value="/category/{category}/status/{status}/mapped/{mapped}")
