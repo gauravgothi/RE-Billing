@@ -30,7 +30,7 @@ public class MeterReadingPunchingService {
             //meter reading validation before reading saving
             validateMeterReading(meterReadingBean,previousReadingBean);
             //if reading is not SR then take as normal
-            meterReadingBean.setEndDate(meterReadingBean.getReadingDate());
+            meterReadingBean.setEndDate(new DateMethods().getOneDayBefore(meterReadingBean.getReadingDate()));
             meterReadingBean.setCurrentState("initial_read");
             meterReadingBean.setReadingType("NR");
             meterReadingBean.setReadSource("web");
@@ -46,12 +46,13 @@ public class MeterReadingPunchingService {
             catch (DataIntegrityViolationException ex)
             {
             throw ex;
+            }catch(NullPointerException ex)
+            {
+            throw ex;
             }catch(Exception ex)
             {
             throw ex;
             }
-
-
     }
 
     void validateMeterReading(MeterReadingBean meterReadingBean,MeterReadingBean previousReadingBean)
