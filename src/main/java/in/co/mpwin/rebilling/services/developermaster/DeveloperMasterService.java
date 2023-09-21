@@ -67,4 +67,7 @@ public class DeveloperMasterService {
     }
 
 
+    public Long getDeveloperIdByUsername(String username) {
+        return developerMasterRepo.findIdByDeveloperUsername(username);
+    }
 }

@@ -25,6 +25,12 @@ public interface FivePercentRepo extends CrudRepository<FivePercentBean,Long> {
     @Query(value = "select * from ecell.re_5perc_report_trx AS t where t.month_year = ?1 AND t.remark = ?2",nativeQuery = true)
     List<FivePercentBean> findByMonthAndRemarkEqualTo(String monthYear,String remark);
 
+    @Query(value = "select * from ecell.re_5perc_report_trx AS t where t.month_year = ?1 AND t.result = ?2",nativeQuery = true)
+    List<FivePercentBean> findByMonthAndResult(String monthYear,String result);
+
+    @Query(value = "select * from ecell.re_5perc_report_trx AS t where t.month_year = ?1 AND t.result = ?2 AND t.remark = ?3",nativeQuery = true)
+    List<FivePercentBean> findByMonthAndResultAndRemark(String monthYear, String result, String remark);
+
     //FivePercentBean updateMeterSelectedFlagById(String meterSelectedFlag, Long id);
 
     @Modifying
@@ -36,4 +42,5 @@ public interface FivePercentRepo extends CrudRepository<FivePercentBean,Long> {
     @Transactional
     @Query(value = "UPDATE ecell.re_5perc_report_trx AS u SET meter_selected_flag = ?1 WHERE u.id = ?2",nativeQuery = true)
     void setMeterSelectedFlagById(String meterSelectedFlag, Long id);
+
 }

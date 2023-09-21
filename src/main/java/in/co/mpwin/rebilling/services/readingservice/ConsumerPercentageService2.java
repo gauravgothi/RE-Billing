@@ -127,8 +127,8 @@ public class ConsumerPercentageService2 {
                             .map(CheckMeterDto::getCheckTotalConsumption).reduce(BigDecimal.ZERO,BigDecimal::add);
                     consumptionPercentageDto2.setMainGrandTotalConsumption(totalMainMetersConsumption);
                     consumptionPercentageDto2.setCheckGrandTotalConsumption(totalCheckMeterConsumption);
-                    consumptionPercentageDto2.setPercentage((consumptionPercentageDto2.getMainGrandTotalConsumption()
-                            .subtract(consumptionPercentageDto2.getCheckGrandTotalConsumption())
+                    consumptionPercentageDto2.setPercentage(((consumptionPercentageDto2.getMainGrandTotalConsumption()
+                            .subtract(consumptionPercentageDto2.getCheckGrandTotalConsumption()))
                             .divide(consumptionPercentageDto2.getMainGrandTotalConsumption(), 6, RoundingMode.HALF_DOWN))
                             .multiply(BigDecimal.valueOf(100)).abs());
                     consumptionPercentageDto2.setResult((consumptionPercentageDto2.getPercentage().compareTo(BigDecimal.valueOf(0.5)) <= 0) ? "pass" : "fail");

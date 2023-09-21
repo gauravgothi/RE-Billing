@@ -47,13 +47,13 @@ public class ConsumptionPercentageController {
         return reportDtoResp;
     }
 
-    @GetMapping("/5percent/{startDate}/{endDate}")
+    @GetMapping("/5percent/startDate/{startDate}/endDate/{endDate}")
     public ResponseEntity<?> getConsumptionReport2(@PathVariable("startDate") String startDate,@PathVariable("endDate") String endDate){
         ResponseEntity reportDtoResp = null;
         List<ConsumptionPercentageDto2> consumptionPercentageDtoList = null;
         try {
-                Date sDate = new SimpleDateFormat("dd-MM-yyyy").parse(startDate);
-                Date eDate = new SimpleDateFormat("dd-MM-yyyy").parse(endDate);
+                Date sDate = new SimpleDateFormat("yyyy-MM-dd").parse(startDate);
+                Date eDate = new SimpleDateFormat("yyyy-MM-dd").parse(endDate);
                 String month = new DateMethods().getMonthYear(eDate);
 
                 consumptionPercentageDtoList = consumerPercentageService2.calculatePercentageReport2(sDate,eDate);
@@ -87,13 +87,13 @@ public class ConsumptionPercentageController {
         return new ResponseEntity<>(new Message("Record saved successfully"),HttpStatus.OK);
     }
 
-    // this is used by amr to load fail approved reading on initial approval stage
-    @GetMapping("/5percent/accept/fail/monthYear/{monthYear}")
-    public ResponseEntity<?> getAmrUserAcceptFailResult(String monthYear){
+    // this is used by amr to load fail approved reading on initial approval stage...... only for viewing pass and fail
+    @GetMapping("/5percent/approve/monthYear/{monthYear}/result/{result}")
+    public ResponseEntity<?> getAmrUserAcceptByMonthAndResult(@PathVariable String monthYear,@PathVariable String result){
         ResponseEntity reportDtoResp = null;
         try {
-            fivePercentService.getAmrUserAcceptFailResult(monthYear);
-
+            List<FivePercentBean> passOrFailResults =   fivePercentService.getAmrUserAcceptByMonthAndResult(monthYear,result);
+            reportDtoResp = new ResponseEntity<>(passOrFailResults,HttpStatus.OK);
         }catch (ApiException apiException){
             reportDtoResp = new ResponseEntity<>(new Message(apiException.getMessage()),apiException.getHttpStatus());
         }
@@ -101,16 +101,33 @@ public class ConsumptionPercentageController {
             e.printStackTrace();
             reportDtoResp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(new Message("Record saved successfully"),HttpStatus.OK);
+        return reportDtoResp ;
+    }
+
+    // this is used by amr For performing action on failed readings....... by simply loading non action reading
+    @GetMapping("/5percent/approve/monthYear/{monthYear}/result/fail/remark/calculated")
+    public ResponseEntity<?> getAmrUserAcceptFailResultForAction(@PathVariable String monthYear){
+        ResponseEntity reportDtoResp = null;
+        try {
+            List<FivePercentBean> passOrFailResults =   fivePercentService.getAmrUserAcceptFailResultForAction(monthYear,"fail","amr_approved");
+            reportDtoResp = new ResponseEntity<>(passOrFailResults,HttpStatus.OK);
+        }catch (ApiException apiException){
+            reportDtoResp = new ResponseEntity<>(new Message(apiException.getMessage()),apiException.getHttpStatus());
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            reportDtoResp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+        }
+        return reportDtoResp ;
     }
 
     //After loading fail approved reading this is used by AMR to force accept failed readings
     @PostMapping("/5percent/forceAccept")
     public ResponseEntity<?> amrUserForceAction(@RequestBody List<FivePercentBean> fivePercentBeanList){
         ResponseEntity reportDtoResp = null;
-        try {
-            fivePercentService.amrUserForceAccept(fivePercentBeanList);
-
+        try {   //list must have meter selected flag either main or check
+                fivePercentService.amrUserForceAccept(fivePercentBeanList);
+                reportDtoResp = new ResponseEntity<>(new Message("Record saved successfully"),HttpStatus.OK);
         }catch (ApiException apiException){
             reportDtoResp = new ResponseEntity<>(new Message(apiException.getMessage()),apiException.getHttpStatus());
         }
@@ -118,7 +135,7 @@ public class ConsumptionPercentageController {
             e.printStackTrace();
             reportDtoResp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(new Message("Record saved successfully"),HttpStatus.OK);
+        return reportDtoResp;
     }
 
 }

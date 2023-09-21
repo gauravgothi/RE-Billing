@@ -1,6 +1,7 @@
 package in.co.mpwin.rebilling.controller.metermaster;
 
 import in.co.mpwin.rebilling.beans.metermaster.MeterMasterBean;
+import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.Message;
 import in.co.mpwin.rebilling.services.metermaster.MeterMasterService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/meter")
@@ -111,68 +113,24 @@ public class MeterMasterController {
             return new ResponseEntity<>("Internal Server Error", HttpStatus.BAD_REQUEST);
         }
     }
-    /*@RequestMapping(method= RequestMethod.POST,value="/createMeterMaster")
-    public ResponseEntity<?> createMeterMaster(@RequestParam("meterno") String METERNO,
-                                                       @RequestParam("make") String MAKE,
-                                                       @RequestParam("category") String CATEGORY,
-                                                       @RequestParam("type") String TYPE,
-                                                       @RequestParam("meter_class") String METER_CLASS,
-                                                       @RequestParam("meter_ctr") String METER_CTR,
-                                                       @RequestParam("meter_ptr") String METER_PTR,
-                                                       @RequestParam("me_ctr") String ME_CTR,
-                                                       @RequestParam("me_ptr") String ME_PTR,
-                                                       @RequestParam("dial_bmf") String DIAL_BMF,
-                                                       @RequestParam("equip_class") String EQUIP_CLASS,
-                                                       @RequestParam("phase") String PHASE,
-                                                       @RequestParam("metergrp") String METERGRP,
-                                                       @RequestParam("mf") String MF,
-                                                       @RequestParam("install_date") Date install_date,
-                                                       @RequestParam("created_by") String created_by,
-                                                       @RequestParam("updated_by") String updated_by,
-                                                       @RequestParam("created_on") Timestamp created_on,
-                                                       @RequestParam("updated_on") Timestamp updated_on,
-                                                       @RequestParam("status") String status,
-                                                       @RequestParam("remark") String remark) {
-        String resp = null;
+
+    @GetMapping(value = "/list/byUser")
+    public ResponseEntity<?> getMetersByUser(){
+        ResponseEntity meterListResp  = null;
         try {
-
-           Integer resp_code = meterMasterService.createMeterMaster(METERNO,
-                   MAKE,
-                   CATEGORY,
-                   TYPE,
-                   METER_CLASS,
-                   METER_CTR,
-                   METER_PTR,
-                   ME_CTR,
-                   ME_PTR,
-                   DIAL_BMF,
-                   EQUIP_CLASS,
-                   PHASE,
-                   METERGRP,
-                   MF,
-                   install_date,
-                   created_by,
-                   updated_by,
-                   created_on,
-                   updated_on,
-                   status,
-                   remark);
-
-           if(resp_code==1)
-           {
-               resp = "Success";
-           }else {
-               resp = "fail";
-           }
-
-        } catch (Exception e) {
-            System.out.println(e);
-            e.printStackTrace();
+                List<Map<String,String>> meterList = meterMasterService.getMetersByUser();
+                meterListResp = new ResponseEntity<>(meterList,HttpStatus.OK);
+        }catch (ApiException apiException){
+            meterListResp = new ResponseEntity<>(new Message(apiException.getMessage()),apiException.getHttpStatus());
+        }catch (DataIntegrityViolationException d){
+            Throwable rootCause = d.getRootCause();
+            String msg=rootCause.getMessage().substring(0,rootCause.getMessage().indexOf("Detail:"));
+            meterListResp = new ResponseEntity<>(new Message(msg),HttpStatus.INTERNAL_SERVER_ERROR);
+            return meterListResp;
+        }catch (Exception e){
+            meterListResp = new ResponseEntity<>(new Message(" something went wrong or some exception occurred "),HttpStatus.INTERNAL_SERVER_ERROR);
+            return meterListResp;
         }
-        return new ResponseEntity<>(resp,HttpStatus.OK);
-    }*/
-
-
-
-
+        return meterListResp;
+    }
 }

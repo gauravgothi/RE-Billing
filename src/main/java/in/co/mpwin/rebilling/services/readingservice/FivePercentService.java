@@ -9,6 +9,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -128,6 +129,8 @@ public class FivePercentService {
             for (FivePercentBean b : fivePercentBeanList){
                 String[] mainMeters = b.getMainMeterNumber().split("#");
                 String[] checkMeters = b.getCheckMeterNumber().split("#");
+                if (!(b.getMeterSelectedFlag().equals("main") || b.getMeterSelectedFlag().equals("check")))
+                    throw new ApiException(HttpStatus.BAD_REQUEST,"Select either main or check");
                 if(b.getResult().equals("fail") && b.getMeterSelectedFlag().equals("main")){
                     //update the reading current state of main meter only
                     for (String mainMeter : mainMeters) {
@@ -153,16 +156,30 @@ public class FivePercentService {
         }
     }
 
-    public List<FivePercentBean> getAmrUserAcceptFailResult(String monthYear){
-        List<FivePercentBean> failResults = null;
+    public List<FivePercentBean> getAmrUserAcceptByMonthAndResult(String monthYear,String result){
+        List<FivePercentBean> fivePercentBeanList = null;
         try {
-            failResults = fivePercentRepo.findByMonthAndRemarkEqualTo(monthYear,"amr_approved");
+            fivePercentBeanList = fivePercentRepo.findByMonthAndResult(monthYear,result);
 
         }catch (DataIntegrityViolationException e){
             //throw e;
         }catch (Exception e){
             // throw e;
         }
-        return failResults;
+        return fivePercentBeanList;
     }
+
+    public List<FivePercentBean> getAmrUserAcceptFailResultForAction(String monthYear,String result,String remark){
+        List<FivePercentBean> fivePercentBeanList = null;
+        try {
+            fivePercentBeanList = fivePercentRepo.findByMonthAndResultAndRemark(monthYear,result,remark);
+
+        }catch (DataIntegrityViolationException e){
+            //throw e;
+        }catch (Exception e){
+            // throw e;
+        }
+        return fivePercentBeanList;
+    }
+
 }
