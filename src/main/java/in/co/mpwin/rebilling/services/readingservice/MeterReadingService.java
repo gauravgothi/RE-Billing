@@ -89,9 +89,9 @@ public class MeterReadingService {
             //reading insertion validation
             if (validationCount <= 0) throw new ApiException(HttpStatus.BAD_REQUEST, "Meter is not actively mapped");
             if (nextReading != null && nextReading.getEActiveEnergy().compareTo(passMRB.getEActiveEnergy()) < 0)
-                throw new ApiException(HttpStatus.BAD_REQUEST, "you are entering reading which is greater than Next reading in Database");
+                throw new ApiException(HttpStatus.BAD_REQUEST, "you are entering reading which is greater than reading already present at "+nextReading.getReadingDate());
             if (previousReading != null && previousReading.getEActiveEnergy().compareTo(passMRB.getEActiveEnergy()) > 0)
-                throw new ApiException(HttpStatus.BAD_REQUEST, "you are entering reading which is less than previous reading in Database");
+                throw new ApiException(HttpStatus.BAD_REQUEST, "you are entering reading which is lesser than reading already present at "+previousReading.getReadingDate());
             //insertion in DB
             if (validationCount > 0 &&
                     (nextReading == null || nextReading.getEActiveEnergy().compareTo(passMRB.getEActiveEnergy()) >= 0) &&
