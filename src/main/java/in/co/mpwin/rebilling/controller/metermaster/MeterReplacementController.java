@@ -5,6 +5,7 @@ import in.co.mpwin.rebilling.beans.metermaster.MeterReplacementBean;
 import in.co.mpwin.rebilling.beans.readingbean.MeterReadingBean;
 import in.co.mpwin.rebilling.dto.MeterReplacementRequest;
 import in.co.mpwin.rebilling.jwt.exception.ApiException;
+import in.co.mpwin.rebilling.miscellanious.DateMethods;
 import in.co.mpwin.rebilling.miscellanious.Message;
 import in.co.mpwin.rebilling.services.metermaster.MeterMasterService;
 import in.co.mpwin.rebilling.services.metermaster.MeterReplacementService;
@@ -15,7 +16,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -53,12 +57,13 @@ public class MeterReplacementController {
             String res = meterReplacementService.replaceMeterMethod(meterReplacementRequest.getOldMeterBean(), meterReplacementRequest.getNewMeterBean());
             return ResponseEntity.status(HttpStatus.OK).body(res);
         } catch (ApiException apiException) {
-            return ResponseEntity.status(apiException.getHttpStatus()).body(apiException.getMessage());
+            return ResponseEntity.status(apiException.getHttpStatus()).body(new Message(apiException.getMessage()));
         } catch (DataIntegrityViolationException d) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(d.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message(d.getMessage()));
+        } catch (NullPointerException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message(e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message(e.getMessage()));
         }
     }
     @RequestMapping(method= RequestMethod.GET,value="/category/{category}/status/{status}/mapped/{mapped}")
@@ -123,6 +128,29 @@ public class MeterReplacementController {
 
         }
         return  resp;
+    }
+
+    @RequestMapping(method=RequestMethod.GET, value ="/meterNo/{meterNo}/month/{month}")
+    public ResponseEntity<?> GetLastReadingByMeterNoAndMonth(@PathVariable("meterNo") String meterNo, @PathVariable("month") String month) {
+
+        try {    //
+            Date readingPunchDate = new DateMethods().getCurrentAndPreviousDate(month).get(1);
+            MeterReadingBean res = meterReadingService.GetLastReadingByMeterNoAndStatus(meterNo,readingPunchDate);
+            if(res==null)
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message("Last reading is not available for meter no. "+meterNo));
+            else
+                return ResponseEntity.status(HttpStatus.OK).body(res);
+        } catch (ApiException apiException) {
+            return ResponseEntity.status(apiException.getHttpStatus()).body(new Message(apiException.getMessage()));
+        } catch (DataIntegrityViolationException ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message(ex.getMessage()));
+        }catch (ParseException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message("Date parse error : Month should be in MMM-yyyy."));
+        }
+        catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message(ex.getMessage()));
+        }
+
     }
 
 

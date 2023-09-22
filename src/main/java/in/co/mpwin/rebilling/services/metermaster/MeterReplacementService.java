@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
@@ -219,10 +220,15 @@ public class MeterReplacementService {
         oldMeterBean.setReadingType("FR");
         oldMeterBean.setReadSource("web");
         oldMeterBean.setCurrentState("initial_read");
+        oldMeterBean.setEndDate(oldMeterBean.getReadingDate());
+        oldMeterBean.setMf(BigDecimal.valueOf(0));
 
         newMeterBean.setReadingType("SR");
         newMeterBean.setReadSource("web");
         newMeterBean.setCurrentState("initial_read");
+        newMeterBean.setEndDate(newMeterBean.getReadingDate());
+        newMeterBean.setMf(BigDecimal.valueOf(0));
+
         MeterReadingBean fr =  meterReadingService.createMeterReading(oldMeterBean);
         MeterReadingBean sr =  meterReadingService.createMeterReading(newMeterBean);
         if(fr!=null && sr!=null)
