@@ -1,8 +1,13 @@
 package in.co.mpwin.rebilling.services.metermaster;
 
+import in.co.mpwin.rebilling.beans.mapping.MeterFeederPlantMappingBean;
 import in.co.mpwin.rebilling.beans.metermaster.MeterMasterBean;
 import in.co.mpwin.rebilling.dao.metermaster.MeterMasterDao;
+import in.co.mpwin.rebilling.jwt.exception.ApiException;
+import in.co.mpwin.rebilling.miscellanious.TokenInfo;
 import in.co.mpwin.rebilling.repositories.metermaster.MeterMasterRepo;
+import in.co.mpwin.rebilling.services.developermaster.DeveloperMasterService;
+import in.co.mpwin.rebilling.services.mapping.MeterFeederPlantMappingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -10,13 +15,22 @@ import org.springframework.stereotype.Service;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class MeterMasterService {
     @Autowired
     MeterMasterDao meterMasterDao;
 
+    @Autowired
+    MeterFeederPlantMappingService mfpService;
+
+    @Autowired
+    DeveloperMasterService developerMasterService;
     @Autowired
     MeterMasterRepo meterMasterRepo;
 
@@ -120,6 +134,30 @@ public class MeterMasterService {
             return meterMasterRepo.findByCategoryAndStatusAndIsMapped(category, status, isMapped);
         } catch (DataIntegrityViolationException ex) {
             throw ex;
+        }
+    }
+
+    public List<Map<String,String>> getMetersByUser(){
+        List<Map<String,String>> meterList = new ArrayList<>();
+        try {
+                String username = new TokenInfo().getCurrentUsername();
+                String developerId = String.valueOf(developerMasterService.getDeveloperIdByUsername(username));
+                List<MeterFeederPlantMappingBean> mfpBeans = mfpService.getMappingByDeveloperId(developerId,"active");
+                List<String> meters = mfpBeans.stream().flatMap(m-> Stream.of(m.getMainMeterNo(),m.getCheckMeterNo())).distinct().collect(Collectors.toList());
+                for (String meter : meters){
+                    Map<String,String> m = new HashMap<>();
+                    String meterCategory = meterMasterRepo.findByMeterNumberAndStatus(meter,"active").getCategory();
+                    m.put("meterNo",meter);
+                    m.put("meterCategory",meterCategory);
+                    meterList.add(m);
+            }
+                return meterList;
+        }catch (ApiException apiException){
+            throw apiException;
+        }catch (DataIntegrityViolationException d){
+            throw d;
+        }catch (Exception e){
+            throw e;
         }
     }
 }

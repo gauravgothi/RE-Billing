@@ -175,12 +175,12 @@ public class MeterReadingController {
         return createReadResp;
     }
 
-    //this is used by HT to view AMR approved or forced approved meter reading
-    @GetMapping("/acceptORforce/monthYear/{monthYear}")
-    public ResponseEntity<?> getAcceptOrForceAcceptReadingsByAmr(@PathVariable("monthYear") String monthYear){
+    //this is used by HT to view AMR accepted or force accepted meter readings
+    @GetMapping("/amr_accepted/monthYear/{monthYear}")
+    public ResponseEntity<?> getAmrAcceptedReadings(@PathVariable("monthYear") String monthYear){
         ResponseEntity readingDtosResp = null;
         try {
-                List<MeterReadingBean> readings = meterReadingService.getAcceptOrForceAcceptReadingsByAmr(monthYear);
+                List<MeterReadingBean> readings = meterReadingService.getAmrAcceptedReadings(monthYear);
             readingDtosResp = new ResponseEntity<>(readings,HttpStatus.OK);
         }catch (ApiException apiException){
             readingDtosResp = new ResponseEntity<>(new Message(apiException.getMessage()),apiException.getHttpStatus());
@@ -192,8 +192,8 @@ public class MeterReadingController {
         return readingDtosResp;
     }
 
-    //this is used by HT to accept AMR approved or forced approved meter reading
-    @PostMapping("/acceptORforce/htAccept")
+    //this is used by HT to accept AMR accepted or force accepted meter readings
+    @PostMapping("/amr_accepted/htAccept")
     public ResponseEntity<?> htUserAccept(@RequestBody List<MeterReadingBean> meterReadingBeanList){
         ResponseEntity readingActionResp = null;
         try {
@@ -210,7 +210,9 @@ public class MeterReadingController {
         return readingActionResp;
     }
 
-    //Ht report meter consumption report month wise, This controller will fetch ht accept meters of a month
+    //For Ht report meter consumption report month wise,
+    // This controller will fetch ht accept meters of a month
+    //url is meter_reading/currentStates/ht_accept,
     @GetMapping("/currentStates/{currentStates}")
     public ResponseEntity<?> getMeterListByCurrentStateIn(@PathVariable("currentStates") List<String> currentStateList){
         ResponseEntity meterListResp = null;
@@ -227,7 +229,7 @@ public class MeterReadingController {
         return meterListResp;
     }
 
-    //Passing Meter Number and Month in MMM-yyyy format to get consumption details
+    //Passing Meter Number, Month in MMM-yyyy format and Current states of current reading to get consumption details
     @GetMapping("/meterConsumption/meterNo/{meterNo}/monthYear/{monthYear}")
     public ResponseEntity<?> getMeterConsumptionByMonth(@PathVariable("meterNo") String meterNo,
                                                         @PathVariable("monthYear") String monthYear){
@@ -244,4 +246,58 @@ public class MeterReadingController {
         }
         return meterConsumptionResp;
     }
+
+    //this is used by DEVELOPER to view HT_ACCEPT or HT approved meter reading of a month
+    @GetMapping("/ht_accepted/monthYear/{monthYear}")
+    public ResponseEntity<?> getHtAcceptedReadings(@PathVariable("monthYear") String monthYear){
+        ResponseEntity readingDtosResp = null;
+        try {
+            List<MeterReadingBean> readings = meterReadingService.getHtAcceptedReadings(monthYear);
+            readingDtosResp = new ResponseEntity<>(readings,HttpStatus.OK);
+        }catch (ApiException apiException){
+            readingDtosResp = new ResponseEntity<>(new Message(apiException.getMessage()),apiException.getHttpStatus());
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            readingDtosResp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+        }
+        return readingDtosResp;
+    }
+
+    //this is used by Developer to accept HT accepted meter reading
+    @PostMapping("/ht_accepted/developer-accept")
+    public ResponseEntity<?> developerUserAccept(@RequestBody List<MeterReadingBean> meterReadingBeanList){
+        ResponseEntity readingActionResp = null;
+        try {
+            meterReadingService.developerUserAccept(meterReadingBeanList);
+            readingActionResp = new ResponseEntity<>(new Message("Readings approved successfully.."),HttpStatus.OK);
+
+        }catch (ApiException apiException){
+            readingActionResp = new ResponseEntity<>(new Message(apiException.getMessage()),apiException.getHttpStatus());
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            readingActionResp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+        }
+        return readingActionResp;
+    }
+
+    //this is used by Developer to reject HT accepted meter reading
+    @PostMapping("/ht_accepted/developer-reject")
+    public ResponseEntity<?> developerUserReject(@RequestBody List<MeterReadingBean> meterReadingBeanList){
+        ResponseEntity readingActionResp = null;
+        try {
+            meterReadingService.developerUserReject(meterReadingBeanList);
+            readingActionResp = new ResponseEntity<>(new Message("Readings rejected successfully.."),HttpStatus.OK);
+
+        }catch (ApiException apiException){
+            readingActionResp = new ResponseEntity<>(new Message(apiException.getMessage()),apiException.getHttpStatus());
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            readingActionResp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+        }
+        return readingActionResp;
+    }
+
 }

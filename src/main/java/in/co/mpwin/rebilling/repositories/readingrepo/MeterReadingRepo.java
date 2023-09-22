@@ -62,7 +62,10 @@ public interface MeterReadingRepo extends CrudRepository<MeterReadingBean,Long> 
     MeterReadingBean findJustBefore(@Param("meterNo") String meterNo,@Param("readingDate") Date readingDate);
 
     @Query(value = "SELECT * FROM ecell.re_meter_reading_trx t WHERE TO_CHAR(t.end_date, 'Mon-YYYY') =:monthYear AND t.current_state in ('amr_accept','amr_force_accept') AND t.status='active';",nativeQuery = true)
-    Optional<List<MeterReadingBean>> getAcceptOrForceAcceptReadingsByAmr(@Param("monthYear") String monthYear);
+    Optional<List<MeterReadingBean>> findAcceptOrForceAcceptReadingsByAmr(@Param("monthYear") String monthYear);
+
+    @Query(value = "SELECT * FROM ecell.re_meter_reading_trx t WHERE TO_CHAR(t.end_date, 'Mon-YYYY') =:monthYear AND t.meter_no IN (:meterList) AND t.current_state in ('ht_accept') AND t.status='active';",nativeQuery = true)
+    Optional<List<MeterReadingBean>> findHtAcceptedReadings(@Param("meterList") List<String> meterList,@Param("monthYear") String monthYear);
 
     @Query(value = "SELECT * FROM ecell.re_meter_reading_trx where meter_no =:meterNo AND current_state IN (:currentStates) AND status =:status AND reading_date BETWEEN :sd AND :ed ORDER BY reading_date ASC",nativeQuery = true)
     List<MeterReadingBean> findByMeterNoAndCurrentStatesInBetween(@Param("meterNo") String meterNo,@Param("currentStates") List<String> currentStates,@Param("sd") Date sd,@Param("ed") Date ed,@Param("status") String staus);

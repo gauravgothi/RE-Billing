@@ -27,11 +27,11 @@ public class ConsumptionPercentageDto2 {
     private List<MainMeterDto> mainMeterDtos;
     private List<CheckMeterDto> checkMeterDtos;
 
-    @Digits(integer = 20,fraction = 6)
+    //@Digits(integer = 20,fraction = 6)
     private BigDecimal mainGrandTotalConsumption;
-    @Digits(integer = 20,fraction = 6)
+    //@Digits(integer = 20,fraction = 6)
     private BigDecimal checkGrandTotalConsumption;
-    @Digits(integer = 20,fraction = 6)
+    //@Digits(integer = 20,fraction = 6)
     private BigDecimal percentage;
 
     private String monthYear;

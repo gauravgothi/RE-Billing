@@ -9,6 +9,7 @@ import in.co.mpwin.rebilling.miscellanious.DateMethods;
 import in.co.mpwin.rebilling.miscellanious.TokenInfo;
 import in.co.mpwin.rebilling.repositories.metermaster.MeterMasterRepo;
 import in.co.mpwin.rebilling.repositories.readingrepo.MeterReadingRepo;
+import in.co.mpwin.rebilling.services.metermaster.MeterMasterService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -34,7 +35,9 @@ import java.util.stream.Collectors;
 @Service
 public class MeterReadingService {
     @Autowired
-    MeterReadingRepo meterReadingRepo;
+    private MeterReadingRepo meterReadingRepo;
+    @Autowired
+    private MeterMasterService meterMasterService;
     @Autowired private DateMethods dateMethods;
 
     @Autowired private ModelMapper modelMapper;
@@ -86,9 +89,9 @@ public class MeterReadingService {
             //reading insertion validation
             if (validationCount <= 0) throw new ApiException(HttpStatus.BAD_REQUEST, "Meter is not actively mapped");
             if (nextReading != null && nextReading.getEActiveEnergy().compareTo(passMRB.getEActiveEnergy()) < 0)
-                throw new ApiException(HttpStatus.BAD_REQUEST, "you are entering reading which is greater than Next reading in Database");
+                throw new ApiException(HttpStatus.BAD_REQUEST, "you are entering reading which is greater than reading already present at "+nextReading.getReadingDate());
             if (previousReading != null && previousReading.getEActiveEnergy().compareTo(passMRB.getEActiveEnergy()) > 0)
-                throw new ApiException(HttpStatus.BAD_REQUEST, "you are entering reading which is less than previous reading in Database");
+                throw new ApiException(HttpStatus.BAD_REQUEST, "you are entering reading which is lesser than reading already present at "+previousReading.getReadingDate());
             //insertion in DB
             if (validationCount > 0 &&
                     (nextReading == null || nextReading.getEActiveEnergy().compareTo(passMRB.getEActiveEnergy()) >= 0) &&
@@ -176,10 +179,23 @@ public class MeterReadingService {
     }
 
 
-    public List<MeterReadingBean> getAcceptOrForceAcceptReadingsByAmr(String monthYear) {
+    public List<MeterReadingBean> getAmrAcceptedReadings(String monthYear) {
         try {
-               return meterReadingRepo.getAcceptOrForceAcceptReadingsByAmr(monthYear)
+               return meterReadingRepo.findAcceptOrForceAcceptReadingsByAmr(monthYear)
                     .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST,"Reading is not present for month" + monthYear));
+        }catch (ApiException apiException){
+            throw apiException;
+        }catch (Exception exception){
+            throw exception;
+        }
+    }
+
+    public List<MeterReadingBean> getHtAcceptedReadings(String monthYear) {
+        try {   //Get Meter List Belongs to developer only then find reading status HT_ACCEPT of those meters only
+                List<Map<String,String>> meterListOfDeveloper = meterMasterService.getMetersByUser();
+                List<String> meterList = meterListOfDeveloper.stream().map(m -> m.get("meterNo")).collect(Collectors.toList());
+                return meterReadingRepo.findHtAcceptedReadings(meterList,monthYear)
+                        .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST,"Reading is not present for month" + monthYear));
         }catch (ApiException apiException){
             throw apiException;
         }catch (Exception exception){
@@ -200,6 +216,46 @@ public class MeterReadingService {
                                                         read.setUpdatedOn(updateTime);
                                                     });
                 meterReadingRepo.saveAll(meterReadingBeanList);
+        }catch (ApiException apiException){
+            throw apiException;
+        }catch (Exception exception){
+            throw exception;
+        }
+    }
+
+    @Transactional
+    public void developerUserAccept(List<MeterReadingBean> meterReadingBeanList) {
+        try {
+            if(meterReadingBeanList.size()==0) throw new ApiException(HttpStatus.BAD_REQUEST,"Select atleast one..");
+
+            String username = new TokenInfo().getCurrentUsername();
+            Timestamp updateTime = new DateMethods().getServerTime();
+            // here we dont need to check existing current state because view reading have only ht_accept
+            meterReadingBeanList.forEach(read -> {  read.setCurrentState("dev_accept");
+                read.setUpdatedBy(username);
+                read.setUpdatedOn(updateTime);
+            });
+            meterReadingRepo.saveAll(meterReadingBeanList);
+        }catch (ApiException apiException){
+            throw apiException;
+        }catch (Exception exception){
+            throw exception;
+        }
+    }
+
+    @Transactional
+    public void developerUserReject(List<MeterReadingBean> meterReadingBeanList) {
+        try {
+            if(meterReadingBeanList.size()==0) throw new ApiException(HttpStatus.BAD_REQUEST,"Select atleast one..");
+
+            String username = new TokenInfo().getCurrentUsername();
+            Timestamp updateTime = new DateMethods().getServerTime();
+            // here we dont need to check existing current state because view reading have only ht_accept
+            meterReadingBeanList.forEach(read -> {  read.setCurrentState("dev_reject");
+                read.setUpdatedBy(username);
+                read.setUpdatedOn(updateTime);
+            });
+            meterReadingRepo.saveAll(meterReadingBeanList);
         }catch (ApiException apiException){
             throw apiException;
         }catch (Exception exception){

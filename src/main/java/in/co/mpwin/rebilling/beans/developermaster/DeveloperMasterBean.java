@@ -19,6 +19,9 @@ public class DeveloperMasterBean implements BeanInterface {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name="developer_username")
+    String developerUsername;
+
     @Column(name="developer_name")
     String developerName;
 
