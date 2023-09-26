@@ -21,18 +21,18 @@ public class MainMeterDto {
 
 
     private String mainMeterNumber;
-    @Digits(integer = 20,fraction = 6)
+    //@Digits(integer = 20,fraction = 6)
     private BigDecimal mainCurrentReading;
-    @Digits(integer = 20,fraction = 6)
+    //@Digits(integer = 20,fraction = 6)
     private BigDecimal mainPreviousReading;
-    @Digits(integer = 20,fraction = 6)
+    //@Digits(integer = 20,fraction = 6)
     private BigDecimal mainReadingDifference;
-    @Digits(integer = 20,fraction = 6)
+    //@Digits(integer = 20,fraction = 6)
     private BigDecimal mainMf;
-    @Digits(integer = 20,fraction = 6)
+    //@Digits(integer = 20,fraction = 6)
     private BigDecimal mainAssessment;
-    @Digits(integer = 20,fraction = 6)
+    //@Digits(integer = 20,fraction = 6)
     private BigDecimal mainConsumption;
-    @Digits(integer = 20,fraction = 6)
+    //@Digits(integer = 20,fraction = 6)
     private BigDecimal mainTotalConsumption;
 }

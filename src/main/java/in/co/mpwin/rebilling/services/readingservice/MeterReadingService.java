@@ -139,7 +139,7 @@ public class MeterReadingService {
                 String username = new TokenInfo().getCurrentUsername();
                 Timestamp updateTime = new DateMethods().getServerTime();
                 meterReadingBeanList = meterReadingRepo.findAllByEndDateMonthAndMeterNoAndStatus(month, meterNo, status);
-                List<MeterReadingBean> beansWithStateInitialRead = meterReadingBeanList.stream().filter(read -> read.getCurrentState().equals("initial_read")).collect(Collectors.toList());
+                List<MeterReadingBean> beansWithStateInitialRead = meterReadingBeanList.stream().filter(read -> read.getCurrentState().equals(currentState)).collect(Collectors.toList());
                 beansWithStateInitialRead.forEach(read -> { read.setCurrentState(updateState);
                                                         read.setUpdatedBy(username);
                                                         read.setUpdatedOn(updateTime);
