@@ -3,7 +3,6 @@ package in.co.mpwin.rebilling.beans.readingbean;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import in.co.mpwin.rebilling.interfaces.BeanInterface;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Digits;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -128,6 +127,6 @@ public class MeterReadingBean implements BeanInterface {
     @Column(name = "i_attribute5")
     private String iAttribute5;
 
-    //e_attribute1 to 10 is reserved for future use
+//e_attribute1 to 10 is reserved for future use
 
 }

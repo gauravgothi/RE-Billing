@@ -45,12 +45,12 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf().disable()
                 .authorizeHttpRequests((authorize)->
-                        authorize.requestMatchers(HttpMethod.POST,"/login"
-                                        //"/login2/**"
-                                        )
-                                .permitAll()
-                                // .requestMatchers(HttpMethod.GET,"/**").permitAll()
-                                .anyRequest().authenticated())
+                    authorize
+                            .requestMatchers(HttpMethod.POST,"/login","/user/forgot_password","user/reset_password")
+                            .permitAll()
+                            .requestMatchers(HttpMethod.GET,"user/reset_password")
+                            .permitAll()
+                            .anyRequest().authenticated())
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 

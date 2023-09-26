@@ -37,6 +37,8 @@ public class User {
 
     private String remark;
 
+    private String email;
+
     @NotNull
     private String createdBy;
     @NotNull
@@ -45,5 +47,8 @@ public class User {
     private Timestamp createdOn;
     @NotNull
     private Timestamp updatedOn;
+
+    @Column(name = "reset_password_token")
+    private String resetPasswordToken;
 
 }
