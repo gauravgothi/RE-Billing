@@ -161,4 +161,6 @@ public interface MeterMasterRepo extends CrudRepository<MeterMasterBean, Long> {
     void updateMeterStatusAndMappingByMeterNo(@Param("meterNo") String meterNo, @Param("status") String status, @Param("isMapped") String isMapped);
 
   List<MeterMasterBean> findByCategoryAndStatusAndIsMapped(String category, String status,String isMapped);
+
+    List<MeterMasterBean> findByStatusAndIsMapped(String status,String isMapped);
 }

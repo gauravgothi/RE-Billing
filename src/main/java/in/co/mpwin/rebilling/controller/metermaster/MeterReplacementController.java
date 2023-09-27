@@ -54,8 +54,11 @@ public class MeterReplacementController {
     @RequestMapping(method = RequestMethod.POST, value = "")
     public ResponseEntity<?> meterReplacement(@RequestBody MeterReplacementRequest meterReplacementRequest) {
         try {
-            String res = meterReplacementService.replaceMeterMethod(meterReplacementRequest.getOldMeterBean(), meterReplacementRequest.getNewMeterBean());
-            return ResponseEntity.status(HttpStatus.OK).body(res);
+            Boolean res = meterReplacementService.replaceMeterMethod(meterReplacementRequest.getOldMeterBean(), meterReplacementRequest.getNewMeterBean());
+            if(res)
+            return ResponseEntity.status(HttpStatus.OK).body("Meter replacement done.");
+            else
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Something went wrong.");
         } catch (ApiException apiException) {
             return ResponseEntity.status(apiException.getHttpStatus()).body(new Message(apiException.getMessage()));
         } catch (DataIntegrityViolationException d) {

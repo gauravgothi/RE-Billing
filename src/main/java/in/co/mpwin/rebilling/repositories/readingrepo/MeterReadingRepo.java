@@ -18,6 +18,8 @@ public interface MeterReadingRepo extends CrudRepository<MeterReadingBean,Long> 
 
     List<MeterReadingBean> findAllByStatus(String status);
 
+    List<MeterReadingBean> findAllByMeterNoAndStatusOrderByReadingDateDesc(String meterNo,String status);
+
     @Query(value = "SELECT * FROM ecell.re_meter_reading_trx WHERE TO_CHAR(reading_date, 'Mon-YYYY') =:mon AND meter_no =:meter AND status=:status",nativeQuery = true)
     List<MeterReadingBean> findAllByReadingDateMonthAndMeterNoAndStatus(@Param("mon") String readingDateMonth,@Param("meter")String meterNo, @Param("status") String status);
 

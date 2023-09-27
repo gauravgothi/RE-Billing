@@ -99,4 +99,15 @@ public class MeterReadingPunchingService {
             throw new ApiException(HttpStatus.BAD_REQUEST,"import Tod4 is less than previous reading");
 
     }
+
+//    public MeterReadingBean saveSRMeterReading(MeterReadingBean meterReadingBean) {
+//        try {
+//
+//            MeterReadingBean previousReadingBean = meterReadingRepo.findLastReadByMeterNoAndStatus(meterReadingBean.getMeterNo(),"active");
+//            //meter reading validation before reading saving
+//            if(previousReadingBean!=null)
+//
+//
+//        }
+//       }
 }

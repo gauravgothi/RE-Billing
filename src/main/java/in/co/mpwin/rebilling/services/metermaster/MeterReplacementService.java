@@ -166,27 +166,29 @@ public class MeterReplacementService {
     }
 
     @Transactional
-    public String replaceMeterMethod(MeterReadingBean oldMeterBean, MeterReadingBean newMeterBean) {
+    public Boolean replaceMeterMethod(MeterReadingBean oldMeterBean, MeterReadingBean newMeterBean) {
 
         MeterMasterBean oldMeter = meterMasterService.getMeterDetailsByMeterNo(oldMeterBean.getMeterNo(), "active");
         MeterMasterBean newMeter = meterMasterService.getMeterDetailsByMeterNo(newMeterBean.getMeterNo(), "active");
 
         if (oldMeter == null || newMeter == null) {
-            return " old meter or new meter detail are not found in meter master data";
+            throw new ApiException(HttpStatus.BAD_REQUEST,"Old meter or new meter detail are not found in meter master data.");
         }
         MeterReadingBean lastReadingBean = meterReadingService.GetLastReadingByMeterNoAndStatus(oldMeterBean.getMeterNo(), "active");
-        if (lastReadingBean==null) {
-            return "last meter reading not found for meter no. " + oldMeterBean.getMeterNo();
-        }
-        if ((oldMeterBean.getEActiveEnergy().compareTo(lastReadingBean.getEActiveEnergy()) < 0) &&
-                (oldMeterBean.getReadingDate().compareTo(lastReadingBean.getReadingDate()) < 0)) {
-            return " old meter final reading or replacement date is less than in last reading data";
-        }
+        if (lastReadingBean==null)
+            throw new ApiException(HttpStatus.BAD_REQUEST,"Previous reading not found for old meter no. " + oldMeterBean.getMeterNo());
+
+        if (oldMeterBean.getEActiveEnergy().compareTo(lastReadingBean.getEActiveEnergy()) < 0)
+            throw new ApiException(HttpStatus.BAD_REQUEST,"Old meter final reading is less than previous reading.");
+
+        if(oldMeterBean.getReadingDate().compareTo(lastReadingBean.getReadingDate()) < 0)
+            throw new ApiException(HttpStatus.BAD_REQUEST,"Meter replacement date is less than previous reading date.");
+
         MeterFeederPlantMappingBean newMFPMapping = new MeterFeederPlantMappingBean();
 
         MeterFeederPlantMappingBean oldMFPMapping = meterFeederPlantMappingService.getLastMFPMappingByMeterNo(oldMeter.getMeterNumber(), oldMeter.getCategory(), "active");
         if (oldMFPMapping==null) {
-            return " mfp mapping not found for old meter number " + oldMeter.getMeterNumber();
+            throw new ApiException(HttpStatus.BAD_REQUEST,"mfp mapping not found for old meter number." + oldMeter.getMeterNumber());
         }
         try {
             Boolean mfpMapped = false;
@@ -194,16 +196,21 @@ public class MeterReplacementService {
             Boolean newMeterMapped = false;
             Boolean meterReplacementHistory = false;
             Boolean readingSRFR = false;
-
+            // for meter replacement update mfp mapping.
             mfpMapped = updateMFPMapping(oldMFPMapping, newMFPMapping, newMeterBean.getMeterNo(), oldMeter.getCategory(), newMeterBean.getReadingDate());
+            // change new meter mapped status from no to yes.
             newMeterMapped = updateMeterStatusAndMappingByMeterNo(newMeterBean.getMeterNo(), "active", "yes");
+            // insert old and new meter number and date in replacement table for history
             meterReplacementHistory = meterReplacementTable(oldMeterBean.getMeterNo(), newMeterBean.getMeterNo(), oldMeterBean.getReadingDate(), oldMFPMapping);
+            //insert SR and FR reading in reading table
             readingSRFR = insertReadingForSRFR(oldMeterBean, newMeterBean);
+            // change old meter mapped status from yes to replaced.
             oldMeterUnmapped = updateMeterStatusAndMappingByMeterNo(oldMeterBean.getMeterNo(), "active", "replaced");
+           // if meter replacement task successfully done than return true else return false.
             if (mfpMapped && oldMeterUnmapped && newMeterMapped && meterReplacementHistory && readingSRFR)
-                return "meter replacement done.";
+                return true;
             else
-                return "something went wrong.";
+                return false;
         }catch (ApiException apiException){
             throw apiException;
         }  catch (DataIntegrityViolationException d) {

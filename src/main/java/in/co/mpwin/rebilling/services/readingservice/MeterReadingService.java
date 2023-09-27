@@ -318,6 +318,20 @@ public class MeterReadingService {
             throw new ApiException(HttpStatus.BAD_REQUEST,"Reading("+currentReadingBean.getEActiveEnergy()+") of meter no. for date "+currentReadingBean.getReadingDate()+" is already present.");
         return meterReadingRepo.findJustBefore(meterNo,date);
     }
+
+    public List<MeterReadingBean> getAllReadingByMeterNo(String meterNo) {
+        try {
+            List<MeterReadingBean> meterReadingBeanList = meterReadingRepo.findAllByMeterNoAndStatusOrderByReadingDateDesc(meterNo,"active");
+            if(meterReadingBeanList.size()==0) throw new ApiException(HttpStatus.BAD_REQUEST,"No reading found");
+            return meterReadingBeanList;
+        }catch (ApiException apiException){
+            throw apiException;
+        }catch (DataIntegrityViolationException d){
+            throw d;
+        }catch (Exception e){
+            throw e;
+        }
+    }
 }
 
 
