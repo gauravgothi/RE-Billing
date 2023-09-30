@@ -2,6 +2,7 @@ package in.co.mpwin.rebilling.controller.developermaster;
 
 import in.co.mpwin.rebilling.beans.developermaster.DeveloperMasterBean;
 import in.co.mpwin.rebilling.beans.feedermaster.FeederMasterBean;
+import in.co.mpwin.rebilling.dto.MeterConsumptionDto;
 import in.co.mpwin.rebilling.miscellanious.Message;
 import in.co.mpwin.rebilling.services.developermaster.DeveloperMasterService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,11 +77,11 @@ public class DeveloperMasterController {
     }
 
     @RequestMapping(method = RequestMethod.GET,value = "/id/{id}")
-    public ResponseEntity<?> getDeveloperById(@PathVariable("id") Long id){
+    public ResponseEntity<?> getDeveloperById(@PathVariable("id") Long id) {
         String status = "active";
         ResponseEntity developerResp = null;
         try {
-            DeveloperMasterBean developer = developerMasterService.getDeveloperById(id,status);
+            DeveloperMasterBean developer = developerMasterService.getDeveloperById(id, status);
             if (developer != null) {
                 developerResp = new ResponseEntity<>(developer, HttpStatus.OK);
             } else if (developer == null) {
@@ -93,6 +94,18 @@ public class DeveloperMasterController {
             e.printStackTrace();
         }
         return developerResp;
-        }
+    }
 
+//    @GetMapping("/bifurcate")
+//    public ResponseEntity<?> getBifurcateDto(MeterConsumptionDto dto){
+//        ResponseEntity bifurcateResp = null;
+//        try {
+//            DeveloperMasterBean developer = developerMasterService.getBifurcateDto(dto);
+//
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return bifurcateResp;
+//    }
 }

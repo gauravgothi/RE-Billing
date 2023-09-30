@@ -3,6 +3,7 @@ package in.co.mpwin.rebilling.repositories.machinemaster;
 import in.co.mpwin.rebilling.beans.machinemaster.MachineMasterBean;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -21,7 +22,9 @@ public interface MachineMasterRepo extends CrudRepository<MachineMasterBean,Long
     MachineMasterBean findByMachineCodeAndStatus(String machineCode, String status);
 
 
-    @Query(value = "select last_value from re_machine_master_id_seq",nativeQuery = true)
+    @Query(value = "select last_value from ecell.re_machine_master_id_seq",nativeQuery = true)
     public Long getMaxSequence();
+    @Query(value = "SELECT * FROM ecell.re_machine_master WHERE machine_code IN (:machineCodes) AND status=:status",nativeQuery = true)
+    List<MachineMasterBean> findAllMachineByMachineCodeList(@Param("machineCodes") List<String> machineCodes, String status);
 
 }

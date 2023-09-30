@@ -1,10 +1,15 @@
 package in.co.mpwin.rebilling.services.developermaster;
 
 import in.co.mpwin.rebilling.beans.developermaster.DeveloperMasterBean;
+import in.co.mpwin.rebilling.beans.readingbean.MeterReadingBean;
+import in.co.mpwin.rebilling.dto.MeterConsumptionDto;
+import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.AuditControlServices;
 import in.co.mpwin.rebilling.miscellanious.ValidatorService;
 import in.co.mpwin.rebilling.repositories.developermaster.DeveloperMasterRepo;
+import in.co.mpwin.rebilling.services.readingservice.MeterReadingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -15,6 +20,8 @@ public class DeveloperMasterService {
 
     @Autowired
     DeveloperMasterRepo developerMasterRepo;
+//    @Autowired
+//    MeterReadingService meterReadingService;
 
     public List<DeveloperMasterBean> getAllDeveloperMasterBean(String status)   {
         List<DeveloperMasterBean> developerMasterBeanList = new ArrayList<>();
@@ -68,6 +75,30 @@ public class DeveloperMasterService {
 
 
     public Long getDeveloperIdByUsername(String username) {
-        return developerMasterRepo.findIdByDeveloperUsername(username);
+        try {
+            Long developerId = developerMasterRepo.findIdByDeveloperUsername(username);
+            if (developerId == null)
+                throw new ApiException(HttpStatus.BAD_REQUEST,"User is not the developer");
+            else
+                return developerId;
+        }catch (ApiException apiException){
+            throw apiException;
+        }catch (Exception exception){
+            throw exception;
+        }
     }
+
+//    public DeveloperMasterBean getBifurcateDto(MeterConsumptionDto dto) {
+//        List<String> validCurrentState = List.of("dev_accept","circle_accept","circle_reject");
+//
+//       MeterReadingBean currentReadingBean =
+//               meterReadingService.getReadingByMeterNoAndReadingDateAndStatus
+//                       (dto.getMeterNo(),dto.getCurrentReadingDate(),"active");
+//
+//       MeterReadingBean previousReadingBean =
+//               meterReadingService.getReadingByMeterNoAndReadingDateAndStatus
+//                       (dto.getMeterNo(),dto.getPreviousReadingDate(),"active");
+//
+//       //currentReadingBean.getCurrentState().
+//    }
 }

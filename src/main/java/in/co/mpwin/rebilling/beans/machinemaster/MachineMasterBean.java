@@ -1,5 +1,6 @@
 package in.co.mpwin.rebilling.beans.machinemaster;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import in.co.mpwin.rebilling.beans.locationmaster.LocationMaster;
 import in.co.mpwin.rebilling.interfaces.BeanInterface;
 import jakarta.persistence.*;
@@ -29,12 +30,23 @@ public class MachineMasterBean implements BeanInterface {
     @Column(name = "capacity")
     String capacity;
 
+    public String getCapacity() {
+        if(capacity == null || capacity.matches("%[a-zA-Z]%"))
+            return "0";
+        return capacity;
+    }
 
-    @Column(name = "commissioned_date")
+    @Column(name = "commissioned_date") @JsonFormat(pattern = "yyyy-MM-dd",timezone = "IST")
     Date commissionedDate;
 
     @Column(name = "active_rate")
     String activeRate;
+
+    public String getActiveRate() {
+        if(activeRate == null || activeRate.matches("%[a-zA-Z]%"))
+            return "0";
+        return activeRate;
+    }
 
     @Column(name ="reactive_rate")
     String  reactiveRate;
@@ -44,9 +56,9 @@ public class MachineMasterBean implements BeanInterface {
     private String createdBy;
     @Column(name ="updated_by")
     private String updatedBy;
-    @Column(name ="updated_on")
+    @Column(name ="updated_on")@JsonFormat(timezone = "IST")
     private Timestamp updatedOn;
-    @Column(name ="created_on")
+    @Column(name ="created_on")@JsonFormat(timezone = "IST")
     private Timestamp createdOn;
     @Column(name ="status")
     private String status;

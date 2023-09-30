@@ -135,8 +135,10 @@ public class MeterConsumptionDto {
     @Column(name="e_consumption_reactive_quad4")@NotNull @Digits(integer = 14,fraction = 6)
     private BigDecimal eConsumptionReactiveQuad4;
 
-//    @Column(name="e_adjustment")@NotNull @Digits(integer = 14,fraction = 6)
-//    private BigDecimal eAdjustment;
+    @Column(name="e_adjustment")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal eAdjustment;
+    @Column(name="i_adjustment")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal iAdjustment;
 
     @Column(name="i_previous_active_energy")@NotNull @Digits(integer = 14,fraction = 6)
     private BigDecimal iPreviousActiveEnergy;
@@ -236,9 +238,11 @@ public class MeterConsumptionDto {
     @Column(name="i_consumption_reactive_quad4")@NotNull @Digits(integer = 14,fraction = 6)
     private BigDecimal iConsumptionReactiveQuad4;
 
-
-//    @Column(name="i_adjustment")@NotNull @Digits(integer = 14,fraction = 6)
-//    private BigDecimal iAdjustment;
+    //Grand KWH = ((Current KWH - Previous KWH) * MF ) + KWH Assesment - KWH Adjustment
+    @Column(name="grand_kwh_export")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal grandKwhExport;
+    @Column(name="grand_kwh_import")@NotNull @Digits(integer = 14,fraction = 6)
+    private BigDecimal grandKwhImport;
 
     public MeterConsumptionDto setMeterConsumptionDto(MeterReadingBean previous, MeterReadingBean current,BigDecimal mf) {
 
@@ -247,6 +251,9 @@ public class MeterConsumptionDto {
         meterConsumptionDto.setMf(mf);
         meterConsumptionDto.setPreviousReadingDate(previous.getReadingDate());
         meterConsumptionDto.setCurrentReadingDate(current.getReadingDate());
+
+        meterConsumptionDto.setEAdjustment(current.getEAdjustment());
+        meterConsumptionDto.setIAdjustment(current.getIAdjustment());
 
         meterConsumptionDto.setEPreviousActiveEnergy(previous.getEActiveEnergy());
         meterConsumptionDto.setEPreviousAssesment(previous.getEAssesment());
@@ -276,7 +283,7 @@ public class MeterConsumptionDto {
         meterConsumptionDto.setECurrentActiveEnergy(current.getEActiveEnergy());
 
         meterConsumptionDto.setEDiffActiveEnergy(current.getEActiveEnergy().subtract(previous.getEActiveEnergy()));
-        meterConsumptionDto.setEDiffAssesment(current.getEAssesment().subtract(previous.getEAssesment()));
+        meterConsumptionDto.setEDiffAssesment(current.getEAssesment());
         meterConsumptionDto.setEDiffKvah(current.getEKvah().subtract(previous.getEKvah()));
         meterConsumptionDto.setEDiffMaxDemand(current.getEMaxDemand().subtract(previous.getEMaxDemand()));
         meterConsumptionDto.setEDiffTod1(current.getETod1().subtract(previous.getETod1()));
@@ -289,7 +296,7 @@ public class MeterConsumptionDto {
         meterConsumptionDto.setEDiffReactiveQuad4(current.getEReactiveQuad4().subtract(previous.getEReactiveQuad4()));
 
         meterConsumptionDto.setEConsumptionActiveEnergy(meterConsumptionDto.getEDiffActiveEnergy().multiply(mf).setScale(6));
-        meterConsumptionDto.setEConsumptionAssesment(meterConsumptionDto.getEDiffAssesment().multiply(mf).setScale(6));
+        meterConsumptionDto.setEConsumptionAssesment(meterConsumptionDto.getEDiffAssesment());
         meterConsumptionDto.setEConsumptionKvah(meterConsumptionDto.getEDiffKvah().multiply(mf).setScale(6));
         meterConsumptionDto.setEConsumptionMaxDemand(meterConsumptionDto.getEDiffMaxDemand().multiply(mf).setScale(6));
         meterConsumptionDto.setEConsumptionTod1(meterConsumptionDto.getEDiffTod1().multiply(mf).setScale(6));
@@ -301,7 +308,9 @@ public class MeterConsumptionDto {
         meterConsumptionDto.setEConsumptionReactiveQuad3(meterConsumptionDto.getEDiffReactiveQuad3().multiply(mf).setScale(6));
         meterConsumptionDto.setEConsumptionReactiveQuad4(meterConsumptionDto.getEDiffReactiveQuad4().multiply(mf).setScale(6));
 
-
+        meterConsumptionDto.setGrandKwhExport((meterConsumptionDto.getEConsumptionActiveEnergy()
+                                        .add(meterConsumptionDto.getEConsumptionAssesment()))
+                                        .subtract(meterConsumptionDto.getEAdjustment()));
 
         meterConsumptionDto.setIPreviousActiveEnergy(previous.getIActiveEnergy());
         meterConsumptionDto.setIPreviousAssesment(previous.getIAssesment());
@@ -330,7 +339,7 @@ public class MeterConsumptionDto {
         meterConsumptionDto.setICurrentReactiveQuad4(current.getIReactiveQuad4());
 
         meterConsumptionDto.setIDiffActiveEnergy(current.getIActiveEnergy().subtract(previous.getIActiveEnergy()));
-        meterConsumptionDto.setIDiffAssesment(current.getIAssesment().subtract(previous.getIAssesment()));
+        meterConsumptionDto.setIDiffAssesment(current.getIAssesment());
         meterConsumptionDto.setIDiffKvah(current.getIKvah().subtract(previous.getIKvah()));
         meterConsumptionDto.setIDiffMaxDemand(current.getIMaxDemand().subtract(previous.getIMaxDemand()));
         meterConsumptionDto.setIDiffTod1(current.getITod1().subtract(previous.getITod1()));
@@ -343,7 +352,7 @@ public class MeterConsumptionDto {
         meterConsumptionDto.setIDiffReactiveQuad4(current.getIReactiveQuad4().subtract(previous.getIReactiveQuad4()));
 
         meterConsumptionDto.setIConsumptionActiveEnergy(meterConsumptionDto.getIDiffActiveEnergy().multiply(mf).setScale(6).setScale(6));
-        meterConsumptionDto.setIConsumptionAssesment(meterConsumptionDto.getIDiffAssesment().multiply(mf).setScale(6));
+        meterConsumptionDto.setIConsumptionAssesment(meterConsumptionDto.getIDiffAssesment());
         meterConsumptionDto.setIConsumptionKvah(meterConsumptionDto.getIDiffKvah().multiply(mf).setScale(6));
         meterConsumptionDto.setIConsumptionMaxDemand(meterConsumptionDto.getIDiffMaxDemand().multiply(mf).setScale(6));
         meterConsumptionDto.setIConsumptionTod1(meterConsumptionDto.getIDiffTod1().multiply(mf).setScale(6));
@@ -354,6 +363,10 @@ public class MeterConsumptionDto {
         meterConsumptionDto.setIConsumptionReactiveQuad2(meterConsumptionDto.getIDiffReactiveQuad2().multiply(mf).setScale(6));
         meterConsumptionDto.setIConsumptionReactiveQuad3(meterConsumptionDto.getIDiffReactiveQuad3().multiply(mf).setScale(6));
         meterConsumptionDto.setIConsumptionReactiveQuad4(meterConsumptionDto.getIDiffReactiveQuad4().multiply(mf).setScale(6));
+
+        meterConsumptionDto.setGrandKwhImport((meterConsumptionDto.getIConsumptionActiveEnergy()
+                .add(meterConsumptionDto.getIConsumptionAssesment()))
+                .subtract(meterConsumptionDto.getIAdjustment()));
 
         return meterConsumptionDto;
     }

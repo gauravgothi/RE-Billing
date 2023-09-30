@@ -77,9 +77,13 @@ public class ConsumerPercentageService2 {
                 List<CheckMeterDto> checkMeterDtos = new ArrayList<>();
                 List<MeterFeederPlantMappingBean> MFPBeans = plantMFP.values().iterator().next();
 
-                consumptionPercentageDto2.setFeederCode(MFPBeans.get(0).getFeederCode());
-                consumptionPercentageDto2.setFeederName(feederMasterService.getFeederByFeederNumber(
-                        MFPBeans.get(0).getFeederCode(),"active").getFeederName());
+                //IF DEVELOPER HAVE NOT ANY MAPPING THEN SIMPLY CONTINUE THE LOOP
+                if(MFPBeans.size()==0)
+                    continue;
+                    consumptionPercentageDto2.setFeederCode(MFPBeans.get(0).getFeederCode());
+                    consumptionPercentageDto2.setFeederName(feederMasterService.getFeederByFeederNumber(
+                            MFPBeans.get(0).getFeederCode(), "active").getFeederName());
+
                 //consumptionPercentageDto2.setFeederName();
                 if (MFPBeans.size()>1){
                     Date mainStartDate = startDate;

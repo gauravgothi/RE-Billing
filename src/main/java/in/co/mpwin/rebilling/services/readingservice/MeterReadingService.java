@@ -2,6 +2,7 @@ package in.co.mpwin.rebilling.services.readingservice;
 
 import in.co.mpwin.rebilling.beans.metermaster.MeterMasterBean;
 import in.co.mpwin.rebilling.beans.readingbean.MeterReadingBean;
+import in.co.mpwin.rebilling.dto.BifurcateConsumptionDto;
 import in.co.mpwin.rebilling.dto.MeterConsumptionDto;
 import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.AuditControlServices;
@@ -288,7 +289,7 @@ public class MeterReadingService {
     public MeterConsumptionDto getMeterConsumptionByMonth(String meterNo, String monthYear) throws ParseException {
         MeterConsumptionDto meterConsumptionDto = new MeterConsumptionDto();
         try {
-                List<String> currentStates = List.of("ht_accept");
+                List<String> currentStates = List.of("ht_accept","dev_accept");
                 Date startReadDate = dateMethods.getCurrentAndPreviousDate(monthYear).get(0);
                 Date endReadDate = dateMethods.getCurrentAndPreviousDate(monthYear).get(1);
                 List<MeterReadingBean> meterReadingBeanList = meterReadingRepo.findByMeterNoAndCurrentStatesInBetween
@@ -318,6 +319,7 @@ public class MeterReadingService {
             throw new ApiException(HttpStatus.BAD_REQUEST,"Reading("+currentReadingBean.getEActiveEnergy()+") of meter no. for date "+currentReadingBean.getReadingDate()+" is already present.");
         return meterReadingRepo.findJustBefore(meterNo,date);
     }
+
 }
 
 
