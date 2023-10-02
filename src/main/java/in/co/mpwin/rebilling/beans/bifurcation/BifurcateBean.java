@@ -16,7 +16,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "BifurcateBean")
-@Table(name = "re_bifurcated_reading")
+@Table(name = "re_bifurcated_reading",uniqueConstraints = @UniqueConstraint(name = "re_bifurcated_reading_ukey", columnNames={"hmeterno","hmonth","linv_code","status"}))
 public class BifurcateBean implements BeanInterface {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,6 +28,11 @@ public class BifurcateBean implements BeanInterface {
     private String hDevUsername;
     @Column(name="hdev_name")@NotNull
     private String hDevName;
+
+    @Column(name="hdev_plant_code")@NotNull
+    private String hDevPlantcode;
+    @Column(name="hdev_plant_name")@NotNull
+    private String hDevPlantName;
     @Column(name="hmeterno")
     private String hMeterNumber;
     @Column(name="hcategory")
@@ -46,6 +51,9 @@ public class BifurcateBean implements BeanInterface {
 
     @Column(name="hkwh_active_energy")@NotNull
     private BigDecimal hConsumptionKwh;
+
+    @Column(name="hrkvah")@NotNull
+    private BigDecimal hRkvah=BigDecimal.valueOf(0);
 
     @Column(name="hadjustment")@NotNull
     private BigDecimal hAdjustment;

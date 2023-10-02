@@ -1,5 +1,6 @@
 package in.co.mpwin.rebilling.miscellanious;
 
+import in.co.mpwin.rebilling.beans.bifurcation.BifurcateBean;
 import in.co.mpwin.rebilling.beans.developermaster.DeveloperMasterBean;
 import in.co.mpwin.rebilling.beans.feedermaster.FeederMasterBean;
 import in.co.mpwin.rebilling.beans.machinemaster.MachineMasterBean;
@@ -54,10 +55,20 @@ public class AuditControlServices {
         } else if (obj instanceof MeterReplacementBean) {
             this.setInitialAuditControlParametersOfMeterReplacementBean((MeterReplacementBean) obj);
 
+        } else if (obj instanceof BifurcateBean){
+            this.setInitialAuditControlParametersOfBifurcateBean((BifurcateBean) obj);
         }
 
     }
 
+    private void setInitialAuditControlParametersOfBifurcateBean(BifurcateBean bifurcateBean) {
+        bifurcateBean.setCreatedOn(new DateMethods().getServerTime());
+        bifurcateBean.setUpdatedOn(new DateMethods().getServerTime());
+        bifurcateBean.setCreatedBy(new TokenInfo().getCurrentUsername());
+        bifurcateBean.setUpdatedBy(new TokenInfo().getCurrentUsername());
+        bifurcateBean.setStatus("active");
+        bifurcateBean.setRemark("developer_bifurcated");
+    }
 
 
     private void setInitialAuditControlParametersOfReading(MeterReadingBean meterReadingBean) {

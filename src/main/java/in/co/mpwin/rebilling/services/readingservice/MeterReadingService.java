@@ -304,6 +304,7 @@ public class MeterReadingService {
 
                     meterConsumptionDto = meterConsumptionDto.setMeterConsumptionDto(meterReadingBeanList.get(0),meterReadingBeanList.get(1),meterMasterBean.getMf());
                     meterConsumptionDto.setCategory(meterMasterBean.getCategory());
+                    meterConsumptionDto.setMonthYear(monthYear);
 
             }
         }catch (ApiException apiException){

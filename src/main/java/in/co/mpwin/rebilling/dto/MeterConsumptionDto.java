@@ -29,6 +29,8 @@ public class MeterConsumptionDto {
     private Date previousReadingDate;
     @Column(name = "reading_date")@NotNull@JsonFormat(timezone = "IST")
     private Date currentReadingDate;
+    @Column(name = "month_year")@NotNull
+    private String monthYear;
 
 //    @Column(name = "end_date")@NotNull@JsonFormat(timezone = "IST")
 //    private Date endDate;

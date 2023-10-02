@@ -46,7 +46,7 @@ public class BifurcateConsumptionDto {
     @Column(name="hkwh_active_energy")@NotNull
     private BigDecimal hConsumptionKwh;  //this is kwh export in previous re generator form
 
-    @Column(name="hrkvh")@NotNull
+    @Column(name="hrkvah")@NotNull
     private BigDecimal hRkvah=BigDecimal.valueOf(0);
 
     @Column(name="hadjustment")@NotNull
