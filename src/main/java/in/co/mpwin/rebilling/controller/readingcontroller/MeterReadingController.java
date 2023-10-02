@@ -1,6 +1,7 @@
 package in.co.mpwin.rebilling.controller.readingcontroller;
 
 import in.co.mpwin.rebilling.beans.readingbean.MeterReadingBean;
+import in.co.mpwin.rebilling.dto.BifurcateConsumptionDto;
 import in.co.mpwin.rebilling.dto.MeterConsumptionDto;
 import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.Message;

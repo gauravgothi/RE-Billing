@@ -1,10 +1,13 @@
 package in.co.mpwin.rebilling.services.mapping;
 
 import in.co.mpwin.rebilling.beans.mapping.MeterFeederPlantMappingBean;
+import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.AuditControlServices;
 import in.co.mpwin.rebilling.miscellanious.ValidatorService;
 import in.co.mpwin.rebilling.repositories.mapping.MeterFeederPlantMappingRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -96,6 +99,23 @@ public class MeterFeederPlantMappingService {
         List<MeterFeederPlantMappingBean> mappingBean = new ArrayList<>();
         try{
             mappingBean= meterFeederPlantMappingRepo.findByStandbyMeterNoAndStatus(smn,status);
+        }catch (Exception e){
+            throw e;
+        }
+        return mappingBean;
+    }
+
+    public MeterFeederPlantMappingBean getByAnyMeterNoAndStatus(String meterNo, String status) {
+
+        MeterFeederPlantMappingBean mappingBean=null;
+        try{
+            mappingBean= meterFeederPlantMappingRepo.findByAnyMeterNoAndStatus(meterNo,status);
+            if (mappingBean==null)
+                throw new ApiException(HttpStatus.BAD_REQUEST,"No active mapping of Plant found for given meter..");
+        }catch (ApiException apiException){
+            throw apiException;
+        }catch (DataIntegrityViolationException d){
+            throw d;
         }catch (Exception e){
             throw e;
         }

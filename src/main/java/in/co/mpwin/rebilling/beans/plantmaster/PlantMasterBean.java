@@ -1,5 +1,6 @@
 package in.co.mpwin.rebilling.beans.plantmaster;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import in.co.mpwin.rebilling.beans.locationmaster.LocationMaster;
 import in.co.mpwin.rebilling.interfaces.BeanInterface;
 import jakarta.persistence.*;
@@ -40,7 +41,7 @@ public class PlantMasterBean implements BeanInterface {
     @Column(name="email")
     String email;
 
-    @Column(name="commissioned_date")
+    @Column(name="commissioned_date")@JsonFormat(pattern = "yyyy-MM-dd",timezone = "IST")
     Date commissionedDate;
 
     @Column(name="type")
@@ -50,9 +51,9 @@ public class PlantMasterBean implements BeanInterface {
     private String createdBy;
     @Column(name ="updated_by")
     private String updatedBy;
-    @Column(name ="updated_on")
+    @Column(name ="updated_on") @JsonFormat(timezone = "IST")
     private Timestamp updatedOn;
-    @Column(name ="created_on")
+    @Column(name ="created_on") @JsonFormat(timezone = "IST")
     private Timestamp createdOn;
     @Column(name ="status")
     private String status;

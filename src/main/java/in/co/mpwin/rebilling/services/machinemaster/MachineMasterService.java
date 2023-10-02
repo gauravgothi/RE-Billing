@@ -38,7 +38,7 @@ public class MachineMasterService {
             new AuditControlServices().setInitialAuditControlParameters(machineMasterBean);
 
             //get max sequence id and set  id as id+1
-            machineMasterBean.setId(getMaxSequence()+1);
+            //machineMasterBean.setId(getMaxSequence()+1);
             // set machine code using id
             machineMasterBean.setMachineCode("M" + (getMaxSequence()+1));
 
@@ -84,6 +84,16 @@ public class MachineMasterService {
     {
         return machineMasterRepo.getMaxSequence();
 
+    }
+
+    public List<MachineMasterBean> getAllMachineByMachineCodeList(List<String> machineCodeList, String status) {
+        List<MachineMasterBean> allMachineList = new ArrayList<>();
+        try {
+            allMachineList = machineMasterRepo.findAllMachineByMachineCodeList(machineCodeList, status);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return allMachineList;
     }
 
 }
