@@ -24,6 +24,7 @@ import in.co.mpwin.rebilling.services.mapping.InvestorMachineMappingService;
 import in.co.mpwin.rebilling.services.mapping.MeterFeederPlantMappingService;
 import in.co.mpwin.rebilling.services.plantmaster.PlantMasterService;
 import in.co.mpwin.rebilling.services.readingservice.MeterReadingService;
+import jakarta.persistence.Tuple;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -93,7 +93,7 @@ public class BifurcateConsumptionService {
                 throw new ApiException(HttpStatus.BAD_REQUEST, "Current and Previous reading must be present");
 
             //First check that reading is developer accept or not
-            if (validCurrentState.contains(currentReadingBean.getCurrentState()))
+            if ((validCurrentState.contains(currentReadingBean.getCurrentState())) && (validCurrentState.contains(previousReadingBean.getCurrentState())))
                 isReadingCurrentStateValid = true;
             else
                 throw new ApiException(HttpStatus.BAD_REQUEST, "Reading of meter for date " + dto.getCurrentReadingDate() +
@@ -280,5 +280,48 @@ public class BifurcateConsumptionService {
         }
 
         return dto;
+    }
+
+    //On invoice generate page it is used to lov view by developer username from bifurcated consumption table
+    public List<Map<String,String>> getInvestorListByDeveloperId(){
+        try {
+            List<Map<String,String>> investors = new ArrayList<>();
+            //get current username and developer id and developer name
+            String username = new TokenInfo().getCurrentUsername();
+
+                List<BifurcateBean> investorList = bifurcateBeanRepo.findDistinctInvestorCodeByDeveloperUsername(username);
+                if (investorList.size() == 0)
+                    throw new ApiException(HttpStatus.BAD_REQUEST,"No investor present for invoice generation..");
+                for (BifurcateBean row : investorList){
+                    Map<String,String> m = new HashMap<>();
+                    m.put("investorCode", row.getlInvestorCode());
+                    m.put("investorName", row.getlInvestorName());
+                    investors.add(m);
+                }
+                return investors;
+
+        }catch (ApiException apiException){
+            throw apiException;
+        }catch (DataIntegrityViolationException d){
+            throw d;
+        }catch (Exception e){
+            throw e;
+        }
+    }
+
+    public BifurcateBean getBifurcateBeanByInvestorCodeAndMonth(String investorCode,String monthYear,String status){
+        try {
+            return bifurcateBeanRepo.findByLInvestorCodeAndHmonthAndStatus(investorCode,monthYear,"active");
+        }catch (Exception exception){
+            throw exception;
+        }
+    }
+
+    public boolean isExistsInvestorInBifurcateBean(String investorCode,String monthYear,String status) {
+        try {
+            return bifurcateBeanRepo.isExistsInvestorInBifurcateBean(investorCode,monthYear,status);
+        }catch (Exception exception){
+            throw exception;
+        }
     }
 }

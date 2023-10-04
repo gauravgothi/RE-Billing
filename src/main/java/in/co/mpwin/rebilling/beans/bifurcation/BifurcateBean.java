@@ -120,6 +120,11 @@ public class BifurcateBean implements BeanInterface {
     @Column(name = "remark")
     private String remark;
 
+    public BifurcateBean(String lInvestorCode, String lInvestorName) {
+        this.lInvestorCode = lInvestorCode;
+        this.lInvestorName = lInvestorName;
+    }
+
     public Long getId() {
         return id;
     }
@@ -136,6 +141,14 @@ public class BifurcateBean implements BeanInterface {
         return hDevName;
     }
 
+    public String gethDevPlantcode() {
+        return hDevPlantcode;
+    }
+
+    public String gethDevPlantName() {
+        return hDevPlantName;
+    }
+
     public String gethMeterNumber() {
         return hMeterNumber;
     }
@@ -149,6 +162,8 @@ public class BifurcateBean implements BeanInterface {
             return new BigDecimal(String.valueOf(this.hMf));
         return hMf;
     }
+
+
 
     public Date gethReadingDate() {
         return hReadingDate;
