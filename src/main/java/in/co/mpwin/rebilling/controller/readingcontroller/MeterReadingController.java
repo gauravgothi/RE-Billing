@@ -323,27 +323,25 @@ public class MeterReadingController {
     @RequestMapping(method = RequestMethod.POST, value ="/SR")
     public ResponseEntity<?> saveSRMeterReading(@RequestBody MeterReadingBean meterReadingBean) {
              ResponseEntity res = null;
-        try { MeterReadingBean mrb = meterReadingPunchingService.saveSRMeterReading(meterReadingBean);
+        try {
+            MeterReadingBean mrb = meterReadingPunchingService.saveSRMeterReading(meterReadingBean);
             if(mrb!=null)
-                res = new ResponseEntity<>(new Message("Reading saved successfully."), HttpStatus.OK);
+                res = new ResponseEntity<>(new Message("SR Reading saved successfully."), HttpStatus.OK);
             if(mrb==null)
-                res = new ResponseEntity<>(new Message("Reading not saved due to some error."),HttpStatus.BAD_REQUEST);
-        }catch (ApiException apiException){
-            res = new ResponseEntity<>(apiException.getMessage(),apiException.getHttpStatus());
-        }catch (DataIntegrityViolationException d)
-        {
+                res = new ResponseEntity<>(new Message("SR Reading not saved due to some error."),HttpStatus.BAD_REQUEST);
+            }catch (ApiException apiException){
+            res = new ResponseEntity<>(new Message(apiException.getMessage()),apiException.getHttpStatus());
+            }catch (DataIntegrityViolationException d){
             Throwable rootCause = d.getRootCause();
             String msg=rootCause.getMessage().substring(0,rootCause.getMessage().indexOf("Detail:"));
             res = new ResponseEntity<>(new Message(msg),HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch(NullPointerException ex)
-        {
+            }catch(NullPointerException ex){
             String msg=ex.getMessage().substring(0,ex.getMessage().indexOf("Detail:"));
             res = new ResponseEntity<>(new Message(msg),HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        catch (Exception e){
+            }catch (Exception e){
             e.printStackTrace();
             res = new ResponseEntity<>(new Message("something went wrong or some exception occurred "),HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+            }
         return res;
     }
 
