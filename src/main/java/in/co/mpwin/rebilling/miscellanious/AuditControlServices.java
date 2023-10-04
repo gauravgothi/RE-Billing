@@ -3,6 +3,7 @@ package in.co.mpwin.rebilling.miscellanious;
 import in.co.mpwin.rebilling.beans.bifurcation.BifurcateBean;
 import in.co.mpwin.rebilling.beans.developermaster.DeveloperMasterBean;
 import in.co.mpwin.rebilling.beans.feedermaster.FeederMasterBean;
+import in.co.mpwin.rebilling.beans.invoice.InvoiceBean;
 import in.co.mpwin.rebilling.beans.machinemaster.MachineMasterBean;
 import in.co.mpwin.rebilling.beans.mapping.InvestorMachineMappingBean;
 import in.co.mpwin.rebilling.beans.mapping.MeterFeederPlantMappingBean;
@@ -57,8 +58,19 @@ public class AuditControlServices {
 
         } else if (obj instanceof BifurcateBean){
             this.setInitialAuditControlParametersOfBifurcateBean((BifurcateBean) obj);
+        }else if (obj instanceof InvoiceBean){
+            this.setInitialAuditControlParametersOfInvoiceBean((InvoiceBean) obj);
         }
 
+    }
+
+    private void setInitialAuditControlParametersOfInvoiceBean(InvoiceBean invoiceBean) {
+        invoiceBean.setCreatedOn(new DateMethods().getServerTime());
+        invoiceBean.setUpdatedOn(new DateMethods().getServerTime());
+        invoiceBean.setCreatedBy(new TokenInfo().getCurrentUsername());
+        invoiceBean.setUpdatedBy(new TokenInfo().getCurrentUsername());
+        invoiceBean.setStatus("active");
+        invoiceBean.setRemark("invoice_freezed");
     }
 
     private void setInitialAuditControlParametersOfBifurcateBean(BifurcateBean bifurcateBean) {

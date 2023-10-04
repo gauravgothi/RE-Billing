@@ -54,5 +54,9 @@ public class PasswordEncoderGenerator {
         System.out.println(z);
         //This prints 47.47999999999999687361196265555918216705322265625
 
+        calendar = Calendar.getInstance();
+        java.sql.Timestamp ourJavaTimestamp = new java.sql.Timestamp(calendar.getTime().getTime());
+        System.out.println(ourJavaTimestamp);;
+
     }
 }

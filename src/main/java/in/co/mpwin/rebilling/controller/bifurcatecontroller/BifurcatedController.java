@@ -12,6 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+
 @RestController
 //@RequestMapping("/report")
 @CrossOrigin(origins="*")
@@ -21,13 +24,13 @@ public class BifurcatedController {
 
     //This is used by developer to bifurcate the meter consumption
     @GetMapping("/bifurcate")
-    public ResponseEntity<?> getConsumptionBifurcateDto(@RequestBody MeterConsumptionDto dto){
+    public ResponseEntity<?> getConsumptionBifurcateDto(@RequestBody MeterConsumptionDto dto) {
         ResponseEntity bifurcateResp = null;
         try {
             BifurcateConsumptionDto bifurcateConsumptionDto = bifurcateService.getBifurcateDto(dto);
             bifurcateResp = new ResponseEntity<>(bifurcateConsumptionDto, HttpStatus.OK);
-        }catch (ApiException apiException){
-            bifurcateResp = new ResponseEntity<>(new Message(apiException.getMessage()),apiException.getHttpStatus());
+        } catch (ApiException apiException) {
+            bifurcateResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -35,18 +38,34 @@ public class BifurcatedController {
     }
 
     @PostMapping("/bifurcate")
-    public ResponseEntity<?> saveConsumptionBifurcateDto(@RequestBody BifurcateConsumptionDto dto){
+    public ResponseEntity<?> saveConsumptionBifurcateDto(@RequestBody BifurcateConsumptionDto dto) {
         ResponseEntity saveBifurcateResp = null;
         try {
             BifurcateConsumptionDto bifurcatedBean = bifurcateService.saveBifurcateDto(dto);
             saveBifurcateResp = new ResponseEntity<>(bifurcatedBean, HttpStatus.OK);
-        }catch (ApiException apiException){
-            saveBifurcateResp = new ResponseEntity<>(new Message(apiException.getMessage()),apiException.getHttpStatus());
-        }catch (DataIntegrityViolationException d) {
-            saveBifurcateResp = new ResponseEntity<>(new Message("Data Integrity Violation"),HttpStatus.BAD_REQUEST);
+        } catch (ApiException apiException) {
+            saveBifurcateResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException d) {
+            saveBifurcateResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return saveBifurcateResp;
+    }
+
+    @GetMapping("/investor-list-lov")
+    public ResponseEntity<?> getInvestorsByDeveloper() {
+        ResponseEntity investorListResp = null;
+        try {
+            List<Map<String,String>> investorList = bifurcateService.getInvestorListByDeveloperId();
+            investorListResp = new ResponseEntity<>(investorList, HttpStatus.OK);
+        } catch (ApiException apiException) {
+            investorListResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException d) {
+            investorListResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return investorListResp;
     }
 }
