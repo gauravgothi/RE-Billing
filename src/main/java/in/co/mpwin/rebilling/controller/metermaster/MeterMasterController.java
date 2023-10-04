@@ -133,4 +133,24 @@ public class MeterMasterController {
         }
         return meterListResp;
     }
+
+    @GetMapping(value = "/list")
+    public ResponseEntity<?> getMeters(){
+        ResponseEntity meterListResp  = null;
+        try {
+            List<Map<String,String>> meterList = meterMasterService.getMeters();
+            meterListResp = new ResponseEntity<>(meterList,HttpStatus.OK);
+        }catch (ApiException apiException){
+            meterListResp = new ResponseEntity<>(new Message(apiException.getMessage()),apiException.getHttpStatus());
+        }catch (DataIntegrityViolationException d){
+            Throwable rootCause = d.getRootCause();
+            String msg=rootCause.getMessage().substring(0,rootCause.getMessage().indexOf("Detail:"));
+            meterListResp = new ResponseEntity<>(new Message(msg),HttpStatus.INTERNAL_SERVER_ERROR);
+            return meterListResp;
+        }catch (Exception e){
+            meterListResp = new ResponseEntity<>(new Message(" something went wrong or some exception occurred "),HttpStatus.INTERNAL_SERVER_ERROR);
+            return meterListResp;
+        }
+        return meterListResp;
+    }
 }

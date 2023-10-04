@@ -34,13 +34,13 @@ public class MeterReplacementController {
     @Autowired
     MeterMasterService meterMasterService;
 
-    @RequestMapping(method=RequestMethod.GET, value ="/meterNo/{meterNo}/status/{status}")
-    public ResponseEntity<?> GetLastReadingByMeterNo(@PathVariable("meterNo") String meterNo, @PathVariable("status") String status) {
+    @RequestMapping(method=RequestMethod.GET, value ="/meterNo/{meterNo}")
+    public ResponseEntity<?> GetLastReadingByMeterNo(@PathVariable("meterNo") String meterNo) {
 
         try {
-         MeterReadingBean res =   meterReadingService.GetLastReadingByMeterNoAndStatus(meterNo,status);
+         MeterReadingBean res =   meterReadingService.GetLastReadingByMeterNoAndStatus(meterNo,"active");
          if(res==null)
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new Message("Last reading not available for meter no. "+meterNo));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message("Last reading not available for meter no. "+meterNo));
          else
              return ResponseEntity.status(HttpStatus.OK).body(res);
             }catch (DataIntegrityViolationException ex) {
@@ -54,8 +54,11 @@ public class MeterReplacementController {
     @RequestMapping(method = RequestMethod.POST, value = "")
     public ResponseEntity<?> meterReplacement(@RequestBody MeterReplacementRequest meterReplacementRequest) {
         try {
-            String res = meterReplacementService.replaceMeterMethod(meterReplacementRequest.getOldMeterBean(), meterReplacementRequest.getNewMeterBean());
-            return ResponseEntity.status(HttpStatus.OK).body(res);
+            Boolean res = meterReplacementService.replaceMeterMethod(meterReplacementRequest.getOldMeterBean(), meterReplacementRequest.getNewMeterBean());
+            if(res)
+            return ResponseEntity.status(HttpStatus.OK).body("Meter replacement done.");
+            else
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Something went wrong.");
         } catch (ApiException apiException) {
             return ResponseEntity.status(apiException.getHttpStatus()).body(new Message(apiException.getMessage()));
         } catch (DataIntegrityViolationException d) {
@@ -110,7 +113,7 @@ public class MeterReplacementController {
             }
             else if(replacementList.size()==0)
             {
-                resp =new ResponseEntity<>(new Message("Meter replacement data is not available"),HttpStatus.NO_CONTENT);
+                resp =new ResponseEntity<>(new Message("Meter replacement data is not available"),HttpStatus.BAD_REQUEST);
             }
             else
             {
@@ -121,10 +124,10 @@ public class MeterReplacementController {
         {
             Throwable rootCause = d.getRootCause();
             String msg=rootCause.getMessage().substring(0,rootCause.getMessage().indexOf("Detail:"));
-            resp = new ResponseEntity<>(new Message(msg),HttpStatus.INTERNAL_SERVER_ERROR);
+            resp = new ResponseEntity<>(new Message(msg),HttpStatus.BAD_REQUEST);
         } catch (Exception e)
         {
-            resp= new ResponseEntity<>(new Message("something went wrong or some exception occurred "+e.getMessage()),HttpStatus.INTERNAL_SERVER_ERROR);
+            resp= new ResponseEntity<>(new Message("something went wrong or some exception occurred "+e.getMessage()),HttpStatus.BAD_REQUEST);
 
         }
         return  resp;
@@ -137,7 +140,7 @@ public class MeterReplacementController {
             Date readingPunchDate = new DateMethods().getCurrentAndPreviousDate(month).get(1);
             MeterReadingBean res = meterReadingService.GetLastReadingByMeterNoAndStatus(meterNo,readingPunchDate);
             if(res==null)
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message("Last reading is not available for meter no. "+meterNo));
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message("You can not punch reading. because SR reading is not available for meter no. "+meterNo));
             else
                 return ResponseEntity.status(HttpStatus.OK).body(res);
         } catch (ApiException apiException) {
@@ -152,6 +155,4 @@ public class MeterReplacementController {
         }
 
     }
-
-
 }

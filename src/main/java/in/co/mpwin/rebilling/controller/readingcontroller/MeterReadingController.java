@@ -5,6 +5,7 @@ import in.co.mpwin.rebilling.dto.BifurcateConsumptionDto;
 import in.co.mpwin.rebilling.dto.MeterConsumptionDto;
 import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.Message;
+import in.co.mpwin.rebilling.services.readingservice.MeterReadingPunchingService;
 import in.co.mpwin.rebilling.services.readingservice.MeterReadingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -25,7 +26,8 @@ import java.util.Optional;
 public class MeterReadingController {
     @Autowired
     MeterReadingService meterReadingService;
-
+    @Autowired
+    MeterReadingPunchingService meterReadingPunchingService;
 
     @RequestMapping(method= RequestMethod.GET,value="/status/{status}")
     public ResponseEntity<?> getAllReadingByStatus(@PathVariable(value = "status") String status){
@@ -300,5 +302,49 @@ public class MeterReadingController {
         }
         return readingActionResp;
     }
+
+    @GetMapping("/meterNo/{meterNo}/history")
+    public ResponseEntity<?> getAllReadingByMeterNo(@PathVariable("meterNo") String meterNo)
+    {
+        ResponseEntity readingHistoryResp = null;
+        try {
+            List<MeterReadingBean> meterReadingHistoryList = meterReadingService.getAllReadingByMeterNo(meterNo);
+            readingHistoryResp = new ResponseEntity<>(meterReadingHistoryList,HttpStatus.OK);
+
+        }catch (ApiException apiException){
+            readingHistoryResp = new ResponseEntity<>(new Message(apiException.getMessage()),apiException.getHttpStatus());
+        }catch (DataIntegrityViolationException d){
+            readingHistoryResp = new ResponseEntity<>(new Message("Database Error"), HttpStatus.BAD_REQUEST);
+        } catch (Exception e){
+            readingHistoryResp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+        }
+        return readingHistoryResp;
+    }
+    //api for SR meter reading for new plant installation.
+    @RequestMapping(method = RequestMethod.POST, value ="/SR")
+    public ResponseEntity<?> saveSRMeterReading(@RequestBody MeterReadingBean meterReadingBean) {
+             ResponseEntity res = null;
+        try {
+            MeterReadingBean mrb = meterReadingPunchingService.saveSRMeterReading(meterReadingBean);
+            if(mrb!=null)
+                res = new ResponseEntity<>(new Message("SR Reading saved successfully."), HttpStatus.OK);
+            if(mrb==null)
+                res = new ResponseEntity<>(new Message("SR Reading not saved due to some error."),HttpStatus.BAD_REQUEST);
+            }catch (ApiException apiException){
+            res = new ResponseEntity<>(new Message(apiException.getMessage()),apiException.getHttpStatus());
+            }catch (DataIntegrityViolationException d){
+            Throwable rootCause = d.getRootCause();
+            String msg=rootCause.getMessage().substring(0,rootCause.getMessage().indexOf("Detail:"));
+            res = new ResponseEntity<>(new Message(msg),HttpStatus.INTERNAL_SERVER_ERROR);
+            }catch(NullPointerException ex){
+            String msg=ex.getMessage().substring(0,ex.getMessage().indexOf("Detail:"));
+            res = new ResponseEntity<>(new Message(msg),HttpStatus.INTERNAL_SERVER_ERROR);
+            }catch (Exception e){
+            e.printStackTrace();
+            res = new ResponseEntity<>(new Message("something went wrong or some exception occurred "),HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        return res;
+    }
+
 
 }

@@ -160,4 +160,25 @@ public class MeterMasterService {
             throw e;
         }
     }
+
+    public List<Map<String,String>> getMeters(){
+        List<Map<String,String>> meterList = new ArrayList<>();
+        try {
+
+            List<MeterMasterBean> meters = meterMasterRepo.findByStatusAndIsMapped("active","yes");
+            for (MeterMasterBean bean : meters){
+                Map<String,String> m = new HashMap<>();
+                m.put("meterNo", bean.getMeterNumber());
+                m.put("meterCategory", bean.getCategory());
+                meterList.add(m);
+            }
+            return meterList;
+        }catch (ApiException apiException){
+            throw apiException;
+        }catch (DataIntegrityViolationException d){
+            throw d;
+        }catch (Exception e){
+            throw e;
+        }
+    }
 }

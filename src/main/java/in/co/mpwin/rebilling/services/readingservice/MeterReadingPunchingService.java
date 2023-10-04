@@ -1,15 +1,20 @@
 package in.co.mpwin.rebilling.services.readingservice;
 
+import in.co.mpwin.rebilling.beans.metermaster.MeterMasterBean;
 import in.co.mpwin.rebilling.beans.readingbean.MeterReadingBean;
 import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.DateMethods;
 import in.co.mpwin.rebilling.repositories.readingrepo.MeterReadingRepo;
+import in.co.mpwin.rebilling.services.metermaster.MeterMasterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Service
 public class MeterReadingPunchingService {
@@ -20,6 +25,8 @@ public class MeterReadingPunchingService {
 
     @Autowired
     MeterReadingRepo meterReadingRepo;
+    @Autowired
+    MeterMasterService meterMasterService;
 
 
     public MeterReadingBean saveMeterReading(MeterReadingBean meterReadingBean)
@@ -72,7 +79,7 @@ public class MeterReadingPunchingService {
         // kwh, kveh and tod reading can not less than previous reading
         if(meterReadingBean.getEActiveEnergy().compareTo(previousReadingBean.getEActiveEnergy())<0)
             throw new ApiException(HttpStatus.BAD_REQUEST,"export active energy is less than previous reading");
-        if(meterReadingBean.getIActiveEnergy().compareTo(previousReadingBean.getIActiveEnergy())<0)
+/*        if(meterReadingBean.getIActiveEnergy().compareTo(previousReadingBean.getIActiveEnergy())<0)
             throw new ApiException(HttpStatus.BAD_REQUEST,"import active energy is less than previous reading");
         if(meterReadingBean.getEKvah().compareTo(previousReadingBean.getEKvah())<0)
 
@@ -96,7 +103,34 @@ public class MeterReadingPunchingService {
         if(meterReadingBean.getITod3().compareTo(previousReadingBean.getITod3())<0)
             throw new ApiException(HttpStatus.BAD_REQUEST,"import Tod3 is less than previous reading");
         if(meterReadingBean.getITod4().compareTo(previousReadingBean.getITod4())<0)
-            throw new ApiException(HttpStatus.BAD_REQUEST,"import Tod4 is less than previous reading");
+            throw new ApiException(HttpStatus.BAD_REQUEST,"import Tod4 is less than previous reading");*/
 
+    }
+
+    public MeterReadingBean saveSRMeterReading(MeterReadingBean meterReadingBean) {
+        try {
+            MeterMasterBean mmb = null;
+            mmb = meterMasterService.getMeterDetailsByMeterNo(meterReadingBean.getMeterNo(), "active");
+            //check meter exist in meter master before crating sr reading
+            if (mmb == null)
+                throw new ApiException(HttpStatus.BAD_REQUEST, "Meter No. " + meterReadingBean.getMeterNo() + " detail is not available in meter master data.");
+            //meter sr reading with meter create date
+            Date meterCreateDate = new SimpleDateFormat("yyyy-MM-dd").parse(mmb.getInstallDate());
+            if (meterReadingBean.getReadingDate().compareTo(meterCreateDate) < 0)
+                throw new ApiException(HttpStatus.BAD_REQUEST, "Meter SR date can not less than meter create date.");
+            meterReadingBean.setReadingType("SR");
+            meterReadingBean.setReadSource("web");
+            meterReadingBean.setEndDate(new DateMethods().getOneDayBefore(meterReadingBean.getReadingDate()));
+            meterReadingBean.setCurrentState("initial_read");
+            return meterReadingService.createMeterReading(meterReadingBean);
+           } catch (ParseException e) {
+              throw new RuntimeException(e);
+           }catch (ApiException apiException) {
+                throw apiException;
+           } catch (DataIntegrityViolationException d) {
+                throw d;
+           } catch (Exception e) {
+                throw e;
+           }
     }
 }
