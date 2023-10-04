@@ -95,6 +95,9 @@ public class FivePercentService {
     public void amrUserAccept(List<FivePercentBean> fivePercentBeanList){
         try {
             for (FivePercentBean b : fivePercentBeanList){
+                //if five percent report remark is calculated then only accept reading otherwise give exception
+                if(!(b.getRemark().equals("calculated")))
+                    throw new ApiException(HttpStatus.BAD_REQUEST,"Something went wrong");
                 String[] mainMeters = b.getMainMeterNumber().split("#");
                 String[] checkMeters = b.getCheckMeterNumber().split("#");
                 if(b.getResult().equals("pass")){

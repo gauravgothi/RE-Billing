@@ -2,6 +2,7 @@ package in.co.mpwin.rebilling.services.readingservice;
 
 import in.co.mpwin.rebilling.beans.metermaster.MeterMasterBean;
 import in.co.mpwin.rebilling.beans.readingbean.MeterReadingBean;
+import in.co.mpwin.rebilling.dto.BifurcateConsumptionDto;
 import in.co.mpwin.rebilling.dto.MeterConsumptionDto;
 import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.AuditControlServices;
@@ -139,7 +140,7 @@ public class MeterReadingService {
                 String username = new TokenInfo().getCurrentUsername();
                 Timestamp updateTime = new DateMethods().getServerTime();
                 meterReadingBeanList = meterReadingRepo.findAllByEndDateMonthAndMeterNoAndStatus(month, meterNo, status);
-                List<MeterReadingBean> beansWithStateInitialRead = meterReadingBeanList.stream().filter(read -> read.getCurrentState().equals("initial_read")).collect(Collectors.toList());
+                List<MeterReadingBean> beansWithStateInitialRead = meterReadingBeanList.stream().filter(read -> read.getCurrentState().equals(currentState)).collect(Collectors.toList());
                 beansWithStateInitialRead.forEach(read -> { read.setCurrentState(updateState);
                                                         read.setUpdatedBy(username);
                                                         read.setUpdatedOn(updateTime);
@@ -288,7 +289,7 @@ public class MeterReadingService {
     public MeterConsumptionDto getMeterConsumptionByMonth(String meterNo, String monthYear) throws ParseException {
         MeterConsumptionDto meterConsumptionDto = new MeterConsumptionDto();
         try {
-                List<String> currentStates = List.of("ht_accept");
+                List<String> currentStates = List.of("ht_accept","dev_accept");
                 Date startReadDate = dateMethods.getCurrentAndPreviousDate(monthYear).get(0);
                 Date endReadDate = dateMethods.getCurrentAndPreviousDate(monthYear).get(1);
                 List<MeterReadingBean> meterReadingBeanList = meterReadingRepo.findByMeterNoAndCurrentStatesInBetween
@@ -303,6 +304,7 @@ public class MeterReadingService {
 
                     meterConsumptionDto = meterConsumptionDto.setMeterConsumptionDto(meterReadingBeanList.get(0),meterReadingBeanList.get(1),meterMasterBean.getMf());
                     meterConsumptionDto.setCategory(meterMasterBean.getCategory());
+                    meterConsumptionDto.setMonthYear(monthYear);
 
             }
         }catch (ApiException apiException){
@@ -319,6 +321,7 @@ public class MeterReadingService {
         return meterReadingRepo.findJustBefore(meterNo,date);
     }
 
+
     public List<MeterReadingBean> getAllReadingByMeterNo(String meterNo) {
         try {
             List<MeterReadingBean> meterReadingBeanList = meterReadingRepo.findAllByMeterNoAndStatusOrderByReadingDateDesc(meterNo,"active");
@@ -332,6 +335,7 @@ public class MeterReadingService {
             throw e;
         }
     }
+
 }
 
 

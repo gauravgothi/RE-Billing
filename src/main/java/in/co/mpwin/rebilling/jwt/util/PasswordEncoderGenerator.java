@@ -46,7 +46,17 @@ public class PasswordEncoderGenerator {
 //        Date currentReadDate = calendar.getTime();
 //                System.out.println(currentReadDate);
 
+        double d=-.00012;
+        System.out.println(d+""); //This prints -1.2E-4
 
+        double c=47.48d;
+        BigDecimal z = new BigDecimal(47.48);
+        System.out.println(z);
+        //This prints 47.47999999999999687361196265555918216705322265625
+
+        calendar = Calendar.getInstance();
+        java.sql.Timestamp ourJavaTimestamp = new java.sql.Timestamp(calendar.getTime().getTime());
+        System.out.println(ourJavaTimestamp);;
 
     }
 }

@@ -43,9 +43,9 @@ public class PlantMasterService {
             new AuditControlServices().setInitialAuditControlParameters(plantMasterBean);
 
             //get max sequence id and set  id as id+1
-            plantMasterBean.setId(getMaxSequence()+1);
+            //plantMasterBean.setId(getMaxSequence()+1);
             // set plant code using id
-           plantMasterBean.setPlantCode("P" + (getMaxSequence()+1));
+           //plantMasterBean.setPlantCode("P" + (getMaxSequence()+1));
 
            plantMasterBean.setContactNo(new ValidatorService().removeSpaceFromString(plantMasterBean.getContactNo()));
 
