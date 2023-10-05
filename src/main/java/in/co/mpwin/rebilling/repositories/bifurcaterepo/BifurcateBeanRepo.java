@@ -20,11 +20,20 @@ public interface BifurcateBeanRepo extends CrudRepository<BifurcateBean,Long> {
     @Query(value = "SELECT DISTINCT new in.co.mpwin.rebilling.beans.bifurcation.BifurcateBean(d.lInvestorCode,d.lInvestorName) FROM BifurcateBean d WHERE d.hDevUsername =:developerUsername",nativeQuery = false)
     List<BifurcateBean> findDistinctInvestorCodeByDeveloperUsername(@Param("developerUsername") String developerUsername);
 
+    @Query(value = "SELECT DISTINCT new in.co.mpwin.rebilling.beans.bifurcation.BifurcateBean(d.hMeterNumber,d.hCategory,d.hCircleName) FROM BifurcateBean d WHERE d.hDevUsername =:developerUsername",nativeQuery = false)
+    List<BifurcateBean> findDistinctMeterNumberByDeveloperUsername(@Param("developerUsername") String developerUsername);
+
+    @Query(value = "SELECT DISTINCT new in.co.mpwin.rebilling.beans.bifurcation.BifurcateBean(d.hMeterNumber,d.hCategory,d.hCircleName) FROM BifurcateBean d WHERE d.hCircleName =:circleUsername",nativeQuery = false)
+    List<BifurcateBean> findDistinctMeterNumberByCircleName(@Param("circleUsername") String circleUsername);
     @Query(value = "SELECT COUNT(*)>0 FROM ecell.re_bifurcated_reading WHERE linv_code=:investorCode AND hmonth=:monthYear AND status=:status",nativeQuery = true)
     boolean isExistsInvestorInBifurcateBean(@Param("investorCode") String investorCode,@Param("monthYear") String monthYear,@Param("status") String status);
 
     @Query(value = "SELECT * FROM ecell.re_bifurcated_reading WHERE linv_code=:investorCode AND hmonth=:hmonth AND status=:status",nativeQuery = true)
     BifurcateBean findByLInvestorCodeAndHmonthAndStatus(@Param("investorCode") String lInvestorCode,@Param("hmonth") String hmonth,@Param("status") String status);
+
+    @Query(value = "SELECT * FROM ecell.re_bifurcated_reading WHERE hmeterno=:hMeterNumber AND hmonth=:hmonth AND status=:status",nativeQuery = true)
+    List<BifurcateBean> findAllByHMeterNumberAndHMonthAndStatus(@Param("hMeterNumber") String hMeterNumber,@Param("hmonth") String hmonth,@Param("status")  String status);
+
 
 //    @Query(value = "SELECT DISTINCT (d.linv_code,d.linv_name) FROM ecell.re_bifurcated_reading d WHERE d.hdev_username =:developerUsername",nativeQuery = true)
 //    List<Tuple> findDistinctInvestorCodeByDeveloperUsername(@Param("developerUsername") String developerUsername);

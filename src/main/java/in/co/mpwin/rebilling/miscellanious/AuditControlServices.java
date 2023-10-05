@@ -70,7 +70,7 @@ public class AuditControlServices {
         invoiceBean.setCreatedBy(new TokenInfo().getCurrentUsername());
         invoiceBean.setUpdatedBy(new TokenInfo().getCurrentUsername());
         invoiceBean.setStatus("active");
-        invoiceBean.setRemark("invoice_freezed");
+        invoiceBean.setRemark(invoiceBean.getRemark());
     }
 
     private void setInitialAuditControlParametersOfBifurcateBean(BifurcateBean bifurcateBean) {
