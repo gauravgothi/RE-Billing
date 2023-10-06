@@ -53,6 +53,7 @@ public class BifurcatedController {
         return saveBifurcateResp;
     }
 
+    //get investor list associated with developer only on invoice generation page
     @GetMapping("/investor-list-lov")
     public ResponseEntity<?> getInvestorsByDeveloper() {
         ResponseEntity investorListResp = null;
@@ -67,5 +68,39 @@ public class BifurcatedController {
             e.printStackTrace();
         }
         return investorListResp;
+    }
+
+    //get meter list associated with developer only on invoice generation page
+    @GetMapping("/meter-list-lov-for-developer")
+    public ResponseEntity<?> getMetersByDeveloper() {
+        ResponseEntity meterListResp = null;
+        try {
+            List<Map<String,String>> meterList = bifurcateService.getMeterListByDeveloperId();
+            meterListResp = new ResponseEntity<>(meterList, HttpStatus.OK);
+        } catch (ApiException apiException) {
+            meterListResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException d) {
+            meterListResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return meterListResp;
+    }
+
+    //get meter list associated with circle only on invoice generation page from bifurcated table
+    @GetMapping("/meter-list-lov-for-circle")
+    public ResponseEntity<?> getMetersByCircle() {
+        ResponseEntity meterListResp = null;
+        try {
+            List<Map<String,String>> meterList = bifurcateService.getMeterListByCircleName();
+            meterListResp = new ResponseEntity<>(meterList, HttpStatus.OK);
+        } catch (ApiException apiException) {
+            meterListResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException d) {
+            meterListResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return meterListResp;
     }
 }

@@ -33,6 +33,9 @@ public class BifurcateBean implements BeanInterface {
     private String hDevPlantcode;
     @Column(name="hdev_plant_name")@NotNull
     private String hDevPlantName;
+
+    @Column(name="hcircle_name")@NotNull
+    private String hCircleName;
     @Column(name="hmeterno")
     private String hMeterNumber;
     @Column(name="hcategory")
@@ -125,6 +128,12 @@ public class BifurcateBean implements BeanInterface {
         this.lInvestorName = lInvestorName;
     }
 
+    public BifurcateBean(String hMeterNumber, String hCategory,String hCircleName) {
+        this.hCircleName = hCircleName;
+        this.hMeterNumber = hMeterNumber;
+        this.hCategory = hCategory;
+    }
+
     public Long getId() {
         return id;
     }
@@ -147,6 +156,10 @@ public class BifurcateBean implements BeanInterface {
 
     public String gethDevPlantName() {
         return hDevPlantName;
+    }
+
+    public String gethCircleName() {
+        return hCircleName;
     }
 
     public String gethMeterNumber() {

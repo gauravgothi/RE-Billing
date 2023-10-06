@@ -2,6 +2,7 @@ package in.co.mpwin.rebilling.services.fileserivce;
 
 import in.co.mpwin.rebilling.beans.xmlfilebean.XmlParserBean;
 import in.co.mpwin.rebilling.beans.readingbean.MeterReadingBean;
+import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.Message;
 import in.co.mpwin.rebilling.miscellanious.UploadPath;
 import in.co.mpwin.rebilling.services.readingservice.MeterReadingService;
@@ -30,7 +31,7 @@ public class FileUploadService {
     MeterReadingBean meterReadingBean;
     @Autowired
     XmlParserBean xmlParserBean;*/
-    public ResponseEntity<?> handleFileUpload(@RequestParam("xmlFile") MultipartFile xmlFile ) {
+    public ResponseEntity<?> handleFileUpload(MultipartFile xmlFile ) {
 
         ResponseEntity resp = null;
 
@@ -50,7 +51,7 @@ public class FileUploadService {
                 String xmlData = new String(bytes, "UTF-8");
                 XmlParserBean xmlParserBean = xmlSaxParserService.parseXml(xmlData);
 
-                if(xmlParserBean.getG1().equals(null))
+                if(xmlParserBean.getDataEntityD1().getG1().equals(null))
                 {
                     resp = new ResponseEntity<>(new Message("XML file is not in correct format"), HttpStatus.OK);
                 }
@@ -72,6 +73,8 @@ public class FileUploadService {
             }
 
 
+        }catch (ApiException apiException){
+            resp = new ResponseEntity<>(new Message(apiException.getMessage()),apiException.getHttpStatus());
         }
         catch (DataIntegrityViolationException d)
         {

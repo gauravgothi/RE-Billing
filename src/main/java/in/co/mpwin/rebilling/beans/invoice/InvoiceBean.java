@@ -105,6 +105,12 @@ public class InvoiceBean implements BeanInterface {
     @Column(name="total_amount")@NotNull
     private BigDecimal totalAmount;
 
+    @Column(name="total_amount_rounded")@NotNull
+    private BigDecimal totalAmountRounded;
+
+    @Column(name = "invoice_stage")@NotNull
+    private String invoiceStage;
+
     @Column(name = "created_by")
     private String createdBy;
     @Column(name = "updated_by")
@@ -160,6 +166,10 @@ public class InvoiceBean implements BeanInterface {
 
     public String getInvesterName() {
         return investerName;
+    }
+
+    public String getInvoiceStage() {
+        return invoiceStage;
     }
 
     public String getGstNo() {
@@ -298,6 +308,11 @@ public class InvoiceBean implements BeanInterface {
         if (this.totalAmount != null)
             return new BigDecimal(String.valueOf(this.totalAmount));
         return totalAmount;
+    }
+    public BigDecimal getTotalAmountRounded() {
+        if (this.totalAmountRounded != null)
+            return new BigDecimal(String.valueOf(this.totalAmountRounded));
+        return totalAmountRounded;
     }
 
     public Date getInvoiceDate() {

@@ -27,6 +27,8 @@ public class BifurcateConsumptionDto {
     private String hDevPlantcode;
     @Column(name="hdev_plant_name")@NotNull
     private String hDevPlantName;
+    @Column(name="hcircle_name")@NotNull
+    private String hCircleName;
     @Column(name="hmeterno")
     private String hMeterNumber;
     @Column(name="hcategory")
