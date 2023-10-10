@@ -15,8 +15,8 @@ public class FileUploadController {
     @Autowired
     FileUploadService fus;
 
-    @PostMapping("/upload")
-    public ResponseEntity<?> handleFileUpload(@RequestParam("file") MultipartFile file ) {
+    @PostMapping("/parsed-data/save")
+    public ResponseEntity<?> handleFileUpload(@RequestParam("xmlFile") MultipartFile file ) {
 
         ResponseEntity resp = null;
         try {

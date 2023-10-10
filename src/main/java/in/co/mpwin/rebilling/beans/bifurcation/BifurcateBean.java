@@ -72,6 +72,9 @@ public class BifurcateBean implements BeanInterface {
     @Column(name="linv_name")@NotNull
     private String lInvestorName;
 
+    @Column(name="ppwa_no")@NotNull
+    private String ppwaNo;
+
     @Column(name = "lmach_capacity")
     private BigDecimal lMachineCapacity;
     @Column(name = "lactive_rate")
@@ -222,6 +225,10 @@ public class BifurcateBean implements BeanInterface {
 
     public String getlInvestorName() {
         return lInvestorName;
+    }
+
+    public String getPpwaNo() {
+        return ppwaNo;
     }
 
     public BigDecimal getlMachineCapacity() {

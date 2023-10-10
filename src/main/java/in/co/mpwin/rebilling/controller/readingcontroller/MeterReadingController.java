@@ -216,10 +216,11 @@ public class MeterReadingController {
     //For Ht report meter consumption report month wise,
     // This controller will fetch ht accept meters of a month
     //url is meter_reading/currentStates/ht_accept,
-    @GetMapping("/currentStates/{currentStates}")
-    public ResponseEntity<?> getMeterListByCurrentStateIn(@PathVariable("currentStates") List<String> currentStateList){
+    @GetMapping("/meterConsumption/meterList")
+    public ResponseEntity<?> getMeterListByCurrentStateIn(){
         ResponseEntity meterListResp = null;
         try {
+                List<String> currentStateList = List.of("ht_accept","dev_accept","dev_reject");
                 List<Map<String,String>> meterList = meterReadingService.getMeterListByCurrentStateIn(currentStateList);
                 meterListResp = new ResponseEntity<>(meterList,HttpStatus.OK);
         }catch (ApiException apiException){

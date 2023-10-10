@@ -19,6 +19,9 @@ public class BifurcateInvestorDto {
     @Column(name="linv_name")@NotNull
     private String lInvestorName;
 
+    @Column(name="ppwa_no")@NotNull
+    private String ppwaNo;
+
     @Column(name = "lmach_capacity")
     private BigDecimal lMachineCapacity;
     @Column(name = "lactive_rate")
