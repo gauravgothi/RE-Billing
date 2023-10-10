@@ -21,6 +21,7 @@ import in.co.mpwin.rebilling.repositories.plantmaster.PlantMasterRepo;
 import in.co.mpwin.rebilling.services.investormaster.InvestorMasterService;
 import in.co.mpwin.rebilling.services.machinemaster.MachineMasterService;
 import in.co.mpwin.rebilling.services.mapping.InvestorMachineMappingService;
+import in.co.mpwin.rebilling.services.mapping.InvestorPpwaMappingService;
 import in.co.mpwin.rebilling.services.mapping.MeterFeederPlantMappingService;
 import in.co.mpwin.rebilling.services.plantmaster.PlantMasterService;
 import in.co.mpwin.rebilling.services.readingservice.MeterReadingService;
@@ -45,6 +46,7 @@ public class BifurcateConsumptionService {
     private DeveloperMasterRepo developerMasterRepo;
     @Autowired private InvestorMachineMappingService investorMachineMappingService;
     @Autowired private InvestorMasterService investorMasterService;
+    @Autowired private InvestorPpwaMappingService investorPpwaMappingService;
     @Autowired private MachineMasterService machineMasterService;
     @Autowired private PlantMasterService plantMasterService;
     @Autowired
@@ -198,9 +200,11 @@ public class BifurcateConsumptionService {
         for (String investor : investorCodes){
             BifurcateInvestorDto dto = new BifurcateInvestorDto();
             InvestorMasterBean investorMasterBean = investorMasterService.getInvestorByInvestorCode(investor,"active");
-
+            if(investorMasterBean == null)
+                throw new ApiException(HttpStatus.BAD_REQUEST,"No investor present in investor master..");
             dto.setLInvestorCode(investor);
             dto.setLInvestorName(investorMasterBean.getInvestorName());
+            dto.setPpwaNo(investorPpwaMappingService.getPpwaNoByInvestorCode(investor,"active"));
 
 
             //Get machine code by investor code

@@ -16,6 +16,7 @@ public class InvoiceInvestorDto {
     private String plantCode;
     private String plantName;
     private String investorCode;
+    private String ppwaNo;
     private String investorName;
     private BigDecimal bifurcateTotalKwhConsumption;
     private BigDecimal bifurcateInvestorKwhConsumption;

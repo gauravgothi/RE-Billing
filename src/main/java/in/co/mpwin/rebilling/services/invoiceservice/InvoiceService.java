@@ -7,6 +7,7 @@ import in.co.mpwin.rebilling.beans.plantmaster.PlantMasterBean;
 import in.co.mpwin.rebilling.dto.InvoiceInvestorDto;
 import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.AuditControlServices;
+import in.co.mpwin.rebilling.miscellanious.Currency;
 import in.co.mpwin.rebilling.miscellanious.DateMethods;
 import in.co.mpwin.rebilling.miscellanious.TokenInfo;
 import in.co.mpwin.rebilling.repositories.bifurcaterepo.BifurcateBeanRepo;
@@ -14,6 +15,7 @@ import in.co.mpwin.rebilling.repositories.invoicerepo.InvoiceBeanRepo;
 import in.co.mpwin.rebilling.services.bifurcateservice.BifurcateConsumptionService;
 import in.co.mpwin.rebilling.services.developermaster.DeveloperMasterService;
 import in.co.mpwin.rebilling.services.investormaster.InvestorMasterService;
+import in.co.mpwin.rebilling.services.mapping.InvestorPpwaMappingService;
 import in.co.mpwin.rebilling.services.plantmaster.PlantMasterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -34,11 +36,12 @@ public class InvoiceService {
     @Autowired private DeveloperMasterService developerMasterService;
     @Autowired private PlantMasterService plantMasterService;
     @Autowired private InvestorMasterService investorMasterService;
+    @Autowired private InvestorPpwaMappingService investorPpwaMappingService;
     @Autowired private BifurcateConsumptionService bifurcateConsumptionService;
     @Autowired
     private BifurcateBeanRepo bifurcateBeanRepo;
 
-    public InvoiceBean generateInvoice(String investorCode, String monthYear){
+    public InvoiceBean generateInvoiceNonPPWA(String investorCode, String monthYear){
         try {
             InvoiceBean invoiceBean = new InvoiceBean();
             //validation for invoice generation
@@ -66,6 +69,7 @@ public class InvoiceService {
                 invoiceBean.setBillingYear(bifurcateBean.getHmonth().substring(4,8));
                 invoiceBean.setInvestorCode(bifurcateBean.getlInvestorCode());
                 invoiceBean.setInvesterName(bifurcateBean.getlInvestorName());
+                invoiceBean.setPpwaNo(bifurcateBean.getPpwaNo());
                 invoiceBean.setGstNo(investorMasterBean.getGstNo());
                 invoiceBean.setCin(investorMasterBean.getCin());
                 invoiceBean.setTin(investorMasterBean.getTin());
@@ -103,15 +107,17 @@ public class InvoiceService {
                 invoiceBean.setLineAdjustmentUnitAmt(invoiceBean.getlAdjustment().multiply(invoiceBean.getlActiveRate()).setScale(6));
                 invoiceBean.setTotalAmount(invoiceBean.getLineKwhAmount().add(invoiceBean.getLineRkvahAmount())
                         .subtract(invoiceBean.getLineFixAdjAmt()).subtract(invoiceBean.getLineAdjustmentUnitAmt()));
-                invoiceBean.setTotalAmountRounded(BigDecimal.valueOf(invoiceBean.getTotalAmount().longValue()));
+                invoiceBean.setGrandTotalAmount(invoiceBean.getTotalAmount());
+                invoiceBean.setGrandTotalAmountRounded(BigDecimal.valueOf(invoiceBean.getGrandTotalAmount().longValue()));
+                invoiceBean.setAmountWords(Currency.convertToIndianCurrency(invoiceBean.getGrandTotalAmountRounded()));
 
                 //set invoice number
-                Integer maxInvoiceNumberOfInvestorOnYear = invoiceBeanRepo.findMaxInvoiceNumber(investorCode,monthYear.substring(4,8));
-                if(maxInvoiceNumberOfInvestorOnYear == null)
-                    maxInvoiceNumberOfInvestorOnYear = 0;
-                String newInvoiceNumber = "MPWZ/"+monthYear.substring(4,8)+"/"+invoiceBean.getInvestorCode()+"/"+String.format("%03d",maxInvoiceNumberOfInvestorOnYear+1);
-                invoiceBean.setInvoiceNumber(newInvoiceNumber);
-                invoiceBean.setBillNo(newInvoiceNumber);
+                Integer maxBillNumberOfInvestorOnYear = invoiceBeanRepo.findMaxBillNumber(investorCode,monthYear.substring(4,8));
+                if(maxBillNumberOfInvestorOnYear == null)
+                    maxBillNumberOfInvestorOnYear = 0;
+                String newBillNumber = "MPWZ/"+monthYear.substring(4,8)+"/"+invoiceBean.getInvestorCode()+"/"+String.format("%03d",maxBillNumberOfInvestorOnYear+1);
+                invoiceBean.setInvoiceNumber(newBillNumber);
+                invoiceBean.setBillNo(newBillNumber);
                 invoiceBean.setInvoiceDate(new DateMethods().getServerTime());
 
             }
@@ -125,14 +131,145 @@ public class InvoiceService {
         }
     }
 
-    @Transactional
-    public InvoiceBean saveInvoice(InvoiceBean invoiceBean) {
+    public List<InvoiceBean> generateInvoicePPWA(String ppwaNo, String monthYear){
         try {
-            //save audit trails
-            new AuditControlServices().setInitialAuditControlParameters(invoiceBean);
-            invoiceBean.setInvoiceStage("invoice_freezed");
-            InvoiceBean savedBean = invoiceBeanRepo.save(invoiceBean);
-            return savedBean;
+            List<InvoiceBean> invoiceBeanList = new ArrayList<>();
+            //validation for invoice generation
+            // 1.all investors related to ppwa must be bifurcated for given month
+            // 2.investor must not be third party
+            List<String> investorCodeLIst = investorPpwaMappingService.getInvestorCodeListByPpwaNo(ppwaNo,monthYear);
+            for (String investorCode : investorCodeLIst){
+                boolean isBifurcationDone = bifurcateConsumptionService.isExistsInvestorInBifurcateBean(ppwaNo,monthYear,"active");
+                InvestorMasterBean investorMasterBean = investorMasterService.getInvestorByInvestorCode(ppwaNo,"active");
+                boolean isBuyerThirdParty = investorMasterBean.getBuyer().equals("Third Party");
+                InvoiceBean alreadyExistInvoice = invoiceBeanRepo
+                        .findByInvestorCodeAndBillingMonthAndStatus(investorCode,monthYear,"active");
+                if (!isBifurcationDone)
+                    throw new ApiException(HttpStatus.BAD_REQUEST,"Bifurcation is not done for given investor " +investorCode+ " and month "+monthYear);
+                else if (isBuyerThirdParty)
+                    throw new ApiException(HttpStatus.BAD_REQUEST,"Since Investor is third Party so invoice can not be generated");
+                else if(alreadyExistInvoice != null)
+                    throw new ApiException(HttpStatus.BAD_REQUEST,"Investor "+investorCode+" invoice already generated for month "
+                            +monthYear+" and invoice number is "+alreadyExistInvoice.getInvoiceNumber());
+                else if (isBifurcationDone && !(isBuyerThirdParty)) {
+                    InvoiceBean invoiceBean = new InvoiceBean();
+                    BifurcateBean bifurcateBean = bifurcateConsumptionService.getBifurcateBeanByInvestorCodeAndMonth(investorCode, monthYear, "active");
+                    invoiceBean.setHMeterNo(bifurcateBean.gethMeterNumber());
+                    invoiceBean.setHCategory(bifurcateBean.gethCategory());
+                    invoiceBean.setHMf(String.valueOf(bifurcateBean.gethMf()));
+                    invoiceBean.setHReadingDate(String.valueOf(bifurcateBean.gethReadingDate()));
+                    invoiceBean.setBillingMonth(bifurcateBean.getHmonth());
+                    invoiceBean.setBillingYear(bifurcateBean.getHmonth().substring(4, 8));
+                    invoiceBean.setInvestorCode(bifurcateBean.getlInvestorCode());
+                    invoiceBean.setInvesterName(bifurcateBean.getlInvestorName());
+                    invoiceBean.setPpwaNo(bifurcateBean.getPpwaNo());
+                    invoiceBean.setGstNo(investorMasterBean.getGstNo());
+                    invoiceBean.setCin(investorMasterBean.getCin());
+                    invoiceBean.setTin(investorMasterBean.getTin());
+                    invoiceBean.setVat(investorMasterBean.getVat());
+                    invoiceBean.setOfficeAddress(investorMasterBean.getOfficeAddress());
+                    invoiceBean.setCircleName(investorMasterBean.getLocationMaster().getCircleName());
+                    invoiceBean.setPpaLetterNo(investorMasterBean.getPpaLetterNo());
+                    invoiceBean.setPpaDate(String.valueOf(investorMasterBean.getPpaDate()));
+                    //set plant commissioned date
+                    PlantMasterBean plantMasterBean = plantMasterService.getPlantByPlantCode(bifurcateBean.gethDevPlantcode(), "active");
+                    invoiceBean.setCommissionedDate(
+                            String.valueOf(plantMasterBean
+                                    .getCommissionedDate()));
+                    invoiceBean.setParticulars(investorMasterBean.getParticulars());
+                    invoiceBean.setLKwhActiveEnergy(bifurcateBean.getlConsumptionKwh()); //this is the kwh export unit
+                    invoiceBean.setLRkvah(bifurcateBean.getLrkvah());
+                    invoiceBean.setLFixedAdjustmentVal(bifurcateBean.getlFixedAdjustmentPer()); //adjustment percent and value clearity needed
+                    invoiceBean.setLAdjustment(bifurcateBean.getlAdjustment());
+                    invoiceBean.setLActiveRate(bifurcateBean.getlMachineActiveRate());
+                    invoiceBean.setLReactiveRate(bifurcateBean.getlMachineAReactiveRate());
+                    invoiceBean.setBankName(investorMasterBean.getBankName());
+                    invoiceBean.setAccountName(investorMasterBean.getAccountHolderName());
+                    invoiceBean.setAccountNo(investorMasterBean.getAccountNo());
+                    invoiceBean.setIfscCode(investorMasterBean.getIfscCode());
+                    invoiceBean.setMicr(investorMasterBean.getMicr());
+                    invoiceBean.setLcdevId(bifurcateBean.gethDevId()); //developer id clarity needed
+                    invoiceBean.setType(plantMasterBean.getType());
+                    //set active energy amount = unit * active rate
+                    invoiceBean.setLineKwhAmount(invoiceBean.getlKwhActiveEnergy().multiply(invoiceBean.getlActiveRate()).setScale(6));
+                    //set rkvah charges = unit * reactive rate
+                    invoiceBean.setLineRkvahAmount(invoiceBean.getlRkvah().multiply(invoiceBean.getlReactiveRate()).setScale(6));
+                    //set fix adjustment amount = fix adjustment value * active rate
+                    invoiceBean.setLineFixAdjAmt(invoiceBean.getlFixedAdjustmentVal().multiply(invoiceBean.getlActiveRate()).setScale(6));
+                    //set adjustment unit amount = total adjustment line unit * active rate
+                    invoiceBean.setLineAdjustmentUnitAmt(invoiceBean.getlAdjustment().multiply(invoiceBean.getlActiveRate()).setScale(6));
+                    invoiceBean.setTotalAmount(invoiceBean.getLineKwhAmount().add(invoiceBean.getLineRkvahAmount())
+                            .subtract(invoiceBean.getLineFixAdjAmt()).subtract(invoiceBean.getLineAdjustmentUnitAmt()));
+
+
+                    //set bill number
+                    Integer maxBillNumberOfInvestorOnYear = invoiceBeanRepo.findMaxBillNumber(investorCode,monthYear.substring(4,8));
+                    if(maxBillNumberOfInvestorOnYear == null)
+                        maxBillNumberOfInvestorOnYear = 0;
+                    String newBillNumber = "MPWZ/"+monthYear.substring(4,8)+"/"+invoiceBean.getInvestorCode()+"/"+String.format("%03d",maxBillNumberOfInvestorOnYear+1);
+                    //set invoice number
+                    Integer maxInvoiceNumberofPpwaNo = invoiceBeanRepo.findMaxInvoiceNumber(invoiceBean.getPpwaNo(),monthYear.substring(4,8));
+                    if (maxInvoiceNumberofPpwaNo == null)
+                        maxInvoiceNumberofPpwaNo = 0;
+                    String newInvoiceNumber = "MPWZ/"+monthYear.substring(4,8)+"/"+invoiceBean.getPpwaNo()+"/"+String.format("%03d",maxInvoiceNumberofPpwaNo+1);
+
+                    invoiceBean.setBillNo(newBillNumber);
+                    invoiceBean.setInvoiceNumber(newInvoiceNumber);
+                    invoiceBean.setInvoiceDate(new DateMethods().getServerTime());
+
+                    invoiceBeanList.add(invoiceBean);
+                }
+            }
+            BigDecimal grandTotAmt = new BigDecimal(0);
+
+            invoiceBeanList.stream().forEach(i -> i.getTotalAmount().add(grandTotAmt));
+            BigDecimal grandTotAmtRod = BigDecimal.valueOf(grandTotAmt.longValue());
+            invoiceBeanList.stream().forEach(i -> {i.setGrandTotalAmount(grandTotAmt);
+                                             i.setGrandTotalAmountRounded(grandTotAmtRod);
+                                             i.setAmountWords(Currency.convertToIndianCurrency(grandTotAmtRod));});
+            return invoiceBeanList;
+        }catch (ApiException apiException){
+            throw apiException;
+        }catch (DataIntegrityViolationException d){
+            throw d;
+        }catch (Exception e){
+            throw e;
+        }
+    }
+
+    @Transactional
+    public String saveInvoiceNonPpwa(InvoiceBean invoiceBean) {
+        try {   if (invoiceBean != null) {
+                //save audit trails
+                new AuditControlServices().setInitialAuditControlParameters(invoiceBean);
+                invoiceBean.setInvoiceStage("invoice_freezed");
+                InvoiceBean savedBean = invoiceBeanRepo.save(invoiceBean);
+                return savedBean.getInvoiceNumber();
+                }
+            else
+                throw new ApiException(HttpStatus.BAD_REQUEST,"No Invoices Bean List Provided");
+        }catch (ApiException apiException){
+            throw apiException;
+        }catch (DataIntegrityViolationException d){
+            throw d;
+        }catch (Exception e){
+            throw e;
+        }
+    }
+
+    @Transactional
+    public String saveInvoicePpwa(List<InvoiceBean> invoiceBeanList) {
+        try {   if (invoiceBeanList.size()>0)
+                    for (InvoiceBean bean : invoiceBeanList) {
+                        //save audit trails
+                        new AuditControlServices().setInitialAuditControlParameters(bean);
+                        bean.setInvoiceStage("invoice_freezed");
+                        InvoiceBean savedBean = invoiceBeanRepo.save(bean);
+
+                    }
+                 else
+                     throw new ApiException(HttpStatus.BAD_REQUEST,"No Invoices Bean List Provided");
+                return "Invoice number " + invoiceBeanList.get(0).getInvoiceNumber()+ " generated successfully.";
         }catch (ApiException apiException){
             throw apiException;
         }catch (DataIntegrityViolationException d){
@@ -158,6 +295,7 @@ public class InvoiceService {
                    invoiceInvestorDto.setInvestorName(b.getlInvestorName());
                    invoiceInvestorDto.setBifurcateInvestorKwhConsumption(b.getlConsumptionKwh());
                    invoiceInvestorDto.setBifurcateTotalKwhConsumption(b.gethConsumptionKwh());
+                   invoiceInvestorDto.setPpwaNo(b.getPpwaNo());
 
                    InvoiceBean invoiceBean = invoiceBeanRepo.findByInvestorCodeAndBillingMonthAndStatus
                            (invoiceInvestorDto.getInvestorCode(),monthYear,"active");
@@ -170,7 +308,7 @@ public class InvoiceService {
                        invoiceInvestorDto.setInvoiceNumber(invoiceBean.getInvoiceNumber());
                        invoiceInvestorDto.setInvoiceDate(String.valueOf(invoiceBean.getInvoiceDate()));
                        invoiceInvestorDto.setInvoiceStage(invoiceBean.getInvoiceStage());
-                       invoiceInvestorDto.setInvoiceAmount(invoiceBean.getTotalAmountRounded());
+                       invoiceInvestorDto.setInvoiceAmount(invoiceBean.getTotalAmount());
                    }
                    invoiceInvestorDtoList.add(invoiceInvestorDto);
                }

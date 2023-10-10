@@ -46,6 +46,9 @@ public class InvoiceBean implements BeanInterface {
     private String investorCode;
     @Column(name="investor_name")@NotNull
     private String investerName;
+
+    @Column(name="ppwa_no")@NotNull
+    private String ppwaNo;
     @Column(name="gst_no")@NotNull
     private String gstNo;
     @Column(name="cin")@NotNull
@@ -105,8 +108,14 @@ public class InvoiceBean implements BeanInterface {
     @Column(name="total_amount")@NotNull
     private BigDecimal totalAmount;
 
-    @Column(name="total_amount_rounded")@NotNull
-    private BigDecimal totalAmountRounded;
+    @Column(name="grand_total_amount")@NotNull
+    private BigDecimal grandTotalAmount;
+
+    @Column(name="grand_total_amount_rounded")@NotNull
+    private BigDecimal grandTotalAmountRounded;
+
+    @Column(name="amount_words")@NotNull
+    private String amountWords;
 
     @Column(name = "invoice_stage")@NotNull
     private String invoiceStage;
@@ -166,6 +175,10 @@ public class InvoiceBean implements BeanInterface {
 
     public String getInvesterName() {
         return investerName;
+    }
+
+    public String getPpwaNo() {
+        return ppwaNo;
     }
 
     public String getInvoiceStage() {
@@ -309,10 +322,21 @@ public class InvoiceBean implements BeanInterface {
             return new BigDecimal(String.valueOf(this.totalAmount));
         return totalAmount;
     }
-    public BigDecimal getTotalAmountRounded() {
-        if (this.totalAmountRounded != null)
-            return new BigDecimal(String.valueOf(this.totalAmountRounded));
-        return totalAmountRounded;
+
+    public BigDecimal getGrandTotalAmount() {
+        if (this.grandTotalAmount != null)
+            return new BigDecimal(String.valueOf(this.grandTotalAmount));
+        return grandTotalAmount;
+    }
+
+    public BigDecimal getGrandTotalAmountRounded() {
+        if (this.grandTotalAmountRounded != null)
+            return new BigDecimal(String.valueOf(this.grandTotalAmountRounded));
+        return grandTotalAmountRounded;
+    }
+
+    public String getAmountWords() {
+        return amountWords;
     }
 
     public Date getInvoiceDate() {

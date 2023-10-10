@@ -16,14 +16,14 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-//@RequestMapping("/report")
+@RequestMapping("/bifurcate")
 @CrossOrigin(origins="*")
 public class BifurcatedController {
     @Autowired
     private BifurcateConsumptionService bifurcateService;
 
     //This is used by developer to bifurcate the meter consumption
-    @GetMapping("/bifurcate")
+    @PostMapping("/empty")
     public ResponseEntity<?> getConsumptionBifurcateDto(@RequestBody MeterConsumptionDto dto) {
         ResponseEntity bifurcateResp = null;
         try {
@@ -37,7 +37,7 @@ public class BifurcatedController {
         return bifurcateResp;
     }
 
-    @PostMapping("/bifurcate")
+    @PostMapping("")
     public ResponseEntity<?> saveConsumptionBifurcateDto(@RequestBody BifurcateConsumptionDto dto) {
         ResponseEntity saveBifurcateResp = null;
         try {

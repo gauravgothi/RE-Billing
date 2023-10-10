@@ -37,10 +37,10 @@ public class InvoiceController {
     }
 
     @GetMapping("/generate/investor/{investor}/monthYear/{monthYear}")
-    public ResponseEntity<?> generateInvoice(@PathVariable ("investor") String investor,@PathVariable ("monthYear") String monthYear){
+    public ResponseEntity<?> generateInvoiceNonPPWA(@PathVariable ("investor") String investor,@PathVariable ("monthYear") String monthYear){
         ResponseEntity invoiceGenerateResp = null;
         try {
-              InvoiceBean invoiceBean = invoiceService.generateInvoice(investor,monthYear);
+              InvoiceBean invoiceBean = invoiceService.generateInvoiceNonPPWA(investor,monthYear);
               invoiceGenerateResp = new ResponseEntity<>(invoiceBean,HttpStatus.OK);
         }catch (ApiException apiException) {
             invoiceGenerateResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
@@ -52,12 +52,44 @@ public class InvoiceController {
         return invoiceGenerateResp;
     }
 
-    @PostMapping("/generate/save")
-    public ResponseEntity<?> saveInvoice(@RequestBody InvoiceBean invoiceBean){
+    @GetMapping("/generate/ppwaNo/{ppwaNo}/monthYear/{monthYear}")
+    public ResponseEntity<?> generateInvoicePPWA(@PathVariable ("ppwaNo") String ppwaNo,@PathVariable ("monthYear") String monthYear){
+        ResponseEntity invoiceGenerateResp = null;
+        try {
+                List<InvoiceBean> invoiceBeanList = invoiceService.generateInvoicePPWA(ppwaNo,monthYear);
+                invoiceGenerateResp = new ResponseEntity<>(invoiceBeanList,HttpStatus.OK);
+        }catch (ApiException apiException) {
+            invoiceGenerateResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException d) {
+            invoiceGenerateResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return invoiceGenerateResp;
+    }
+
+    @PostMapping("/generate/save-non-ppwa")
+    public ResponseEntity<?> saveInvoiceNonPpwa(@RequestBody InvoiceBean invoiceBean){
         ResponseEntity invoiceSaveResp = null;
         try {
-                InvoiceBean savedInvoice = invoiceService.saveInvoice(invoiceBean);
-                invoiceSaveResp = new ResponseEntity<>(savedInvoice,HttpStatus.OK);
+                String responseMessage = invoiceService.saveInvoiceNonPpwa(invoiceBean);
+                invoiceSaveResp = new ResponseEntity<>(responseMessage,HttpStatus.OK);
+        }catch (ApiException apiException) {
+            invoiceSaveResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException d) {
+            invoiceSaveResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return invoiceSaveResp;
+    }
+
+    @PostMapping("/generate/save-ppwa")
+    public ResponseEntity<?> saveInvoicePpwa(@RequestBody List<InvoiceBean> invoiceBeanList){
+        ResponseEntity invoiceSaveResp = null;
+        try {
+            String responseMessage = invoiceService.saveInvoicePpwa(invoiceBeanList);
+            invoiceSaveResp = new ResponseEntity<>(responseMessage,HttpStatus.OK);
         }catch (ApiException apiException) {
             invoiceSaveResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
         } catch (DataIntegrityViolationException d) {
