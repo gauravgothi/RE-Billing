@@ -110,6 +110,7 @@ public class ConsumptionPercentageController {
         ResponseEntity reportDtoResp = null;
         try {
             List<FivePercentBean> passOrFailResults =   fivePercentService.getAmrUserAcceptFailResultForAction(monthYear,"fail","amr_approved");
+
             reportDtoResp = new ResponseEntity<>(passOrFailResults,HttpStatus.OK);
         }catch (ApiException apiException){
             reportDtoResp = new ResponseEntity<>(new Message(apiException.getMessage()),apiException.getHttpStatus());

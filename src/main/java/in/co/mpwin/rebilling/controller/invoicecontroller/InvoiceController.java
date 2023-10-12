@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URLDecoder;
 import java.util.List;
 
 @RestController
@@ -73,7 +74,7 @@ public class InvoiceController {
         ResponseEntity invoiceSaveResp = null;
         try {
                 String responseMessage = invoiceService.saveInvoiceNonPpwa(invoiceBean);
-                invoiceSaveResp = new ResponseEntity<>(responseMessage,HttpStatus.OK);
+                invoiceSaveResp = new ResponseEntity<>(new Message(responseMessage + " invoice saved."),HttpStatus.OK);
         }catch (ApiException apiException) {
             invoiceSaveResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
         } catch (DataIntegrityViolationException d) {
@@ -89,7 +90,7 @@ public class InvoiceController {
         ResponseEntity invoiceSaveResp = null;
         try {
             String responseMessage = invoiceService.saveInvoicePpwa(invoiceBeanList);
-            invoiceSaveResp = new ResponseEntity<>(responseMessage,HttpStatus.OK);
+            invoiceSaveResp = new ResponseEntity<>(new Message(responseMessage + " invoice saved."),HttpStatus.OK);
         }catch (ApiException apiException) {
             invoiceSaveResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
         } catch (DataIntegrityViolationException d) {
@@ -100,13 +101,48 @@ public class InvoiceController {
         return invoiceSaveResp;
     }
 
+    //This api will be used by developer or circle to view non ppwa investor invoice
+    @GetMapping("/view/non-ppwa/invoiceNumber/{invoiceNumber}")
+    public ResponseEntity<?> viewInvoiceNonPpwa(@PathVariable("invoiceNumber") String invoiceNumber){
+        ResponseEntity invoiceViewResp = null;
+        try {
+
+            InvoiceBean invoiceBean = invoiceService.viewInvoiceNonPpwa(invoiceNumber);
+            invoiceViewResp = new ResponseEntity<>(invoiceBean,HttpStatus.OK);
+        }catch (ApiException apiException) {
+            invoiceViewResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException d) {
+            invoiceViewResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return invoiceViewResp;
+    }
+
+    //This api will be used by developer or circle to view ppwa investor invoice
+    @GetMapping("/view/ppwa/invoiceNumber/{invoiceNumber}")
+    public ResponseEntity<?> viewInvoicePpwa(@PathVariable("invoiceNumber") String invoiceNumber){
+        ResponseEntity invoiceViewResp = null;
+        try {
+            List<InvoiceBean> invoiceBeanList = invoiceService.viewInvoicePpwa(invoiceNumber);
+            invoiceViewResp = new ResponseEntity<>(invoiceBeanList,HttpStatus.OK);
+        }catch (ApiException apiException) {
+            invoiceViewResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException d) {
+            invoiceViewResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return invoiceViewResp;
+    }
+
     //This api will be used by developer to submit invoices for circle approval
     @PostMapping("/submit")
     public ResponseEntity<?> submitInvoice(@RequestBody List<InvoiceInvestorDto> invoiceInvestorDtoList){
         ResponseEntity invoiceSubmitResp = null;
         try {
              String message = invoiceService.submitInvoice(invoiceInvestorDtoList);
-            invoiceSubmitResp = new ResponseEntity<>(message,HttpStatus.OK);
+            invoiceSubmitResp = new ResponseEntity<>(new Message(message),HttpStatus.OK);
         }catch (ApiException apiException) {
             invoiceSubmitResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
         } catch (DataIntegrityViolationException d) {

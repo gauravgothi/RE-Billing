@@ -103,4 +103,21 @@ public class BifurcatedController {
         }
         return meterListResp;
     }
+
+    //get bifurcation dto of already bifurcated bean of meter
+    @GetMapping("/get/dto/meterNo/{meterNo}/monthYear/{monthYear}")
+    public ResponseEntity<?> getAlreadyBifurcatedBeanDto(@PathVariable("meterNo") String meterNo,@PathVariable("monthYear") String monthYear) {
+        ResponseEntity alreadyBifurcatedBeanDto = null;
+        try {
+            BifurcateConsumptionDto bifurcateConsumptionDto = bifurcateService.getAlreadyBifurcatedBeanDto(meterNo,monthYear);
+            alreadyBifurcatedBeanDto = new ResponseEntity<>(bifurcateConsumptionDto, HttpStatus.OK);
+        } catch (ApiException apiException) {
+            alreadyBifurcatedBeanDto = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException d) {
+            alreadyBifurcatedBeanDto = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return alreadyBifurcatedBeanDto;
+    }
 }

@@ -34,6 +34,9 @@ public interface BifurcateBeanRepo extends CrudRepository<BifurcateBean,Long> {
     @Query(value = "SELECT * FROM ecell.re_bifurcated_reading WHERE hmeterno=:hMeterNumber AND hmonth=:hmonth AND status=:status",nativeQuery = true)
     List<BifurcateBean> findAllByHMeterNumberAndHMonthAndStatus(@Param("hMeterNumber") String hMeterNumber,@Param("hmonth") String hmonth,@Param("status")  String status);
 
+    @Query(value = "SELECT DISTINCT hmeterno FROM ecell.re_bifurcated_reading WHERE ppwa_no=:ppwaNo AND hmonth=:monthYear AND status=:status",nativeQuery = true)
+    List<String> findDistinctMeterByPpwaNoAndMonthYear(@Param("ppwaNo") String ppwaNo,@Param("monthYear") String monthYear,@Param("status") String status);
+
 
 //    @Query(value = "SELECT DISTINCT (d.linv_code,d.linv_name) FROM ecell.re_bifurcated_reading d WHERE d.hdev_username =:developerUsername",nativeQuery = true)
 //    List<Tuple> findDistinctInvestorCodeByDeveloperUsername(@Param("developerUsername") String developerUsername);

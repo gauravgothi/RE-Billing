@@ -96,18 +96,18 @@ public class FivePercentService {
         try {
             for (FivePercentBean b : fivePercentBeanList){
                 //if five percent report remark is calculated then only accept reading otherwise give exception
-                if(!(b.getRemark().equals("calculated")))
-                    throw new ApiException(HttpStatus.BAD_REQUEST,"Something went wrong");
+                if((b.getResult().equals("withheld")))
+                    continue;
                 String[] mainMeters = b.getMainMeterNumber().split("#");
                 String[] checkMeters = b.getCheckMeterNumber().split("#");
-                if(b.getResult().equals("pass")){
+                if(b.getResult().equals("pass") && (b.getRemark().equals("calculated"))){
                     //update the reading current state
                     for (String mainMeter : mainMeters)
                         meterReadingService.updateCurrentState("initial_read","amr_accept",b.getMonthYear(),mainMeter,"active");
                     for (String checkMeter : checkMeters)
                         meterReadingService.updateCurrentState("initial_read","amr_accept",b.getMonthYear(),checkMeter,"active");
                 }
-                else if (b.getResult().equals("fail")){
+                else if (b.getResult().equals("fail") && (b.getRemark().equals("calculated"))){
                     //update the reading current state
                     for (String mainMeter : mainMeters)
                         meterReadingService.updateCurrentState("initial_read","amr_reject",b.getMonthYear(),mainMeter,"active");
@@ -176,11 +176,15 @@ public class FivePercentService {
         List<FivePercentBean> fivePercentBeanList = null;
         try {
             fivePercentBeanList = fivePercentRepo.findByMonthAndResultAndRemark(monthYear,result,remark);
+            if (fivePercentBeanList.size()==0)
+                throw new ApiException(HttpStatus.BAD_REQUEST,"Not any Failed reading left for force approval");
 
-        }catch (DataIntegrityViolationException e){
-            //throw e;
+        }catch (ApiException apiException){
+            throw apiException;
+        }catch (DataIntegrityViolationException d){
+            throw d;
         }catch (Exception e){
-            // throw e;
+             throw e;
         }
         return fivePercentBeanList;
     }

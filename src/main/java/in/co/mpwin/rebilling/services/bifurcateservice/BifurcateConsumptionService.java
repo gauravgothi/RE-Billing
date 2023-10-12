@@ -201,7 +201,7 @@ public class BifurcateConsumptionService {
             BifurcateInvestorDto dto = new BifurcateInvestorDto();
             InvestorMasterBean investorMasterBean = investorMasterService.getInvestorByInvestorCode(investor,"active");
             if(investorMasterBean == null)
-                throw new ApiException(HttpStatus.BAD_REQUEST,"No investor present in investor master..");
+                throw new ApiException(HttpStatus.BAD_REQUEST,investor + " No investor present in investor master..");
             dto.setLInvestorCode(investor);
             dto.setLInvestorName(investorMasterBean.getInvestorName());
             dto.setPpwaNo(investorPpwaMappingService.getPpwaNoByInvestorCode(investor,"active"));
@@ -414,12 +414,75 @@ public class BifurcateConsumptionService {
         try {
             BifurcateBean bifurcateBean = bifurcateBeanRepo.findByLInvestorCodeAndHmonthAndStatus
                     (investorCode,monthYear,status);
-            bifurcateBean.setStatus("inactive"+new DateMethods().getServerTime());
+            bifurcateBean.setStatus("inactive_"+new DateMethods().getServerTime());
             bifurcateBean.setUpdatedBy(new TokenInfo().getCurrentUsername());
             bifurcateBean.setUpdatedOn(new DateMethods().getServerTime());
             bifurcateBeanRepo.save(bifurcateBean);
         }catch (Exception exception){
             throw exception;
+        }
+    }
+
+    public List<String> getDistinctMeterByPpwaNoAndMonthYear(String ppwaNo, String monthYear, String status) {
+        try {
+                List<String> distinctMeters  = bifurcateBeanRepo.findDistinctMeterByPpwaNoAndMonthYear(ppwaNo,monthYear,status);
+                return distinctMeters;
+        }catch (Exception exception){
+            throw exception;
+        }
+    }
+
+    public BifurcateConsumptionDto getAlreadyBifurcatedBeanDto(String meterNo, String monthYear) {
+        try {
+                List<BifurcateBean> bifurcateBeanList = bifurcateBeanRepo.findAllByHMeterNumberAndHMonthAndStatus
+                        (meterNo,monthYear,"active");
+                if (bifurcateBeanList.size() == 0)
+                    throw new ApiException(HttpStatus.BAD_REQUEST,meterNo + " meter is not bifurcated for given month");
+                //set the investor bifurcated dtos
+                List<BifurcateInvestorDto> bifurcateInvestorDtoList = new ArrayList<>();
+                for (BifurcateBean bifurcateBean : bifurcateBeanList){
+                    BifurcateInvestorDto bifurcateInvestorDto = new BifurcateInvestorDto();
+
+                    ModelMapper modelMapper = new ModelMapper();
+
+                    bifurcateInvestorDto = modelMapper.map(bifurcateBean,BifurcateInvestorDto.class);
+                    bifurcateInvestorDtoList.add(bifurcateInvestorDto);
+                }
+                BifurcateConsumptionDto bifurcateConsumptionDto = new BifurcateConsumptionDto();
+                bifurcateConsumptionDto.setHDevId(bifurcateBeanList.get(0).gethDevId());
+                bifurcateConsumptionDto.setHDevUsername(bifurcateBeanList.get(0).gethDevUsername());
+                bifurcateConsumptionDto.setHDevName(bifurcateBeanList.get(0).gethDevName());
+                bifurcateConsumptionDto.setHDevPlantcode(bifurcateBeanList.get(0).gethDevPlantcode());
+                bifurcateConsumptionDto.setHDevPlantName(bifurcateBeanList.get(0).gethDevPlantName());
+                bifurcateConsumptionDto.setHCircleName(bifurcateBeanList.get(0).gethCircleName());
+                bifurcateConsumptionDto.setHMeterNumber(bifurcateBeanList.get(0).gethMeterNumber());
+                bifurcateConsumptionDto.setHCategory(bifurcateBeanList.get(0).gethCategory());
+                bifurcateConsumptionDto.setHMf(bifurcateBeanList.get(0).gethMf());
+                bifurcateConsumptionDto.setHReadingDate(bifurcateBeanList.get(0).gethReadingDate());
+                bifurcateConsumptionDto.setHmonth(bifurcateBeanList.get(0).getHmonth());
+                bifurcateConsumptionDto.setHMaxDemand(bifurcateBeanList.get(0).gethMaxDemand());
+                bifurcateConsumptionDto.setHConsumptionKwh(bifurcateBeanList.get(0).gethConsumptionKwh());
+                bifurcateConsumptionDto.setHRkvah(bifurcateBeanList.get(0).gethRkvah());
+                bifurcateConsumptionDto.setHAdjustment(bifurcateBeanList.get(0).gethAdjustment());
+                bifurcateConsumptionDto.setHAssessment(bifurcateBeanList.get(0).gethAssessment());
+                bifurcateConsumptionDto.setHGrandConsumptionKwh(bifurcateBeanList.get(0).gethGrandConsumptionKwh());
+                bifurcateConsumptionDto.setFSumConsumptionKwh(bifurcateBeanList.get(0).getfSumConsumptionKwh());
+                bifurcateConsumptionDto.setFSumAssessment(bifurcateBeanList.get(0).getfSumAssessment());
+                bifurcateConsumptionDto.setFSumFixedAdjustmentValue(bifurcateBeanList.get(0).getfSumFixedAdjustmentValue());
+                bifurcateConsumptionDto.setFSumAdjustment(bifurcateBeanList.get(0).getfSumAdjustment());
+                bifurcateConsumptionDto.setFGrandConsumptionKwh(bifurcateBeanList.get(0).getfGrandConsumptionKwh());
+                bifurcateConsumptionDto.setFUnallocatedConsumptionKwh(bifurcateBeanList.get(0).getfUnallocatedConsumptionKwh());
+
+                bifurcateConsumptionDto.setBifurcateInvestorDtoList(bifurcateInvestorDtoList);
+
+                return bifurcateConsumptionDto;
+
+        }catch (ApiException apiException){
+            throw apiException;
+        }catch (DataIntegrityViolationException d){
+            throw d;
+        }catch (Exception e){
+            throw e;
         }
     }
 }
