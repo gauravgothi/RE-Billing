@@ -71,7 +71,7 @@ public class BifurcatedController {
     }
 
     //get meter list associated with developer only on invoice generation page
-    @GetMapping("/meter-list-lov-for-developer")
+    @GetMapping("/developer/meters")
     public ResponseEntity<?> getMetersByDeveloper() {
         ResponseEntity meterListResp = null;
         try {
@@ -88,7 +88,7 @@ public class BifurcatedController {
     }
 
     //get meter list associated with circle only on invoice generation page from bifurcated table
-    @GetMapping("/meter-list-lov-for-circle")
+    @GetMapping("/circle/meters")
     public ResponseEntity<?> getMetersByCircle() {
         ResponseEntity meterListResp = null;
         try {

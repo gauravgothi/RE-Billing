@@ -21,6 +21,7 @@ public class InvoiceController {
 
     @Autowired private InvoiceService invoiceService;
 
+
     @GetMapping("/load/meterNo/{meterNo}/monthYear/{monthYear}")
     public ResponseEntity<?> loadInvoiceDetailOfMeter(@PathVariable("meterNo") String meterNo,@PathVariable ("monthYear") String monthYear){
         ResponseEntity loadInvoiceResp = null;
@@ -41,6 +42,7 @@ public class InvoiceController {
     public ResponseEntity<?> generateInvoiceNonPPWA(@PathVariable ("investor") String investor,@PathVariable ("monthYear") String monthYear){
         ResponseEntity invoiceGenerateResp = null;
         try {
+                                    =
               InvoiceBean invoiceBean = invoiceService.generateInvoiceNonPPWA(investor,monthYear);
               invoiceGenerateResp = new ResponseEntity<>(invoiceBean,HttpStatus.OK);
         }catch (ApiException apiException) {

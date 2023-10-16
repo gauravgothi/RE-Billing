@@ -33,11 +33,16 @@ public class ConsumptionPercentageController {
     @GetMapping("/5percent/month/{month}")
     public ResponseEntity<?> getConsumptionReport(@PathVariable("month") String month){
         ResponseEntity reportDtoResp = null;
-        List<ConsumptionPercentageDto> consumptionPercentageDtoList = null;
+        List<ConsumptionPercentageDto2> consumptionPercentageDtoList = null;
         try {
-            consumptionPercentageDtoList = consumptionPercentageService.calculatePercentageReport(month);
-            List<FivePercentBean> fivePercentReport =  consumptionPercentageService.percentageBeanToDto(consumptionPercentageDtoList);
-            reportDtoResp = new ResponseEntity<>(fivePercentReport, HttpStatus.OK);
+                Date previousReadDate = new DateMethods().getCurrentAndPreviousDate(month).get(0);
+                Date currentReadDate = new DateMethods().getCurrentAndPreviousDate(month).get(0);
+
+                consumptionPercentageDtoList = consumerPercentageService2.calculatePercentageReport2(previousReadDate,currentReadDate);
+                List<FivePercentBean> fivePercentReport =  consumerPercentageService2.consumptionPercentageDto2ToFivePercentageBean(consumptionPercentageDtoList,month);
+                fivePercentService.insertFivePercentReport(fivePercentReport);//report save to table
+                reportDtoResp = new ResponseEntity<>(fivePercentReport, HttpStatus.OK);
+                //reportDtoResp = new ResponseEntity<>(consumptionPercentageDtoList, HttpStatus.OK);
         } catch (ParseException e) {
             reportDtoResp = new ResponseEntity<>(new Message("Month is not in valid format(Mmm-yyyy)"),HttpStatus.BAD_REQUEST);
         }catch (Exception e){
