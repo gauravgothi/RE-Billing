@@ -44,5 +44,12 @@ public class LocationMasterService {
         return location;
     }
 
+    public List<String> getDeveloperListByCircleNameAndStatus(String username, String status) {
+        return locationMasterRepo.findDeveloperUsernamesByLocationIdAndStatus(username,status);
+    }
 
+    public String getIdByCircleNameAndStatus(String circleName, String status) {
+        return locationMasterRepo.findIdByCircleNameAndStatus(circleName,status);
+
+    }
 }

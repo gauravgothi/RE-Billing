@@ -11,6 +11,7 @@ import in.co.mpwin.rebilling.beans.metermaster.MeterMasterBean;
 import in.co.mpwin.rebilling.beans.metermaster.MeterReplacementBean;
 import in.co.mpwin.rebilling.beans.plantmaster.PlantMasterBean;
 import in.co.mpwin.rebilling.beans.readingbean.MeterReadingBean;
+import in.co.mpwin.rebilling.beans.thirdparty.ThirdPartyBean;
 import in.co.mpwin.rebilling.services.plantmaster.PlantMasterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -60,6 +61,8 @@ public class AuditControlServices {
             this.setInitialAuditControlParametersOfBifurcateBean((BifurcateBean) obj);
         }else if (obj instanceof InvoiceBean){
             this.setInitialAuditControlParametersOfInvoiceBean((InvoiceBean) obj);
+        }else if (obj instanceof ThirdPartyBean){
+            this.setInitialAuditControlParametersOfInvoiceBean((ThirdPartyBean) obj);
         }
 
     }
@@ -171,6 +174,14 @@ public class AuditControlServices {
         meterReplacementBean.setUpdatedBy(new TokenInfo().getCurrentUsername());
         meterReplacementBean.setStatus("active");
         meterReplacementBean.setRemark("NA");
+    }
+    private void setInitialAuditControlParametersOfInvoiceBean(ThirdPartyBean tpBean) {
+        tpBean.setCreatedOn(new DateMethods().getServerTime());
+        tpBean.setUpdatedOn(new DateMethods().getServerTime());
+        tpBean.setCreatedBy(new TokenInfo().getCurrentUsername());
+        tpBean.setUpdatedBy(new TokenInfo().getCurrentUsername());
+        tpBean.setStatus("active");
+        tpBean.setRemark("NA");
     }
 
     public static void main(String arg[]) throws ParseException {

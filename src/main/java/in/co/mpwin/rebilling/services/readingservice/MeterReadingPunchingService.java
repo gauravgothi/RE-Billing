@@ -121,7 +121,7 @@ public class MeterReadingPunchingService {
             meterReadingBean.setReadingType("SR");
             meterReadingBean.setReadSource("web");
             meterReadingBean.setEndDate(new DateMethods().getOneDayBefore(meterReadingBean.getReadingDate()));
-            meterReadingBean.setCurrentState("initial_read");
+            meterReadingBean.setCurrentState("ht_accept");
             return meterReadingService.createMeterReading(meterReadingBean);
            } catch (ParseException e) {
               throw new RuntimeException(e);

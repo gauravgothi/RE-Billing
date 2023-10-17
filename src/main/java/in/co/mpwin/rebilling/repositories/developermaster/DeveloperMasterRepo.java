@@ -18,4 +18,5 @@ public interface DeveloperMasterRepo extends CrudRepository<DeveloperMasterBean,
 
     @Query(value = "SELECT d.id FROM ecell.re_developer_master AS d WHERE d.developer_username=:username AND d.status='active'",nativeQuery = true)
     Long findIdByDeveloperUsername(@Param("username") String username);
+
 }
