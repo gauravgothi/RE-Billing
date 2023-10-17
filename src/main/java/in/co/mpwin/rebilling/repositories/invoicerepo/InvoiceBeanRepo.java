@@ -18,7 +18,7 @@ public interface InvoiceBeanRepo extends CrudRepository<InvoiceBean,Long> {
 
     InvoiceBean findByInvestorCodeAndBillingMonthAndStatus(String investorCode,String billingMonth,String status);
 
-    InvoiceBean findByInvoiceNumberAndStatus(String invoiceNumber, String status);
+    InvoiceBean findByInvoiceNumberAndInvestorCodeAndStatus(String invoiceNumber,String investorCode, String status);
 
     List<InvoiceBean> findAllByInvoiceNumberAndStatus(String invoiceNumber, String status);
 }

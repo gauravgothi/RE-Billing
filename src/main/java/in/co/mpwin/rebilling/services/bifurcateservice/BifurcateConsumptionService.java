@@ -419,6 +419,7 @@ public class BifurcateConsumptionService {
             bifurcateBean.setUpdatedOn(new DateMethods().getServerTime());
             bifurcateBeanRepo.save(bifurcateBean);
         }catch (Exception exception){
+            exception.printStackTrace();
             throw exception;
         }
     }

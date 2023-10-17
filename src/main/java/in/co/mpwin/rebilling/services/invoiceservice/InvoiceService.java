@@ -119,6 +119,7 @@ public class InvoiceService {
                 invoiceBean.setInvoiceNumber(newBillNumber);
                 invoiceBean.setBillNo(newBillNumber);
                 invoiceBean.setInvoiceDate(new DateMethods().getServerTime());
+                invoiceBean.setInvoiceStage("pending");
 
             }
             return invoiceBean;
@@ -218,6 +219,7 @@ public class InvoiceService {
                     invoiceBean.setBillNo(newBillNumber);
                     invoiceBean.setInvoiceNumber(newInvoiceNumber);
                     invoiceBean.setInvoiceDate(new DateMethods().getServerTime());
+                    invoiceBean.setInvoiceStage("pending");
 
                     invoiceBeanList.add(invoiceBean);
                 }
@@ -341,7 +343,7 @@ public class InvoiceService {
                                 invoiceInvestorDto.setInvoiceNumber(null);
                                 invoiceInvestorDto.setInvoiceDate(null);
                                 invoiceInvestorDto.setInvoiceAmount(null);
-                                invoiceInvestorDto.setInvoiceStage(null);
+                                invoiceInvestorDto.setInvoiceStage("pending");
                             } else {
                                 invoiceInvestorDto.setInvoiceNumber(invoiceBean.getInvoiceNumber());
                                 invoiceInvestorDto.setInvoiceDate(String.valueOf(invoiceBean.getInvoiceDate()));
@@ -399,7 +401,7 @@ public class InvoiceService {
         //check for invoiceInvestorDto
         try {
             for (InvoiceInvestorDto dto : invoiceInvestorDtoList) {
-                InvoiceBean bean = invoiceBeanRepo.findByInvoiceNumberAndStatus(dto.getInvoiceNumber(), "active");
+                InvoiceBean bean = invoiceBeanRepo.findByInvoiceNumberAndInvestorCodeAndStatus(dto.getInvoiceNumber(), dto.getInvestorCode(), "active");
                 if (bean == null)
                     throw new ApiException(HttpStatus.BAD_REQUEST, "Invoice " + dto.getInvoiceNumber() +" not exist in database");
 
@@ -428,7 +430,7 @@ public class InvoiceService {
         //check for invoiceInvestorDto
         try {
             for (InvoiceInvestorDto dto : invoiceInvestorDtoList) {
-                InvoiceBean bean = invoiceBeanRepo.findByInvoiceNumberAndStatus(dto.getInvoiceNumber(), "active");
+                InvoiceBean bean = invoiceBeanRepo.findByInvoiceNumberAndInvestorCodeAndStatus(dto.getInvoiceNumber(), dto.getInvestorCode(), "active");
                 if (bean == null)
                     throw new ApiException(HttpStatus.BAD_REQUEST,"Invoice " + dto.getInvoiceNumber() +" not exist in database");
 
@@ -457,7 +459,7 @@ public class InvoiceService {
         //check for invoiceInvestorDto
         try {
             for (InvoiceInvestorDto dto : invoiceInvestorDtoList) {
-                InvoiceBean bean = invoiceBeanRepo.findByInvoiceNumberAndStatus(dto.getInvoiceNumber(), "active");
+                InvoiceBean bean = invoiceBeanRepo.findByInvoiceNumberAndInvestorCodeAndStatus(dto.getInvoiceNumber(), dto.getInvestorCode(), "active");
                 if (bean == null)
                     throw new ApiException(HttpStatus.BAD_REQUEST, "Invoice " + dto.getInvoiceNumber() +" not exist in database");
 

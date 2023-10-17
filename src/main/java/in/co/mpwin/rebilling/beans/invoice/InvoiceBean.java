@@ -95,7 +95,7 @@ public class InvoiceBean implements BeanInterface {
     private String lcdevId;
     @Column(name="type")@NotNull
     private String type;  //WIND AND SOLAR from Plant
-    @Column(name="user_id")@NotNull
+    @Column(name="user_id")
     private String userId;
     @Column(name="line_kwh_amount")@NotNull
     private BigDecimal lineKwhAmount;

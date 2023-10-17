@@ -33,6 +33,7 @@ public class BifurcatedController {
             bifurcateResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
         } catch (Exception e) {
             e.printStackTrace();
+            bifurcateResp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
         }
         return bifurcateResp;
     }
@@ -49,6 +50,7 @@ public class BifurcatedController {
             saveBifurcateResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             e.printStackTrace();
+            saveBifurcateResp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
         }
         return saveBifurcateResp;
     }
@@ -66,6 +68,7 @@ public class BifurcatedController {
             investorListResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             e.printStackTrace();
+            investorListResp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
         }
         return investorListResp;
     }
@@ -83,6 +86,7 @@ public class BifurcatedController {
             meterListResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             e.printStackTrace();
+            meterListResp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
         }
         return meterListResp;
     }
@@ -100,6 +104,7 @@ public class BifurcatedController {
             meterListResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             e.printStackTrace();
+            meterListResp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
         }
         return meterListResp;
     }
@@ -117,6 +122,7 @@ public class BifurcatedController {
             alreadyBifurcatedBeanDto = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             e.printStackTrace();
+            alreadyBifurcatedBeanDto = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
         }
         return alreadyBifurcatedBeanDto;
     }
