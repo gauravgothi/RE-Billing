@@ -201,6 +201,12 @@ public class BifurcateBean implements BeanInterface {
         return hConsumptionKwh;
     }
 
+    public BigDecimal gethRkvah() {
+        if (this.hRkvah != null)
+            return new BigDecimal(String.valueOf(this.hRkvah));
+        return hRkvah;
+    }
+
     public BigDecimal gethAdjustment() {
         if (this.hAdjustment != null)
             return new BigDecimal(String.valueOf(this.hAdjustment));

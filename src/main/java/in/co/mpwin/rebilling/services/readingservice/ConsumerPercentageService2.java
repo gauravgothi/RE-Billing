@@ -38,7 +38,7 @@ public class ConsumerPercentageService2 {
 
     public List<ConsumptionPercentageDto2> calculatePercentageReport2(Date startDate, Date endDate) throws ParseException{
         List<ConsumptionPercentageDto2> dtoList = new ArrayList<>();
-        Date futureEndDate = new SimpleDateFormat("dd-MM-yyyy").parse("01-12-2023");
+        Date futureEndDate = new SimpleDateFormat("dd-MM-yyyy").parse("31-12-2024");
         String monthYear = new DateMethods().getMonthYear(endDate);
         List<DeveloperMasterBean> developerList = developerMasterService.getAllDeveloperMasterBean("active");
         for (int k =0;developerList.size()>k;k++){

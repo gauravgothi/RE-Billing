@@ -10,8 +10,9 @@ import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 public class PasswordEncoderGenerator {
 
@@ -31,11 +32,11 @@ public class PasswordEncoderGenerator {
 //        System.out.println("value= "+a);
 
 
-        Calendar calendar = Calendar.getInstance();
-        System.out.println(calendar);
-        System.out.println(calendar.getTime());
-        java.sql.Timestamp ourJavaTimestampObject = new java.sql.Timestamp(calendar.getTime().getTime());
-        System.out.println(ourJavaTimestampObject);
+//        Calendar calendar = Calendar.getInstance();
+//        System.out.println(calendar);
+//        System.out.println(calendar.getTime());
+//        java.sql.Timestamp ourJavaTimestampObject = new java.sql.Timestamp(calendar.getTime().getTime());
+//        System.out.println(ourJavaTimestampObject);
 
 //        Date previousReadDate = new SimpleDateFormat("MMM-yyyy").parse("Feb-2023");
 //        System.out.println(previousReadDate);
@@ -46,17 +47,51 @@ public class PasswordEncoderGenerator {
 //        Date currentReadDate = calendar.getTime();
 //                System.out.println(currentReadDate);
 
-        double d=-.00012;
-        System.out.println(d+""); //This prints -1.2E-4
+//        double d=-.00012;
+//        System.out.println(d+""); //This prints -1.2E-4
+//
+//        double c=47.48d;
+//        BigDecimal z = new BigDecimal(47.48);
+//        System.out.println(z);
+//        //This prints 47.47999999999999687361196265555918216705322265625
+//
+//        calendar = Calendar.getInstance();
+//        java.sql.Timestamp ourJavaTimestamp = new java.sql.Timestamp(calendar.getTime().getTime());
+//        System.out.println(ourJavaTimestamp);;
 
-        double c=47.48d;
-        BigDecimal z = new BigDecimal(47.48);
-        System.out.println(z);
-        //This prints 47.47999999999999687361196265555918216705322265625
 
-        calendar = Calendar.getInstance();
-        java.sql.Timestamp ourJavaTimestamp = new java.sql.Timestamp(calendar.getTime().getTime());
-        System.out.println(ourJavaTimestamp);;
+
+        LinkedHashSet<String> gfg = new LinkedHashSet<String>();
+        // Adding element to LinkedHashSet
+        gfg.add("Geeks");
+        gfg.add("for");
+        gfg.add("geeks");
+        LinkedHashSet<String> newgfg = new LinkedHashSet<>(gfg);
+        int initialSetSize,finalSetSize;
+
+
+
+        // Create a new LinkedHashSet to store elements to add
+        //LinkedHashSet<String> elementsToAdd = new LinkedHashSet<String>(gfg);
+
+        do {
+            gfg = new LinkedHashSet<>(newgfg);
+            initialSetSize = newgfg.size();
+            // Iterating LinkedHashSet using enhanced for loop
+            for (String itr : gfg) {
+                if (itr.equals("for")) {
+                    newgfg.add("from");
+                }
+            }
+
+            finalSetSize = newgfg.size();
+        }while (initialSetSize != finalSetSize);
+
+        // Now, print the modified LinkedHashSet
+        for (String itr : newgfg) {
+            System.out.println(itr);
+        }
+
 
     }
 }

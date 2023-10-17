@@ -15,6 +15,7 @@ public class InvoiceInvestorDto {
 
     private String plantCode;
     private String plantName;
+    private String meterNumber;
     private String investorCode;
     private String ppwaNo;
     private String investorName;

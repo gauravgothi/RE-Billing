@@ -33,6 +33,7 @@ public class BifurcatedController {
             bifurcateResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
         } catch (Exception e) {
             e.printStackTrace();
+            bifurcateResp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
         }
         return bifurcateResp;
     }
@@ -49,6 +50,7 @@ public class BifurcatedController {
             saveBifurcateResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             e.printStackTrace();
+            saveBifurcateResp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
         }
         return saveBifurcateResp;
     }
@@ -66,12 +68,13 @@ public class BifurcatedController {
             investorListResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             e.printStackTrace();
+            investorListResp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
         }
         return investorListResp;
     }
 
     //get meter list associated with developer only on invoice generation page
-    @GetMapping("/meter-list-lov-for-developer")
+    @GetMapping("/developer/meters")
     public ResponseEntity<?> getMetersByDeveloper() {
         ResponseEntity meterListResp = null;
         try {
@@ -83,12 +86,13 @@ public class BifurcatedController {
             meterListResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             e.printStackTrace();
+            meterListResp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
         }
         return meterListResp;
     }
 
     //get meter list associated with circle only on invoice generation page from bifurcated table
-    @GetMapping("/meter-list-lov-for-circle")
+    @GetMapping("/circle/meters")
     public ResponseEntity<?> getMetersByCircle() {
         ResponseEntity meterListResp = null;
         try {
@@ -100,7 +104,26 @@ public class BifurcatedController {
             meterListResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             e.printStackTrace();
+            meterListResp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
         }
         return meterListResp;
+    }
+
+    //get bifurcation dto of already bifurcated bean of meter
+    @GetMapping("/get/dto/meterNo/{meterNo}/monthYear/{monthYear}")
+    public ResponseEntity<?> getAlreadyBifurcatedBeanDto(@PathVariable("meterNo") String meterNo,@PathVariable("monthYear") String monthYear) {
+        ResponseEntity alreadyBifurcatedBeanDto = null;
+        try {
+            BifurcateConsumptionDto bifurcateConsumptionDto = bifurcateService.getAlreadyBifurcatedBeanDto(meterNo,monthYear);
+            alreadyBifurcatedBeanDto = new ResponseEntity<>(bifurcateConsumptionDto, HttpStatus.OK);
+        } catch (ApiException apiException) {
+            alreadyBifurcatedBeanDto = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException d) {
+            alreadyBifurcatedBeanDto = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            e.printStackTrace();
+            alreadyBifurcatedBeanDto = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+        }
+        return alreadyBifurcatedBeanDto;
     }
 }

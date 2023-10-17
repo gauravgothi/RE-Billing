@@ -17,7 +17,7 @@ import java.util.Date;
 @AllArgsConstructor
 @Entity(name = "InvoiceBean")
 @Table(name = "re_invoice_common",uniqueConstraints = { @UniqueConstraint(name = "re_invoice_common_ukey", columnNames={"investor_code","billing_month","status"}),
-                                                        @UniqueConstraint(name = "re_invoice_common_ukey2",columnNames = {"invoiceno"})})
+                                                        @UniqueConstraint(name = "re_invoice_common_ukey2",columnNames = {"billno"})})
 public class InvoiceBean implements BeanInterface {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -95,7 +95,7 @@ public class InvoiceBean implements BeanInterface {
     private String lcdevId;
     @Column(name="type")@NotNull
     private String type;  //WIND AND SOLAR from Plant
-    @Column(name="user_id")@NotNull
+    @Column(name="user_id")
     private String userId;
     @Column(name="line_kwh_amount")@NotNull
     private BigDecimal lineKwhAmount;
