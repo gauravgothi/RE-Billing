@@ -85,6 +85,7 @@ public class ThirdPartyService {
             if(feederMasterBean==null)
                 throw new ApiException(HttpStatus.BAD_REQUEST,"feeder detail not found in master for feeder number:"+mfpBean.getFeederCode());
 
+
             DeveloperPlantDto dpDto = new DeveloperPlantDto();
             dpDto.setDeveloperId(String.valueOf(developerMasterBean.getId()));
             dpDto.setDeveloperName(developerMasterBean.getDeveloperName());
@@ -103,6 +104,7 @@ public class ThirdPartyService {
             dpDto.setFeederCircuitVoltage(feederMasterBean.getCircuitVoltage());
             dpDto.setFeederInjectingSubstationName(feederMasterBean.getInjectingSsName());
             dpDto.setSiteLocation(plantMasterBean.getAddress());
+
             return dpDto;
         }catch (ApiException apiException){
             throw apiException;

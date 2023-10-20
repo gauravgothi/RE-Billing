@@ -122,7 +122,15 @@ public class MeterReadingPunchingService {
             meterReadingBean.setReadSource("web");
             meterReadingBean.setEndDate(new DateMethods().getOneDayBefore(meterReadingBean.getReadingDate()));
             meterReadingBean.setCurrentState("ht_accept");
-            return meterReadingService.createMeterReading(meterReadingBean);
+            meterReadingBean.setMf(BigDecimal.valueOf(0));
+            MeterReadingBean lastReading = meterReadingRepo.findLastReadByMeterNoAndStatus(meterReadingBean.getMeterNo(),"active");
+
+            if(lastReading!=null && (lastReading.getReadingType().compareTo("FR")==0)&&(meterReadingBean.getReadingDate().compareTo(lastReading.getReadingDate())>=0))
+                return meterReadingService.createMeterReading(meterReadingBean);
+            else if(lastReading==null)
+                return meterReadingService.createMeterReading(meterReadingBean);
+            else
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Last reading of this meter is not FR or last reading date is greater than SR reading date.");
            } catch (ParseException e) {
               throw new RuntimeException(e);
            }catch (ApiException apiException) {
