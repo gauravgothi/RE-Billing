@@ -6,7 +6,9 @@ import in.co.mpwin.rebilling.interfaces.BeanInterface;
 import jakarta.persistence.*;
 import lombok.*;
 
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Date;
 
@@ -53,7 +55,7 @@ public class ThirdPartyBean implements BeanInterface  {
     private String developerId ;
 
     @Column(name="developer_name")
-    private String developer_name;
+    private String developerName;
 
     @Column(name="plant_code")
     private String plantCode ;
@@ -83,6 +85,14 @@ public class ThirdPartyBean implements BeanInterface  {
 
     @Column(name="standby_meter_no")
     private String standbyMeterNo;
+    @Column(name="mfp_id")
+    private String mfpId;
+    @Column(name="feeder_number")
+    private  String feederNumber;
+    @Column(name="feeder_injecting_substation_name")
+    private String feederInjectingSubstationName;
+    @Column(name="feeder_circuit_voltage")
+    private String feederCircuitVoltage;
 
     @Column(name="developer_discom_name")
     private String developerDiscomName ;
@@ -99,8 +109,8 @@ public class ThirdPartyBean implements BeanInterface  {
     @Column(name="period_of_ppwa")
     private String periodOfPpwa;
 
-    @Column(name="adjustment_unit_percent")
-    private String adjustmentUnitPercent;
+    @Column(name="adjustment_unit_percent") @Digits(integer = 5,fraction = 2)
+    private BigDecimal adjustmentUnitPercent;
 
     @Column(name="userid")
     private String userid;

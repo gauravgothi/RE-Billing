@@ -57,9 +57,11 @@ public interface MeterFeederPlantMappingRepo extends CrudRepository<MeterFeederP
     @Query(value = "UPDATE ecell.re_meter_feeder_plant_mapping SET end_date=:replaceDate where id=:id", nativeQuery = true)
     void updateMappingEndDatebyId(@Param("id") Long id,@Param("replaceDate") Date replaceDate);
 
-    @Query(value = "select distinct t.plant_code from ecell.re_meter_feeder_plant_mapping t where t.developer_id='1' and status='active' order by t.plant_code",nativeQuery = true)
-    List<String> findDistinctPlantCodeByDeveloperIdAndStatus(String di, String status);
+    @Query(value = "select distinct t.plant_code from ecell.re_meter_feeder_plant_mapping t where t.developer_id=:developerId and t.status=:status order by t.plant_code",nativeQuery = true)
+    List<String> findDistinctPlantCodeByDeveloperIdAndStatus(@Param("developerId") String developerId,@Param("status") String status);
 
     List<MeterFeederPlantMappingBean> findAllByDeveloperIdAndStatusOrderByEndDateAsc(String di, String status);
 
+    @Query(value = "select * from ecell.re_meter_feeder_plant_mapping where developer_id=:developerId and plant_code=:plantId and status=:status order by id DESC limit 1", nativeQuery = true)
+    MeterFeederPlantMappingBean findByDeveloperIdAndPlantIdAndStatus(@Param("developerId") String developerId,@Param("plantId") String plantId, @Param("status") String status);
 }
