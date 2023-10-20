@@ -36,7 +36,7 @@ public class ConsumptionPercentageController {
         List<ConsumptionPercentageDto2> consumptionPercentageDtoList = null;
         try {
                 Date previousReadDate = new DateMethods().getCurrentAndPreviousDate(month).get(0);
-                Date currentReadDate = new DateMethods().getCurrentAndPreviousDate(month).get(0);
+                Date currentReadDate = new DateMethods().getCurrentAndPreviousDate(month).get(1);
 
                 consumptionPercentageDtoList = consumerPercentageService2.calculatePercentageReport2(previousReadDate,currentReadDate);
                 List<FivePercentBean> fivePercentReport =  consumerPercentageService2.consumptionPercentageDto2ToFivePercentageBean(consumptionPercentageDtoList,month);

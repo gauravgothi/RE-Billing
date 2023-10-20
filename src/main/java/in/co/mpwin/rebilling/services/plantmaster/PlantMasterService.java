@@ -3,10 +3,13 @@ package in.co.mpwin.rebilling.services.plantmaster;
 
 
 import in.co.mpwin.rebilling.beans.plantmaster.PlantMasterBean;
+import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.AuditControlServices;
 import in.co.mpwin.rebilling.miscellanious.ValidatorService;
 import in.co.mpwin.rebilling.repositories.plantmaster.PlantMasterRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 
@@ -24,10 +27,16 @@ public class PlantMasterService {
         List<PlantMasterBean> allPlantList = new ArrayList<>();
         try {
             allPlantList= plantMasterRepo.findAllByStatus(status);
+            if (allPlantList.isEmpty())
+                throw new ApiException(HttpStatus.BAD_REQUEST, "plant list are not found.");
+            return allPlantList;
+        } catch (ApiException apiException) {
+            throw apiException;
+        } catch (DataIntegrityViolationException d) {
+            throw d;
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        return allPlantList;
     }
 
 
@@ -89,12 +98,19 @@ public class PlantMasterService {
     public List<PlantMasterBean> getAllPlantByLocationId(String locationId, String status) {
         List<PlantMasterBean> allPlantList = new ArrayList<>();
         try {
-            allPlantList= plantMasterRepo.findByLocationIdAndStatus(locationId, status);
+            allPlantList = plantMasterRepo.findByLocationIdAndStatus(locationId, status);
+            if (allPlantList.isEmpty())
+                throw new ApiException(HttpStatus.BAD_REQUEST, "plant list are not available for this location id:" + locationId);
+            return allPlantList;
+        } catch (ApiException apiException) {
+            throw apiException;
+        } catch (DataIntegrityViolationException d) {
+            throw d;
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        return allPlantList;
     }
+
 }
 
 

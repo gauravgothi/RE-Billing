@@ -2,10 +2,12 @@ package in.co.mpwin.rebilling.controller.plantmaster;
 
 
 import in.co.mpwin.rebilling.beans.plantmaster.PlantMasterBean;
+import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.Message;
 import in.co.mpwin.rebilling.services.plantmaster.PlantMasterService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,19 +27,16 @@ public class PlantMasterController {
         try {
             String status = "active";
             List<PlantMasterBean> plantList = plantMasterService.getAllPlantMasterBean(status);
-
-            if(plantList.size()>0)
-            {
-                plantResp = new ResponseEntity<>(plantList, HttpStatus.OK);
+            plantResp = new ResponseEntity<>(plantList, HttpStatus.OK);
+            }catch (ApiException apiException) {
+                plantResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+            } catch (DataIntegrityViolationException d) {
+                plantResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+            }catch (Exception e) {
+                e.printStackTrace();
+                plantResp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, 200)), HttpStatus.BAD_REQUEST);
             }
-            else if(plantList.size()==0)
-            {
-                plantResp =new ResponseEntity<>(new Message("plant list is not available"),HttpStatus.BAD_REQUEST);
-            }
-        }catch (Exception e) {
-            e.printStackTrace();
-        }
-        return plantResp;
+            return plantResp;
     }
 
 
@@ -114,17 +113,20 @@ public class PlantMasterController {
         ResponseEntity plantResp = null;
          try {
             List<PlantMasterBean> plantList = plantMasterService.getAllPlantByLocationId(locationId, status);
-            if (plantList.size()>0) {
+            if (plantList.size()>0)
                 plantResp = new ResponseEntity<>(plantList , HttpStatus.OK);
-            } else if (plantList.size() == 0) {
-                plantResp = new ResponseEntity<>(new Message( " plant list does not exist for "+locationId), HttpStatus.BAD_REQUEST);
-            } else {
-                plantResp = new ResponseEntity<>(new Message("Something went wrong."), HttpStatus.BAD_REQUEST);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+             else if (plantList.size() == 0)
+                throw new ApiException(HttpStatus.BAD_REQUEST, "plant list are not available for this location id:"+locationId);
+             else
+                throw new ApiException(HttpStatus.BAD_REQUEST, "something went wrong to get plant list "+locationId);
+            } catch (ApiException apiException) {
+             plantResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+         } catch (DataIntegrityViolationException d) {
+             plantResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+         }catch (Exception e) {
+             e.printStackTrace();
+             plantResp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, 200)), HttpStatus.BAD_REQUEST);
+         }
         return plantResp;
     }
 
