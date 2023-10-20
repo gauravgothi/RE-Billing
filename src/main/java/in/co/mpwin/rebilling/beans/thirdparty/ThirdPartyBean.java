@@ -4,17 +4,14 @@ package in.co.mpwin.rebilling.beans.thirdparty;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import in.co.mpwin.rebilling.interfaces.BeanInterface;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 import java.util.Date;
 
 @Getter
-@Setter
+@Setter @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "ThirdPartyBean")
@@ -58,8 +55,8 @@ public class ThirdPartyBean implements BeanInterface  {
     @Column(name="developer_name")
     private String developer_name;
 
-    @Column(name="plant_id")
-    private String plantId ;
+    @Column(name="plant_code")
+    private String plantCode ;
 
     @Column(name="plant_name")
     private String plantName;
@@ -67,8 +64,8 @@ public class ThirdPartyBean implements BeanInterface  {
     @Column(name="plant_capacity")
     private String plantCapacity ;
 
-    @Column(name="investor_id")
-    private String investorId;
+    @Column(name="investor_code")
+    private String investorCode;
 
     @Column(name="investor_name")
     private String investorName ;

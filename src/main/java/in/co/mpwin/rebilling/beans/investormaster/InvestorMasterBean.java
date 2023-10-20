@@ -6,6 +6,7 @@ import in.co.mpwin.rebilling.miscellanious.ConstantField;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 
 import javax.validation.constraints.Email;
@@ -14,6 +15,7 @@ import java.util.Date;
 
 @Getter
 @Setter
+@ToString
 @Entity(name="InvestorMasterBean")
 @Table(name="re_investor_master")
 public class InvestorMasterBean implements BeanInterface {

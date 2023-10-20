@@ -6,12 +6,14 @@ import in.co.mpwin.rebilling.interfaces.BeanInterface;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.sql.Date;
 import java.sql.Timestamp;
 
 @Getter
 @Setter
+@ToString
 @Entity(name="MachineMasterBean")
 @Table(name="re_machine_master",uniqueConstraints = @UniqueConstraint(name = "re_machine_master_ukey", columnNames={"machine_code", "status"}))
 public class MachineMasterBean implements BeanInterface {

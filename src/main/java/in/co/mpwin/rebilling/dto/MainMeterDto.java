@@ -4,17 +4,14 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.validation.constraints.Digits;
 import java.math.BigDecimal;
 
 
 @Getter
-@Setter
+@Setter @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class MainMeterDto {

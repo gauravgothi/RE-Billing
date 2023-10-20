@@ -189,4 +189,18 @@ public class FivePercentService {
         return fivePercentBeanList;
     }
 
+    public List<FivePercentBean> discardFivePercent(String meterNumber,String monthYear,String status){
+        List<FivePercentBean> fivePercentBeanList = null;
+        try {
+                fivePercentRepo.discardFivePercentBean(meterNumber,monthYear,status);
+        }catch (ApiException apiException){
+            throw apiException;
+        }catch (DataIntegrityViolationException d){
+            throw d;
+        }catch (Exception e){
+            throw e;
+        }
+        return fivePercentBeanList;
+    }
+
 }

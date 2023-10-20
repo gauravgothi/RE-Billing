@@ -6,6 +6,7 @@ import in.co.mpwin.rebilling.interfaces.BeanInterface;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -13,7 +14,7 @@ import java.sql.Timestamp;
 
 @Getter
 @Setter
-
+@ToString
 @Entity(name="PlantMasterBean")
 @Table(name="re_plant_master",uniqueConstraints = @UniqueConstraint(name = "re_plant_master_ukey", columnNames={"plant_code", "status"}))
 public class PlantMasterBean implements BeanInterface {

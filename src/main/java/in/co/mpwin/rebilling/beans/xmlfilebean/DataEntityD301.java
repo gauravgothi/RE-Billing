@@ -1,8 +1,13 @@
 package in.co.mpwin.rebilling.beans.xmlfilebean;
 
+import lombok.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
+
+@NoArgsConstructor
+@AllArgsConstructor
 public class DataEntityD301 {
     private String mechanism;
     private String datetime;

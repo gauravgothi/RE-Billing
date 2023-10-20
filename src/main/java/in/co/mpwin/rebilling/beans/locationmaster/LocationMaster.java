@@ -4,6 +4,7 @@ import in.co.mpwin.rebilling.interfaces.BeanInterface;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
@@ -11,6 +12,7 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 @Entity
+@ToString
 @Table(name = "re_location_master")
 public class LocationMaster implements BeanInterface {
 

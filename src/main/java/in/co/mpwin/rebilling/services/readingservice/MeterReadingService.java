@@ -13,6 +13,7 @@ import in.co.mpwin.rebilling.repositories.readingrepo.MeterReadingRepo;
 import in.co.mpwin.rebilling.services.metermaster.MeterMasterService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -37,6 +38,8 @@ import java.util.stream.Collectors;
 public class MeterReadingService {
     @Autowired
     private MeterReadingRepo meterReadingRepo;
+    @Autowired @Lazy
+    private  FivePercentService fivePercentService;
     @Autowired
     private MeterMasterService meterMasterService;
     @Autowired private DateMethods dateMethods;
@@ -211,7 +214,7 @@ public class MeterReadingService {
 
                 String username = new TokenInfo().getCurrentUsername();
                 Timestamp updateTime = new DateMethods().getServerTime();
-                // here we dont need to check existing current state because view reading have only amr_accept or force_accept
+                // here we dont need to check existing current state because view reading have only amr_accept or force_accept or dev_reject
                 meterReadingBeanList.forEach(read -> {  read.setCurrentState("ht_accept");
                                                         read.setUpdatedBy(username);
                                                         read.setUpdatedOn(updateTime);
@@ -255,8 +258,16 @@ public class MeterReadingService {
             meterReadingBeanList.forEach(read -> {  read.setCurrentState("dev_reject");
                 read.setUpdatedBy(username);
                 read.setUpdatedOn(updateTime);
+                read.setStatus("inactive_" +updateTime ); //added for dev_reject cases newly added 19.10.23
+
             });
             meterReadingRepo.saveAll(meterReadingBeanList);
+
+            //added for dev_reject cases newly added 19.10.23
+            meterReadingBeanList.forEach(read -> {
+                String monthYear = new DateMethods().getMonthYear(read.getReadingDate());
+                fivePercentService.discardFivePercent(read.getMeterNo(), monthYear,"inactive_" +updateTime);
+            });
         }catch (ApiException apiException){
             throw apiException;
         }catch (Exception exception){

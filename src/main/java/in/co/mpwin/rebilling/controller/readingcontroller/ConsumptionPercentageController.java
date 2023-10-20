@@ -6,6 +6,7 @@ import in.co.mpwin.rebilling.beans.readingbean.FivePercentBean;
 import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.DateMethods;
 import in.co.mpwin.rebilling.miscellanious.Message;
+import in.co.mpwin.rebilling.repositories.readingrepo.FivePercentRepo;
 import in.co.mpwin.rebilling.services.readingservice.ConsumptionPercentageService;
 import in.co.mpwin.rebilling.services.readingservice.ConsumerPercentageService2;
 import in.co.mpwin.rebilling.services.readingservice.FivePercentService;
@@ -29,6 +30,8 @@ public class ConsumptionPercentageController {
     ConsumerPercentageService2 consumerPercentageService2;
     @Autowired
     FivePercentService fivePercentService;
+    @Autowired
+    private FivePercentRepo fivePercentRepo;
 
     @GetMapping("/5percent/month/{month}")
     public ResponseEntity<?> getConsumptionReport(@PathVariable("month") String month){
@@ -36,14 +39,20 @@ public class ConsumptionPercentageController {
         List<ConsumptionPercentageDto2> consumptionPercentageDtoList = null;
         try {
                 Date previousReadDate = new DateMethods().getCurrentAndPreviousDate(month).get(0);
-                Date currentReadDate = new DateMethods().getCurrentAndPreviousDate(month).get(0);
+                Date currentReadDate = new DateMethods().getCurrentAndPreviousDate(month).get(1);
 
                 consumptionPercentageDtoList = consumerPercentageService2.calculatePercentageReport2(previousReadDate,currentReadDate);
                 List<FivePercentBean> fivePercentReport =  consumerPercentageService2.consumptionPercentageDto2ToFivePercentageBean(consumptionPercentageDtoList,month);
                 fivePercentService.insertFivePercentReport(fivePercentReport);//report save to table
-                reportDtoResp = new ResponseEntity<>(fivePercentReport, HttpStatus.OK);
+                if (fivePercentReport.size() == 0)
+                    reportDtoResp = new ResponseEntity<>(new Message("Five Percent Report of Given month Already approved and " +
+                            " no any meter left in withheld"), HttpStatus.BAD_REQUEST);
+                else
+                    reportDtoResp = new ResponseEntity<>(fivePercentReport, HttpStatus.OK);
                 //reportDtoResp = new ResponseEntity<>(consumptionPercentageDtoList, HttpStatus.OK);
-        } catch (ParseException e) {
+        } catch (ApiException apiException){
+            reportDtoResp = new ResponseEntity<>(new Message(apiException.getMessage()),apiException.getHttpStatus());
+        }catch (ParseException e) {
             reportDtoResp = new ResponseEntity<>(new Message("Month is not in valid format(Mmm-yyyy)"),HttpStatus.BAD_REQUEST);
         }catch (Exception e){
             e.printStackTrace();

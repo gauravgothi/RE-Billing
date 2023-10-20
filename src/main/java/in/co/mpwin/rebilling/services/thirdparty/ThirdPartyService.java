@@ -47,5 +47,20 @@ public class ThirdPartyService {
             throw new RuntimeException(e);
         }
     }
+
+    public List<ThirdPartyBean> getThirdPartiesByInvestorCode(String investorCode) {
+        try {
+            List<ThirdPartyBean> tpLists = thirdPartyRepo.findAllByInvestorCodeAndStatus(investorCode,"active");
+            if (tpLists.isEmpty())
+                throw new ApiException(HttpStatus.BAD_REQUEST, "No third party for investor." + investorCode);
+            return tpLists;
+        } catch (ApiException apiException) {
+            throw apiException;
+        } catch (DataIntegrityViolationException d) {
+            throw d;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
 

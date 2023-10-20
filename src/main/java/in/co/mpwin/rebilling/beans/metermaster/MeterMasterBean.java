@@ -5,13 +5,14 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Digits;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 @Getter
-@Setter
+@Setter @ToString
 @Entity(name="MeterMasterBean")@Table(name="re_meter_master")
 public class MeterMasterBean implements MeterMasterInterface {
     @Id

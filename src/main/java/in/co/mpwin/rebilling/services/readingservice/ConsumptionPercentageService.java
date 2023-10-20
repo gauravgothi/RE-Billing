@@ -54,7 +54,7 @@ public class ConsumptionPercentageService {
                         percentageDto.getCheckCurrentReading().compareTo(BigDecimal.valueOf(-1)) != 0)  {
                     //calculate percentage(main total consumption - check total consumption *100)
                     percentageDto.setPercentage((percentageDto.getMainTotalConsumption().subtract(percentageDto.getCheckTotalConsumption())
-                            .divide(percentageDto.getMainTotalConsumption(), 6, RoundingMode.HALF_DOWN)).multiply(BigDecimal.valueOf(100)).abs());
+                            .divide(percentageDto.getMainTotalConsumption(), 2, RoundingMode.HALF_DOWN)).multiply(BigDecimal.valueOf(100)).abs());
                     percentageDto.setResult((percentageDto.getPercentage().compareTo(BigDecimal.valueOf(0.5)) <= 0) ? "pass" : "fail");
                 } else {
                     percentageDto.setPercentage(BigDecimal.valueOf(-1));
