@@ -60,6 +60,13 @@ public class PasswordEncoderGenerator {
 //        System.out.println(ourJavaTimestamp);;
 
 
+        Date date = new SimpleDateFormat("dd-MM-yyyy").parse("01-10-2023");
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.DATE, -1);
+        Date oneDayBefore = cal.getTime();
+        System.out.println(new SimpleDateFormat("MMM-yyyy").format(oneDayBefore));
 
         LinkedHashSet<String> gfg = new LinkedHashSet<String>();
         // Adding element to LinkedHashSet

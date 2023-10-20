@@ -25,6 +25,9 @@ public interface BifurcateBeanRepo extends CrudRepository<BifurcateBean,Long> {
 
     @Query(value = "SELECT DISTINCT new in.co.mpwin.rebilling.beans.bifurcation.BifurcateBean(d.hMeterNumber,d.hCategory,d.hCircleName) FROM BifurcateBean d WHERE d.hCircleName =:circleUsername",nativeQuery = false)
     List<BifurcateBean> findDistinctMeterNumberByCircleName(@Param("circleUsername") String circleUsername);
+
+    @Query(value = "SELECT DISTINCT new in.co.mpwin.rebilling.beans.bifurcation.BifurcateBean(d.hMeterNumber,d.hCategory,d.hCircleName) FROM BifurcateBean d",nativeQuery = false)
+    List<BifurcateBean> findDistinctMeterNumber();
     @Query(value = "SELECT COUNT(*)>0 FROM ecell.re_bifurcated_reading WHERE linv_code=:investorCode AND hmonth=:monthYear AND status=:status",nativeQuery = true)
     boolean isExistsInvestorInBifurcateBean(@Param("investorCode") String investorCode,@Param("monthYear") String monthYear,@Param("status") String status);
 

@@ -5,11 +5,12 @@ import in.co.mpwin.rebilling.interfaces.BeanInterface;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.sql.Timestamp;
 import java.util.Date;
 
-@Getter
+@Getter @ToString
 @Setter
 @Entity(name="MeterReplacementBean")@Table(name="re_meter_replacement", uniqueConstraints = @UniqueConstraint(name = "re_meter_replacement_ukey", columnNames={"old_meter_number", "new_meter_number","replace_date"}))
 public class MeterReplacementBean implements BeanInterface {

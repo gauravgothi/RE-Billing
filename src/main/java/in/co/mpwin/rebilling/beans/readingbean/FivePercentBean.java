@@ -1,12 +1,9 @@
 package in.co.mpwin.rebilling.beans.readingbean;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-@Getter@Setter
+@Getter@Setter @ToString
 @NoArgsConstructor@AllArgsConstructor
 @Entity(name = "FivePercentBean")
 @Table(name = "re_5perc_report_trx",uniqueConstraints = @UniqueConstraint(name = "re_5perc_report_trx_ukey", columnNames={"plantCode","monthYear"}))

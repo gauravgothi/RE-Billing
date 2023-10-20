@@ -68,6 +68,13 @@ public class ThirdPartyService {
         }
     }
 
+
+    public List<ThirdPartyBean> getThirdPartiesByInvestorCode(String investorCode) {
+        try {
+            List<ThirdPartyBean> tpLists = thirdPartyRepo.findAllByInvestorCodeAndStatus(investorCode,"active");
+            if (tpLists.isEmpty())
+                throw new ApiException(HttpStatus.BAD_REQUEST, "No third party for investor." + investorCode);
+
     //find mfp mapping by developer id and plant id order by id desc limit 1 to get only last active mapping
     public DeveloperPlantDto getDeveloperPlantDto(String developerId, String plantCode) {
 
@@ -135,6 +142,7 @@ public class ThirdPartyService {
             List<ThirdPartyBean> tpLists = thirdPartyRepo.findByInvestorCodeAndStatus(investorCode,status);
             if (tpLists.isEmpty())
                 throw new ApiException(HttpStatus.BAD_REQUEST, "No record found in third party table for investor id:"+investorCode);
+
             return tpLists;
         } catch (ApiException apiException) {
             throw apiException;
@@ -144,6 +152,8 @@ public class ThirdPartyService {
             throw new RuntimeException(e);
         }
     }
+
+
 
     public List<ThirdPartyBean> getThirdPartiesByPlantCode(String plantCode, String status) {
         try {
@@ -176,5 +186,6 @@ public class ThirdPartyService {
         }
 
     }
+
 }
 

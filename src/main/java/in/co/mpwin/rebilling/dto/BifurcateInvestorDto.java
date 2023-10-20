@@ -1,10 +1,7 @@
 package in.co.mpwin.rebilling.dto;
 
 import jakarta.persistence.Column;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
@@ -46,4 +43,24 @@ public class BifurcateInvestorDto {
     private BigDecimal lAdjustment; //adjustment unit * MF
     @Column(name="lconsumption")@NotNull
     private BigDecimal lConsumptionTotal;
+
+    @Override
+    public String toString() {
+        return "BifurcateInvestorDto{" +
+                "lInvestorCode='" + lInvestorCode + '\'' +
+                ", lInvestorName='" + lInvestorName + '\'' +
+                ", ppwaNo='" + ppwaNo + '\'' +
+                ", lMachineCapacity=" + lMachineCapacity +
+                ", lMachineActiveRate=" + lMachineActiveRate +
+                ", lMachineAReactiveRate=" + lMachineAReactiveRate +
+                ", lDevConsumptionKwh=" + lDevConsumptionKwh +
+                ", lFixedAdjustmentPer=" + lFixedAdjustmentPer +
+                ", lConsumptionKwh=" + lConsumptionKwh +
+                ", lrkvah=" + lrkvah +
+                ", lAssessment=" + lAssessment +
+                ", lAdjustmentUnit=" + lAdjustmentUnit +
+                ", lAdjustment=" + lAdjustment +
+                ", lConsumptionTotal=" + lConsumptionTotal +
+                '}';
+    }
 }

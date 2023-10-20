@@ -5,11 +5,12 @@ import in.co.mpwin.rebilling.interfaces.BeanInterface;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.sql.Timestamp;
 
 @Getter
-@Setter
+@Setter @ToString
 @Entity(name="InvestorMachineMappingBean")
 @Table(name="re_investor_machine_mapping", uniqueConstraints = @UniqueConstraint(name ="re_investor_machine_mapping_ukey", columnNames={"mfp_id","investor_code", "machine_code","status"}))
 public class InvestorMachineMappingBean implements BeanInterface

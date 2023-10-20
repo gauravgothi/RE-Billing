@@ -133,7 +133,7 @@ public class ConsumerPercentageService2 {
                     consumptionPercentageDto2.setCheckGrandTotalConsumption(totalCheckMeterConsumption);
                     consumptionPercentageDto2.setPercentage(((consumptionPercentageDto2.getMainGrandTotalConsumption()
                             .subtract(consumptionPercentageDto2.getCheckGrandTotalConsumption()))
-                            .divide(consumptionPercentageDto2.getMainGrandTotalConsumption(), 6, RoundingMode.HALF_DOWN))
+                            .divide(consumptionPercentageDto2.getMainGrandTotalConsumption(), 2, RoundingMode.HALF_DOWN))
                             .multiply(BigDecimal.valueOf(100)).abs());
                     consumptionPercentageDto2.setResult((consumptionPercentageDto2.getPercentage().compareTo(BigDecimal.valueOf(0.5)) <= 0) ? "pass" : "fail");
                     consumptionPercentageDto2.setRemark("calculated");
@@ -167,7 +167,7 @@ public class ConsumerPercentageService2 {
             mainMeterDto.setMainReadingDifference(current.subtract(previous));
             mainMeterDto.setMainMf(meterMasterService.getMeterDetailsByMeterNo(meterNo, "active").getMf());
             mainMeterDto.setMainConsumption(mainMeterDto.getMainReadingDifference().multiply(mainMeterDto.getMainMf())
-                    .setScale(6, RoundingMode.HALF_DOWN));
+                    .setScale(2, RoundingMode.HALF_DOWN));
             mainMeterDto.setMainTotalConsumption(mainMeterDto.getMainConsumption().add(mainMeterDto.getMainAssessment()));
         }else{
             mainMeterDto.setMainAssessment(BigDecimal.valueOf(-1));
@@ -201,7 +201,7 @@ public class ConsumerPercentageService2 {
             checkMeterDto.setCheckReadingDifference(current.subtract(previous));
             checkMeterDto.setCheckMf(meterMasterService.getMeterDetailsByMeterNo(meterNo, "active").getMf());
             checkMeterDto.setCheckConsumption(checkMeterDto.getCheckReadingDifference().multiply(checkMeterDto.getCheckMf())
-                    .setScale(6, RoundingMode.HALF_DOWN));
+                    .setScale(2, RoundingMode.HALF_DOWN));
             checkMeterDto.setCheckTotalConsumption(checkMeterDto.getCheckConsumption().add(checkMeterDto.getCheckAssessment()));
         }else{
             checkMeterDto.setCheckAssessment(BigDecimal.valueOf(-1));

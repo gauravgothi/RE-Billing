@@ -6,11 +6,12 @@ import in.co.mpwin.rebilling.miscellanious.ConstantField;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.validation.constraints.Email;
 import java.sql.Timestamp;
 
-@Getter @Setter
+@Getter @Setter @ToString
 @Entity(name="DeveloperMasterBean")
 @Table(name="re_developer_master")
 public class DeveloperMasterBean implements BeanInterface {

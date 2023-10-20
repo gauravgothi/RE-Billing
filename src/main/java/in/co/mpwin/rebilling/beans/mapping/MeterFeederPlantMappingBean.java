@@ -8,12 +8,13 @@ import in.co.mpwin.rebilling.interfaces.BeanInterface;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 import java.util.Date;
 
-@Getter
+@Getter @ToString
 @Setter
 @Entity(name="MeterFeederPlantMappingBean")
 @Table(name="re_meter_feeder_plant_mapping",uniqueConstraints = @UniqueConstraint(name = "re_meter_feeder_plant_mapping_ukey", columnNames={"main_meter_no", "check_meter_no", "standby_meter_no", "developer_id"}))

@@ -109,6 +109,24 @@ public class BifurcatedController {
         return meterListResp;
     }
 
+    //get all meter list only on invoice generation page from bifurcated table
+    @GetMapping("/all/meters")
+    public ResponseEntity<?> getAllMeters() {
+        ResponseEntity meterListResp = null;
+        try {
+            List<Map<String,String>> meterList = bifurcateService.getAllMeters();
+            meterListResp = new ResponseEntity<>(meterList, HttpStatus.OK);
+        } catch (ApiException apiException) {
+            meterListResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException d) {
+            meterListResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            e.printStackTrace();
+            meterListResp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+        }
+        return meterListResp;
+    }
+
     //get bifurcation dto of already bifurcated bean of meter
     @GetMapping("/get/dto/meterNo/{meterNo}/monthYear/{monthYear}")
     public ResponseEntity<?> getAlreadyBifurcatedBeanDto(@PathVariable("meterNo") String meterNo,@PathVariable("monthYear") String monthYear) {

@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
@@ -13,6 +14,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 @Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "InvoiceBean")
