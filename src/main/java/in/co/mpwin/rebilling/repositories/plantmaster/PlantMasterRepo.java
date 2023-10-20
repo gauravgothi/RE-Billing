@@ -24,9 +24,7 @@ public interface PlantMasterRepo extends CrudRepository<PlantMasterBean,Long> {
     @Query(value = "select last_value from re_plant_master_id_seq",nativeQuery = true)
     public Long getMaxSequence();
 
-
-
-    //@Query(value = "select max(id) from re_plant_master",nativeQuery = true)
+     //@Query(value = "select max(id) from re_plant_master",nativeQuery = true)
     //public Long getMaxId();
 
 

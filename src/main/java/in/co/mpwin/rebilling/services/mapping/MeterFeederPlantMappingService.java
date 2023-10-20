@@ -1,10 +1,18 @@
 package in.co.mpwin.rebilling.services.mapping;
 
+import in.co.mpwin.rebilling.beans.developermaster.DeveloperMasterBean;
+import in.co.mpwin.rebilling.beans.feedermaster.FeederMasterBean;
 import in.co.mpwin.rebilling.beans.mapping.MeterFeederPlantMappingBean;
+import in.co.mpwin.rebilling.beans.plantmaster.PlantMasterBean;
+import in.co.mpwin.rebilling.beans.thirdparty.DeveloperPlantDto;
 import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.AuditControlServices;
 import in.co.mpwin.rebilling.miscellanious.ValidatorService;
 import in.co.mpwin.rebilling.repositories.mapping.MeterFeederPlantMappingRepo;
+import in.co.mpwin.rebilling.services.developermaster.DeveloperMasterService;
+import in.co.mpwin.rebilling.services.feedermaster.FeederMasterService;
+import in.co.mpwin.rebilling.services.machinemaster.MachineMasterService;
+import in.co.mpwin.rebilling.services.plantmaster.PlantMasterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -18,8 +26,11 @@ import java.util.List;
 @Service
 public class MeterFeederPlantMappingService {
 
-    @Autowired
-    MeterFeederPlantMappingRepo meterFeederPlantMappingRepo;
+    @Autowired private MeterFeederPlantMappingRepo meterFeederPlantMappingRepo;
+    @Autowired private DeveloperMasterService developerMasterService;
+    @Autowired private PlantMasterService plantMasterService;
+    @Autowired private FeederMasterService feederMasterService;
+    @Autowired private MachineMasterService machineMasterService;
 
 
     public MeterFeederPlantMappingBean createMapping(MeterFeederPlantMappingBean meterFeederPlantMappingBean) {
@@ -211,4 +222,4 @@ public class MeterFeederPlantMappingService {
 
         }
 
-    }
+}
