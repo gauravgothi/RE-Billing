@@ -4,6 +4,7 @@ import in.co.mpwin.rebilling.beans.machinemaster.MachineMasterBean;
 import in.co.mpwin.rebilling.miscellanious.AuditControlServices;
 import in.co.mpwin.rebilling.repositories.machinemaster.MachineMasterRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -19,8 +20,11 @@ public class MachineMasterService {
         List<MachineMasterBean> allMachineList = new ArrayList<>();
         try {
             allMachineList= machineMasterRepo.findAllByStatus(status);
-        } catch (Exception e) {
-            e.printStackTrace();
+        }catch(DataIntegrityViolationException d)
+        {
+            throw d;
+        }catch (Exception e) {
+            throw e;
         }
         return allMachineList;
     }

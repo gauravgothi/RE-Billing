@@ -9,7 +9,9 @@ import in.co.mpwin.rebilling.beans.thirdparty.DeveloperPlantDto;
 import in.co.mpwin.rebilling.beans.thirdparty.ThirdPartyBean;
 import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.AuditControlServices;
+import in.co.mpwin.rebilling.miscellanious.DateMethods;
 import in.co.mpwin.rebilling.miscellanious.Message;
+import in.co.mpwin.rebilling.miscellanious.TokenInfo;
 import in.co.mpwin.rebilling.repositories.mapping.MeterFeederPlantMappingRepo;
 import in.co.mpwin.rebilling.repositories.thirdparty.ThirdPartyRepo;
 import in.co.mpwin.rebilling.services.developermaster.DeveloperMasterService;
@@ -161,13 +163,11 @@ public class ThirdPartyService {
             throw new RuntimeException(e);
         }
     }
-
-    public List<InvestorMasterBean> getInvestors(String developerId, String plantCode) {
+// get all investor from master where investor mapped with developer id and plant code in meter_feeder_plant table to investor_machine table
+    public List<InvestorMasterBean> getInvestorsByDeveloperIdAndPlantCode(String developerId, String plantCode) {
 
         try {
-            List<InvestorMasterBean> investorLists = investorMasterService.getAllInvestorMasterBean("active");
-            if (investorLists.isEmpty())
-                throw new ApiException(HttpStatus.BAD_REQUEST, "investor record not found in investor master.");
+            List<InvestorMasterBean> investorLists = investorMasterService.getAllInvestorByDeveloperIdAndPlantCode(developerId, plantCode, "active");
             return investorLists;
         } catch (ApiException apiException) {
             throw apiException;
@@ -177,6 +177,48 @@ public class ThirdPartyService {
             throw new RuntimeException(e);
         }
 
+    }
+
+    public ThirdPartyBean setThirdPartyInactive(ThirdPartyBean thirdPartyBean) {
+        try {
+            thirdPartyBean.setStatus("inactive");
+            thirdPartyBean.setUpdatedBy(new TokenInfo().getCurrentUsername());
+            thirdPartyBean.setUpdatedOn(new DateMethods().getServerTime());
+            ThirdPartyBean result = thirdPartyRepo.save(thirdPartyBean);
+            if (result != null)
+                return result;
+            else
+                throw new ApiException(HttpStatus.BAD_REQUEST, "unable to perform this operation for third party "
+                        + thirdPartyBean.getConsumerCode() + "-" + thirdPartyBean.getConsumerName() + " due to some error.");
+        } catch (ApiException apiException) {
+            throw apiException;
+        } catch (DataIntegrityViolationException d) {
+            throw d;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+
+    public ThirdPartyBean updateThirdParty(ThirdPartyBean thirdPartyBean) {
+        try
+        {
+            thirdPartyBean.setUpdatedBy(new TokenInfo().getCurrentUsername());
+            thirdPartyBean.setUpdatedOn(new DateMethods().getServerTime());
+            ThirdPartyBean result = thirdPartyRepo.save(thirdPartyBean);
+            if(result==null)
+                throw new ApiException(HttpStatus.BAD_REQUEST,"unable to update third party "
+                        +thirdPartyBean.getConsumerCode()+"-"+thirdPartyBean.getConsumerName()+" due to some error.");
+
+            return result;
+        }catch (ApiException apiException) {
+            throw apiException;
+        } catch (DataIntegrityViolationException d) {
+            throw d;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
 

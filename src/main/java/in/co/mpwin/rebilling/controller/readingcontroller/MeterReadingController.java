@@ -341,9 +341,10 @@ public class MeterReadingController {
             ex.printStackTrace();
             String msg=ex.getMessage().substring(0,ex.getMessage().indexOf("Detail:"));
             res = new ResponseEntity<>(new Message(msg),HttpStatus.BAD_REQUEST);
-            }catch (Exception e){
-            e.printStackTrace();
-            res = new ResponseEntity<>(new Message("something went wrong or some exception occurred "),HttpStatus.BAD_REQUEST);
+            }catch (Exception ex){
+            ex.printStackTrace();
+            String msg=ex.getMessage().substring(0,ex.getMessage().indexOf("Detail:"));
+            res = new ResponseEntity<>(new Message("some exception occurred: "+msg),HttpStatus.BAD_REQUEST);
             }
         return res;
     }

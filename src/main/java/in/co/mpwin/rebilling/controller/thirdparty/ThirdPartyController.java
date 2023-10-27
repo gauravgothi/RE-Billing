@@ -36,6 +36,7 @@ public class ThirdPartyController {
         } catch (ApiException apiException) {
             resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
         } catch (DataIntegrityViolationException d) {
+
             resp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             e.printStackTrace();
@@ -44,7 +45,7 @@ public class ThirdPartyController {
         return resp;
     }
 
-    // get list of third party saved in database
+    // get active third party list
 
     @GetMapping("/list")
     public ResponseEntity<?> getThirdPartyBeans() {
@@ -138,9 +139,45 @@ public class ThirdPartyController {
     {
         ResponseEntity resp = null;
         try {
-            List<InvestorMasterBean> investors = thirdPartyService.getInvestors(developerId,plantCode);
+            List<InvestorMasterBean> investors = thirdPartyService.getInvestorsByDeveloperIdAndPlantCode(developerId,plantCode);
             resp = new ResponseEntity<>(investors, HttpStatus.OK);
         } catch (ApiException apiException) {
+            resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException d) {
+            resp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            e.printStackTrace();
+            resp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, 200)), HttpStatus.BAD_REQUEST);
+        }
+        return resp;
+    }
+
+    @PutMapping("/inactive")
+    public ResponseEntity<?> setThirdPartyInactive(@RequestBody ThirdPartyBean thirdParty)
+    {
+        ResponseEntity resp = null;
+        try {
+            ThirdPartyBean tpBean = thirdPartyService.setThirdPartyInactive(thirdParty);
+            resp = new ResponseEntity<>(tpBean,HttpStatus.OK);
+        }catch (ApiException apiException) {
+            resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException d) {
+            resp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            e.printStackTrace();
+            resp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, 200)), HttpStatus.BAD_REQUEST);
+        }
+        return resp;
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<?> updateThirdPartyInactive(@RequestBody ThirdPartyBean thirdParty)
+    {
+        ResponseEntity resp = null;
+        try {
+            ThirdPartyBean tpBean = thirdPartyService.updateThirdParty(thirdParty);
+            resp = new ResponseEntity<>(tpBean,HttpStatus.OK);
+        }catch (ApiException apiException) {
             resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
         } catch (DataIntegrityViolationException d) {
             resp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);

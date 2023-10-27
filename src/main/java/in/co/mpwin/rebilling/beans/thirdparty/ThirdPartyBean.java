@@ -100,13 +100,13 @@ public class ThirdPartyBean implements BeanInterface  {
     @Column(name="developer_discom_name")
     private String developerDiscomName ;
 
-    @Column(name="commission_date") @JsonFormat(timezone = "IST")
+    @Column(name="commission_date")@NotNull @JsonFormat(pattern = "yyyy-MM-dd",timezone = "IST")
     private Date commissionDate ;
 
-    @Column(name="ppwa_date") @JsonFormat(timezone = "IST")
+    @Column(name="ppwa_date")@NotNull @JsonFormat(pattern = "yyyy-MM-dd",timezone = "IST")
     private Date ppwaDate ;
 
-    @Column(name="sanction_date") @JsonFormat(timezone = "IST")
+    @Column(name="sanction_date")@NotNull @JsonFormat(pattern = "yyyy-MM-dd",timezone = "IST")
     private Date sanctionDate ;
 
     @Column(name="period_of_ppwa")
