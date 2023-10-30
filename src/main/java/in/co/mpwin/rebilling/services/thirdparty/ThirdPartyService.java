@@ -5,25 +5,32 @@ import in.co.mpwin.rebilling.beans.feedermaster.FeederMasterBean;
 import in.co.mpwin.rebilling.beans.investormaster.InvestorMasterBean;
 import in.co.mpwin.rebilling.beans.mapping.MeterFeederPlantMappingBean;
 import in.co.mpwin.rebilling.beans.plantmaster.PlantMasterBean;
+import in.co.mpwin.rebilling.beans.readingbean.FivePercentBean;
 import in.co.mpwin.rebilling.beans.thirdparty.DeveloperPlantDto;
 import in.co.mpwin.rebilling.beans.thirdparty.ThirdPartyBean;
+import in.co.mpwin.rebilling.beans.thirdparty.ThirdPartyBeanHistory;
+import in.co.mpwin.rebilling.dto.ConsumptionPercentageDto2;
 import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.AuditControlServices;
 import in.co.mpwin.rebilling.miscellanious.DateMethods;
 import in.co.mpwin.rebilling.miscellanious.Message;
 import in.co.mpwin.rebilling.miscellanious.TokenInfo;
 import in.co.mpwin.rebilling.repositories.mapping.MeterFeederPlantMappingRepo;
+import in.co.mpwin.rebilling.repositories.thirdparty.ThirdPartyHistoryRepo;
 import in.co.mpwin.rebilling.repositories.thirdparty.ThirdPartyRepo;
 import in.co.mpwin.rebilling.services.developermaster.DeveloperMasterService;
 import in.co.mpwin.rebilling.services.feedermaster.FeederMasterService;
 import in.co.mpwin.rebilling.services.investormaster.InvestorMasterService;
 import in.co.mpwin.rebilling.services.machinemaster.MachineMasterService;
 import in.co.mpwin.rebilling.services.plantmaster.PlantMasterService;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -32,12 +39,18 @@ import java.util.List;
 @Service
 public class ThirdPartyService {
     @Autowired private ThirdPartyRepo thirdPartyRepo;
+
+    @Autowired private ThirdPartyHistoryRepo thirdPartyHistoryRepo;
     @Autowired private MeterFeederPlantMappingRepo meterFeederPlantMappingRepo;
     @Autowired private DeveloperMasterService developerMasterService;
     @Autowired private PlantMasterService plantMasterService;
     @Autowired private FeederMasterService feederMasterService;
     @Autowired private MachineMasterService machineMasterService;
     @Autowired private InvestorMasterService investorMasterService;
+
+
+    public ThirdPartyService() {
+    }
 
     public ThirdPartyBean saveThirdPartyBean(ThirdPartyBean tpBean) {
         try {
@@ -57,7 +70,7 @@ public class ThirdPartyService {
 
     public List<ThirdPartyBean> getThirdPartyBeans() {
         try {
-            List<ThirdPartyBean> tpLists = thirdPartyRepo.findAllByStatus("active");
+            List<ThirdPartyBean> tpLists = thirdPartyRepo.findAll();
             if (tpLists.isEmpty())
                 throw new ApiException(HttpStatus.BAD_REQUEST, "No content found for third party.");
             return tpLists;
@@ -179,16 +192,25 @@ public class ThirdPartyService {
 
     }
 
+    @Transactional
     public ThirdPartyBean setThirdPartyInactive(ThirdPartyBean thirdPartyBean) {
         try {
+            //set Third Party History Before Updating ThirdParty with remark "active to inactive";
+            ThirdPartyBeanHistory historyBean = mapToHistory(thirdPartyBean);
+            historyBean.setHremark("status active to inactive");
+            historyBean.setHcreatedBy(new TokenInfo().getCurrentUsername());
+            historyBean.setHcreatedOn(new DateMethods().getServerTime());
+            ThirdPartyBeanHistory historyRespBean = thirdPartyHistoryRepo.save(historyBean);
+
+            // now update the third party status from active to inactive
             thirdPartyBean.setStatus("inactive");
             thirdPartyBean.setUpdatedBy(new TokenInfo().getCurrentUsername());
             thirdPartyBean.setUpdatedOn(new DateMethods().getServerTime());
             ThirdPartyBean result = thirdPartyRepo.save(thirdPartyBean);
-            if (result != null)
+            if (result!= null)
                 return result;
             else
-                throw new ApiException(HttpStatus.BAD_REQUEST, "unable to perform this operation for third party "
+                throw new ApiException(HttpStatus.BAD_REQUEST, "unable to inactive this third party "
                         + thirdPartyBean.getConsumerCode() + "-" + thirdPartyBean.getConsumerName() + " due to some error.");
         } catch (ApiException apiException) {
             throw apiException;
@@ -199,11 +221,23 @@ public class ThirdPartyService {
         }
     }
 
-
-
+    @Transactional
     public ThirdPartyBean updateThirdParty(ThirdPartyBean thirdPartyBean) {
         try
         {
+            //set Third Party History Before Updating ThirdParty with remark "third party data update";
+            ThirdPartyBean preUpdateThirdPartyBean = thirdPartyRepo.findById(thirdPartyBean.getId()).orElse(null);
+            if(preUpdateThirdPartyBean==null)
+                throw new ApiException(HttpStatus.BAD_REQUEST,"third party id:"+thirdPartyBean.getId()+" not found for consumer code: "+thirdPartyBean.getConsumerCode());
+
+            ThirdPartyBeanHistory historyBean = mapToHistory(preUpdateThirdPartyBean);
+            historyBean.setHremark("third party data update");
+            historyBean.setHcreatedBy(new TokenInfo().getCurrentUsername());
+            historyBean.setHcreatedOn(new DateMethods().getServerTime());
+            ThirdPartyBeanHistory historyRespBean = thirdPartyHistoryRepo.save(historyBean);
+
+            // now update the third party data with update by and on.
+
             thirdPartyBean.setUpdatedBy(new TokenInfo().getCurrentUsername());
             thirdPartyBean.setUpdatedOn(new DateMethods().getServerTime());
             ThirdPartyBean result = thirdPartyRepo.save(thirdPartyBean);
@@ -219,6 +253,60 @@ public class ThirdPartyService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public List<ThirdPartyBean> getThirdPartyBeansByStatus(String status) {
+        try {
+            List<ThirdPartyBean> tpLists = thirdPartyRepo.findAllByStatus(status);
+            if (tpLists.isEmpty())
+                throw new ApiException(HttpStatus.BAD_REQUEST, "No content found for third party.");
+            return tpLists;
+        } catch (ApiException apiException) {
+            throw apiException;
+        } catch (DataIntegrityViolationException d) {
+            throw d;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    @Transactional
+    public ThirdPartyBean setThirdPartyActive(ThirdPartyBean thirdPartyBean) {
+
+        try {
+
+            //set Third Party History Before Updating ThirdParty with remark "inactive to active";
+            ThirdPartyBeanHistory historyBean = mapToHistory(thirdPartyBean);
+            historyBean.setHremark("status inactive to active");
+            historyBean.setHcreatedBy(new TokenInfo().getCurrentUsername());
+            historyBean.setHcreatedOn(new DateMethods().getServerTime());
+            ThirdPartyBeanHistory historyRespBean = thirdPartyHistoryRepo.save(historyBean);
+
+            // now update the third party status from inactive to active
+            thirdPartyBean.setStatus("active");
+            thirdPartyBean.setUpdatedBy(new TokenInfo().getCurrentUsername());
+            thirdPartyBean.setUpdatedOn(new DateMethods().getServerTime());
+            ThirdPartyBean result = thirdPartyRepo.save(thirdPartyBean);
+            if (result!= null)
+                return result;
+            else
+                throw new ApiException(HttpStatus.BAD_REQUEST, "unable to active third party "
+                        + thirdPartyBean.getConsumerCode() + "-" + thirdPartyBean.getConsumerName() + " due to some error.");
+        } catch (ApiException apiException) {
+            throw apiException;
+        } catch (DataIntegrityViolationException d) {
+            throw d;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private ThirdPartyBeanHistory mapToHistory(ThirdPartyBean thirdPartyBean) {
+        //Setup of type map because destination have extra property
+        ModelMapper modelMapper = new ModelMapper();
+        ThirdPartyBeanHistory historyBean = modelMapper.map(thirdPartyBean, ThirdPartyBeanHistory.class);
+        return historyBean;
     }
 }
 

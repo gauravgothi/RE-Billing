@@ -64,6 +64,22 @@ public class ThirdPartyController {
         return resp;
     }
 
+    @GetMapping("/list/status/{status}")
+    public ResponseEntity<?> getThirdPartyBeansByStatus(@PathVariable("status") String status) {
+        ResponseEntity resp = null;
+        try {
+            List<ThirdPartyBean> tpLists = thirdPartyService.getThirdPartyBeansByStatus(status);
+            resp = new ResponseEntity<>(tpLists, HttpStatus.OK);
+        } catch (ApiException apiException) {
+            resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException d) {
+            resp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            e.printStackTrace();
+            resp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, 200)), HttpStatus.BAD_REQUEST);
+        }
+        return resp;
+    }
     @GetMapping("/dto/developerId/{developerId}/plantCode/{plantCode}")
     public ResponseEntity<?> getMfpMapping(@PathVariable("developerId") String developerId, @PathVariable("plantCode") String plantCode)
     {
@@ -158,6 +174,24 @@ public class ThirdPartyController {
         ResponseEntity resp = null;
         try {
             ThirdPartyBean tpBean = thirdPartyService.setThirdPartyInactive(thirdParty);
+            resp = new ResponseEntity<>(tpBean,HttpStatus.OK);
+        }catch (ApiException apiException) {
+            resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException d) {
+            resp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            e.printStackTrace();
+            resp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, 200)), HttpStatus.BAD_REQUEST);
+        }
+        return resp;
+    }
+
+    @PutMapping("/active")
+    public ResponseEntity<?> setThirdPartyActive(@RequestBody ThirdPartyBean thirdParty)
+    {
+        ResponseEntity resp = null;
+        try {
+            ThirdPartyBean tpBean = thirdPartyService.setThirdPartyActive(thirdParty);
             resp = new ResponseEntity<>(tpBean,HttpStatus.OK);
         }catch (ApiException apiException) {
             resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());

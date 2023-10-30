@@ -1,6 +1,5 @@
 package in.co.mpwin.rebilling.beans.thirdparty;
 
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import in.co.mpwin.rebilling.interfaces.BeanInterface;
 import jakarta.persistence.*;
@@ -19,12 +18,14 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "ThirdPartyBean")
-@Table(name = "re_third_party",uniqueConstraints = { @UniqueConstraint(name = "re_third_party_ukey", columnNames={"consumer_code","status"})})
-public class ThirdPartyBean implements BeanInterface  {
+@Entity(name = "ThirdPartyBeanHistory")
+@Table(name = "re_third_party_history")
+public class ThirdPartyBeanHistory implements BeanInterface  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long hid;
+
     private long id;
     @Column(name="consumer_code")
     private String consumerCode;
@@ -133,4 +134,12 @@ public class ThirdPartyBean implements BeanInterface  {
     @Column(name = "remark")
     private String remark;
 
+    @Column(name = "hcreated_by")
+    private String hcreatedBy;
+
+    @Column(name = "hcreated_on")
+    private Timestamp hcreatedOn;
+
+    @Column(name = "hremark")
+    private String hremark;
 }
