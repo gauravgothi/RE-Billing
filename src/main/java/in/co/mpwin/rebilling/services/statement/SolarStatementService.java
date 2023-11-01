@@ -12,12 +12,17 @@ import in.co.mpwin.rebilling.beans.thirdparty.ThirdPartyBean;
 import in.co.mpwin.rebilling.dto.BifurcateInvestorDto;
 import in.co.mpwin.rebilling.dto.MeterConsumptionDto;
 import in.co.mpwin.rebilling.jwt.exception.ApiException;
+import in.co.mpwin.rebilling.miscellanious.AuditControlServices;
+import in.co.mpwin.rebilling.miscellanious.DateMethods;
+import in.co.mpwin.rebilling.miscellanious.TokenInfo;
 import in.co.mpwin.rebilling.repositories.metermaster.MeterMasterRepo;
+import in.co.mpwin.rebilling.repositories.statement.SolarStatementRepo;
 import in.co.mpwin.rebilling.services.feedermaster.FeederMasterService;
 import in.co.mpwin.rebilling.services.investormaster.InvestorMasterService;
 import in.co.mpwin.rebilling.services.machinemaster.MachineMasterService;
 import in.co.mpwin.rebilling.services.mapping.InvestorMachineMappingService;
 import in.co.mpwin.rebilling.services.mapping.MeterFeederPlantMappingService;
+import in.co.mpwin.rebilling.services.metermaster.MeterMasterService;
 import in.co.mpwin.rebilling.services.plantmaster.PlantMasterService;
 import in.co.mpwin.rebilling.services.readingservice.MeterReadingService;
 import in.co.mpwin.rebilling.services.thirdparty.ThirdPartyService;
@@ -51,7 +56,10 @@ public class SolarStatementService {
     private MeterReadingService meterReadingService;
     @Autowired
     private ThirdPartyService thirdPartyService;
+    @Autowired
+    private MeterMasterService meterMasterService;
 
+    @Autowired SolarStatementRepo solarStatementRepo;
     @Autowired
     private FeederMasterService feederMasterService;
     @Autowired
@@ -59,6 +67,10 @@ public class SolarStatementService {
 
     public List<SolarStatementBean> getSolarStatement(String meterNo, String monthYear) throws ParseException {
         try {
+            //check if solar statement is already exist if exist then return beanlist otherwise generate bean and return
+            List<SolarStatementBean> alreadyExistStatementBeanList = solarStatementRepo.findAllByMeterNumberAndMonthYearAndStatus(meterNo,monthYear,"active");
+            if (alreadyExistStatementBeanList.size() != 0)
+                return alreadyExistStatementBeanList;
             List<SolarStatementBean> solarStatementBeanList = new ArrayList<>();
             //Third check is meter is only one out of two meter present in mapping , means if check already done then main not possible or vice versa
             MeterFeederPlantMappingBean mfpBean = mfpService.getByAnyMeterNoAndStatus(meterNo, "active");
@@ -69,6 +81,8 @@ public class SolarStatementService {
             PlantMasterBean plantMasterBean = plantMasterService.getPlantByPlantCode(plantCode, "active");
             if (plantMasterBean == null)
                 throw new ApiException(HttpStatus.BAD_REQUEST, "Not Any Plant Present in plant master table..");
+//            if (!plantMasterBean.getType().equals("SOLAR"))
+//                throw new ApiException(HttpStatus.BAD_REQUEST, "Solar Statement only for Solar Plant not for Wind..");
             Long mfpBeanId = mfpBean.getId();//This is used for getting investor related to plant
 
             //Fetch Distinct Investor list from InvestorMachine Mapping belongs by Meter Feeder Mapping id
@@ -87,7 +101,12 @@ public class SolarStatementService {
                 if (investorMasterBean == null)
                     throw new ApiException(HttpStatus.BAD_REQUEST, investor + " No investor present in investor master..");
 
+                //set audit trails
+                String username = new TokenInfo().getCurrentUsername();
+                solarStatementBean.setGeneratedBy(username);
+                solarStatementBean.setGeneratedOn(new DateMethods().getServerTime());
                 solarStatementBean.setMeterNumber(meterNo);
+                solarStatementBean.setMeterInstallDate(meterMasterService.getMeterDetailsByMeterNo(meterNo,"active").getInstallDate());
                 solarStatementBean.setMonthYear(monthYear);
                 solarStatementBean.setPlantCode(plantMasterBean.getPlantCode());
                 solarStatementBean.setPlantName(plantMasterBean.getPlantName());
@@ -172,6 +191,7 @@ public class SolarStatementService {
                 solarStatementBean.setEConsumptionKvah(meterConsumptionDto.getEConsumptionKvah());
 
                 solarStatementBean.setWheelingChargePercent(BigDecimal.valueOf(5.91));
+                solarStatementBean.setStatus("active");
 
                 BigDecimal meterTod1 = meterConsumptionDto.getEConsumptionTod1();
                 BigDecimal meterTod2 = meterConsumptionDto.getEConsumptionTod2();
@@ -214,7 +234,8 @@ public class SolarStatementService {
                     ThirdPartyTod thirdPartyTod = new ThirdPartyTod();
                     thirdPartyTod.setTpCode(thirdPartyBean.getConsumerCode());
                     thirdPartyTod.setTpName(thirdPartyBean.getConsumerName());
-                    thirdPartyTod.setTpPercentage(new BigDecimal(thirdPartyBean.getAdjustmentUnitPercent()));
+                    thirdPartyTod.setTpPercentage(thirdPartyBean.getAdjustmentUnitPercent());
+                    thirdPartyTod.setSolarStatementBean(solarStatementBean);
 
                     //if tod adjstment 0 then individual adjustment is also 0
                     if (solarStatementBean.getTotalAdjustment().compareTo(BigDecimal.valueOf(0)) >= 0){
@@ -237,7 +258,8 @@ public class SolarStatementService {
                 solarStatementBean.setThirdPartyTodSet(thirdPartyTodSet);
                 solarStatementBeanList.add(solarStatementBean);
             }
-            return solarStatementBeanList;
+            List<SolarStatementBean> savedBeanList = (List<SolarStatementBean>) solarStatementRepo.saveAll(solarStatementBeanList);
+            return savedBeanList;
         }catch (ApiException apiException) {
             throw apiException;
         } catch (DataIntegrityViolationException d) {

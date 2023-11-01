@@ -4,6 +4,7 @@ import in.co.mpwin.rebilling.beans.statement.SolarStatementBean;
 import in.co.mpwin.rebilling.beans.thirdparty.ThirdPartyBean;
 import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.Message;
+import in.co.mpwin.rebilling.services.statement.SolarStatementReportService;
 import in.co.mpwin.rebilling.services.statement.SolarStatementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -21,13 +22,17 @@ public class SolarStatementController {
     @Autowired
     SolarStatementService solarStatementService;
 
+    @Autowired
+    SolarStatementReportService solarStatementReportService;
+
     @GetMapping("/solar/meterNo/{meterNo}/monthYear/{monthYear}")
     public ResponseEntity<?> getSolarStatement(@PathVariable("meterNo") String meterNo,@PathVariable("monthYear") String monthYear)
     {
         ResponseEntity statementResp = null;
         try {
                 List<SolarStatementBean> solarStatementBeanList = solarStatementService.getSolarStatement(meterNo,monthYear);
-            statementResp = new ResponseEntity<>( solarStatementBeanList, HttpStatus.OK);
+                byte[] solarStatementInPdf = solarStatementReportService.exportSolarStatement("pdf",solarStatementBeanList);
+            statementResp = new ResponseEntity<>( solarStatementInPdf, HttpStatus.OK);
         }catch (ApiException apiException) {
             statementResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
         } catch (DataIntegrityViolationException d) {

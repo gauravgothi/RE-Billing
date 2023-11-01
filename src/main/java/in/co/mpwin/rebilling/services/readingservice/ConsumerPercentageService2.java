@@ -45,6 +45,8 @@ public class ConsumerPercentageService2 {
 
             List<MeterFeederPlantMappingBean> mappingBeanList = meterFeederPlantMappingService
                     .getMappingByDeveloperIdOrderByEndDate(String.valueOf(developerList.get(k).getId()), "active");
+            if(mappingBeanList.size() == 0)
+                continue;
             // now arrange it plant wise in map <PlantCode,List<MFPBean>>
             List<Map<String,List<MeterFeederPlantMappingBean>>> plantMFPList = new ArrayList<>();
             List<String> distinctPlants = meterFeederPlantMappingService.getDistinctPlantCodeByDeveloperId(String.valueOf(developerList.get(k).getId()), "active");
@@ -245,22 +247,22 @@ public class ConsumerPercentageService2 {
         List<CheckMeterDto> checkMeters = dto2.getCheckMeterDtos();
 
         bean.setMainMeterNumber(concatDelim(mainMeters.stream().map(MainMeterDto::getMainMeterNumber)));
-        bean.setMainCurrentReading(concatDelim(mainMeters.stream().map(MainMeterDto::getMainCurrentReading)).replaceAll("-1","Reading Not Available"));
-        bean.setMainPreviousReading(concatDelim(mainMeters.stream().map(MainMeterDto::getMainPreviousReading)).replaceAll("-1","Reading Not Available"));
-        bean.setMainReadingDifference(concatDelim(mainMeters.stream().map(MainMeterDto::getMainReadingDifference)).replaceAll("-1","NA"));
-        bean.setMainMf(concatDelim(mainMeters.stream().map(MainMeterDto::getMainMf)).replaceAll("-1","NA"));
-        bean.setMainAssessment(concatDelim(mainMeters.stream().map(MainMeterDto::getMainAssessment)).replaceAll("-1","NA"));
-        bean.setMainConsumption(concatDelim(mainMeters.stream().map(MainMeterDto::getMainConsumption)).replaceAll("-1","NA"));
-        bean.setMainTotalConsumption(String.valueOf(dto2.getMainGrandTotalConsumption()).replaceAll("-1","NA"));
+        bean.setMainCurrentReading(concatDelim(mainMeters.stream().map(m -> m.getMainCurrentReading().toPlainString())).replaceAll("-1","Reading Not Available"));
+        bean.setMainPreviousReading(concatDelim(mainMeters.stream().map(m -> m.getMainPreviousReading().toPlainString())).replaceAll("-1","Reading Not Available"));
+        bean.setMainReadingDifference(concatDelim(mainMeters.stream().map(m -> m.getMainReadingDifference().toPlainString())).replaceAll("-1","NA"));
+        bean.setMainMf(concatDelim(mainMeters.stream().map(m -> m.getMainMf().toPlainString())).replaceAll("-1","NA"));
+        bean.setMainAssessment(concatDelim(mainMeters.stream().map(m -> m.getMainAssessment().toPlainString())).replaceAll("-1","NA"));
+        bean.setMainConsumption(concatDelim(mainMeters.stream().map(m -> m.getMainConsumption().toPlainString())).replaceAll("-1","NA"));
+        bean.setMainTotalConsumption(String.valueOf(dto2.getMainGrandTotalConsumption().toPlainString()).replaceAll("-1","NA"));
 
         bean.setCheckMeterNumber(concatDelim(checkMeters.stream().map(CheckMeterDto::getCheckMeterNumber)));
-        bean.setCheckCurrentReading(concatDelim(checkMeters.stream().map(CheckMeterDto::getCheckCurrentReading)).replaceAll("-1","Reading Not Available"));
-        bean.setCheckPreviousReading(concatDelim(checkMeters.stream().map(CheckMeterDto::getCheckPreviousReading)).replaceAll("-1","Reading Not Available"));
-        bean.setCheckReadingDifference(concatDelim(checkMeters.stream().map(CheckMeterDto::getCheckReadingDifference)).replaceAll("-1","NA"));
-        bean.setCheckMf(concatDelim(checkMeters.stream().map(CheckMeterDto::getCheckMf)).replaceAll("-1","NA"));
-        bean.setCheckAssessment(concatDelim(checkMeters.stream().map(CheckMeterDto::getCheckAssessment)).replaceAll("-1","NA"));
-        bean.setCheckConsumption(concatDelim(checkMeters.stream().map(CheckMeterDto::getCheckConsumption)).replaceAll("-1","NA"));
-        bean.setCheckTotalConsumption(String.valueOf(dto2.getCheckGrandTotalConsumption()).replaceAll("-1","NA"));
+        bean.setCheckCurrentReading(concatDelim(checkMeters.stream().map(c -> c.getCheckCurrentReading().toPlainString())).replaceAll("-1","Reading Not Available"));
+        bean.setCheckPreviousReading(concatDelim(checkMeters.stream().map(c -> c.getCheckPreviousReading().toPlainString())).replaceAll("-1","Reading Not Available"));
+        bean.setCheckReadingDifference(concatDelim(checkMeters.stream().map(c -> c.getCheckReadingDifference().toPlainString())).replaceAll("-1","NA"));
+        bean.setCheckMf(concatDelim(checkMeters.stream().map(c -> c.getCheckMf().toPlainString())).replaceAll("-1","NA"));
+        bean.setCheckAssessment(concatDelim(checkMeters.stream().map(c -> c.getCheckAssessment().toPlainString())).replaceAll("-1","NA"));
+        bean.setCheckConsumption(concatDelim(checkMeters.stream().map(c -> c.getCheckConsumption().toPlainString())).replaceAll("-1","NA"));
+        bean.setCheckTotalConsumption(String.valueOf(dto2.getCheckGrandTotalConsumption().toPlainString()).replaceAll("-1","NA"));
         
         return bean;
     }

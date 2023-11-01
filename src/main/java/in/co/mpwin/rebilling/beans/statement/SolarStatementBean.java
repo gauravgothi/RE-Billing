@@ -4,12 +4,12 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import in.co.mpwin.rebilling.interfaces.BeanInterface;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Cascade;
 
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.sql.Timestamp;
+import java.util.*;
 
 @Setter @ToString
 @NoArgsConstructor
@@ -24,6 +24,9 @@ public class SolarStatementBean implements BeanInterface {
 
     @Column(name="meter_number")
     private String meterNumber;
+
+    @Column(name="meter_install_date")
+    private String meterInstallDate;
     @Column(name="meter_mf")
     private BigDecimal meterMf;
     @Column(name="category")
@@ -171,12 +174,25 @@ public class SolarStatementBean implements BeanInterface {
     @Column(name="wheeling_charge_percent")@NotNull
     private BigDecimal wheelingChargePercent;
 
+    @Column(name="generated_by")
+    private String generatedBy;
+
+    @Column(name = "generated_on")
+    private Timestamp generatedOn;
+
+    @Column(name = "status")
+    private String status;
+
     public long getId() {
         return id;
     }
 
     public String getMeterNumber() {
         return meterNumber;
+    }
+
+    public String getMeterInstallDate() {
+        return meterInstallDate;
     }
 
     public BigDecimal getMeterMf() {
@@ -500,5 +516,22 @@ public class SolarStatementBean implements BeanInterface {
         if (this.wheelingChargePercent != null)
             return new BigDecimal(String.valueOf(this.wheelingChargePercent));
         return wheelingChargePercent;
+    }
+
+    public String getGeneratedBy() {
+        return generatedBy;
+    }
+
+    public Timestamp getGeneratedOn() {
+        return generatedOn;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public static Collection<SolarStatementBean> getSolarBean(){
+        List<SolarStatementBean> solarStatementBeanList = new ArrayList<>();
+        return solarStatementBeanList;
     }
 }

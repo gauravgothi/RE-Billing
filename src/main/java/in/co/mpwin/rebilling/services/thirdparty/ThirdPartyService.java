@@ -5,6 +5,7 @@ import in.co.mpwin.rebilling.beans.feedermaster.FeederMasterBean;
 import in.co.mpwin.rebilling.beans.investormaster.InvestorMasterBean;
 import in.co.mpwin.rebilling.beans.mapping.MeterFeederPlantMappingBean;
 import in.co.mpwin.rebilling.beans.plantmaster.PlantMasterBean;
+import in.co.mpwin.rebilling.beans.statement.ThirdPartyTod;
 import in.co.mpwin.rebilling.beans.thirdparty.DeveloperPlantDto;
 import in.co.mpwin.rebilling.beans.thirdparty.ThirdPartyBean;
 import in.co.mpwin.rebilling.jwt.exception.ApiException;
@@ -25,6 +26,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -70,11 +73,25 @@ public class ThirdPartyService {
 
 
     public List<ThirdPartyBean> getThirdPartiesByInvestorCode(String investorCode) {
+        List<ThirdPartyBean> tpLists = new ArrayList<>();
         try {
-            List<ThirdPartyBean> tpLists = thirdPartyRepo.findAllByInvestorCodeAndStatus(investorCode,"active");
-            if (tpLists.isEmpty())
-                throw new ApiException(HttpStatus.BAD_REQUEST, "No third party for investor." + investorCode);
-
+                tpLists = thirdPartyRepo.findAllByInvestorCodeAndStatus(investorCode, "active");
+                if (tpLists.isEmpty())
+                    throw new ApiException(HttpStatus.BAD_REQUEST, "No third party for investor." + investorCode);
+        }catch (ApiException apiException){
+            ThirdPartyBean thirdPartyBean = new ThirdPartyBean();
+            thirdPartyBean.setConsumerCode("  ");
+            thirdPartyBean.setConsumerName("   ");
+            thirdPartyBean.setAdjustmentUnitPercent(BigDecimal.valueOf(100));
+            tpLists.add(thirdPartyBean);
+            //throw apiException;
+        }catch (DataIntegrityViolationException d){
+            throw d;
+        }catch (Exception e) {
+            throw e;
+        }
+        return tpLists;
+    }
     //find mfp mapping by developer id and plant id order by id desc limit 1 to get only last active mapping
     public DeveloperPlantDto getDeveloperPlantDto(String developerId, String plantCode) {
 
