@@ -338,13 +338,15 @@ public class MeterReadingController {
             }catch (DataIntegrityViolationException d){
             Throwable rootCause = d.getRootCause();
             String msg=rootCause.getMessage().substring(0,rootCause.getMessage().indexOf("Detail:"));
-            res = new ResponseEntity<>(new Message(msg),HttpStatus.INTERNAL_SERVER_ERROR);
+            res = new ResponseEntity<>(new Message(msg),HttpStatus.BAD_REQUEST);
             }catch(NullPointerException ex){
+            ex.printStackTrace();
             String msg=ex.getMessage().substring(0,ex.getMessage().indexOf("Detail:"));
-            res = new ResponseEntity<>(new Message(msg),HttpStatus.INTERNAL_SERVER_ERROR);
-            }catch (Exception e){
-            e.printStackTrace();
-            res = new ResponseEntity<>(new Message("something went wrong or some exception occurred "),HttpStatus.INTERNAL_SERVER_ERROR);
+            res = new ResponseEntity<>(new Message(msg),HttpStatus.BAD_REQUEST);
+            }catch (Exception ex){
+            ex.printStackTrace();
+            String msg=ex.getMessage().substring(0,ex.getMessage().indexOf("Detail:"));
+            res = new ResponseEntity<>(new Message("some exception occurred: "+msg),HttpStatus.BAD_REQUEST);
             }
         return res;
     }

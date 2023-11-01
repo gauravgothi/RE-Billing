@@ -2,10 +2,12 @@ package in.co.mpwin.rebilling.controller.machinemaster;
 
 
 import in.co.mpwin.rebilling.beans.machinemaster.MachineMasterBean;
+import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.Message;
 import in.co.mpwin.rebilling.services.machinemaster.MachineMasterService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,8 +37,13 @@ public class MachineMasterController {
             {
                 machineResp=new ResponseEntity<>( new Message("Machine list is not available"),HttpStatus.BAD_REQUEST);
             }
-        }catch (Exception e) {
+        }catch (ApiException apiException) {
+            machineResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException d) {
+            machineResp = new ResponseEntity<>(new Message("Data Integrity Violation"+d.getMessage().substring(0, 200)),HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
             e.printStackTrace();
+            machineResp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, 200)),HttpStatus.BAD_REQUEST);
         }
         return machineResp;
     }

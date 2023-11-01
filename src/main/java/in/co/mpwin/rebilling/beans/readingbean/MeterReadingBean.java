@@ -16,7 +16,8 @@ import java.util.Date;
 @Setter @ToString
 @Entity(name="MeterReading")
 @Table(name="re_meter_reading_trx",uniqueConstraints = @UniqueConstraint(name = "re_meter_reading_trx_ukey", columnNames={"meter_no","reading_date","reading_type","status"}))
-public class MeterReadingBean implements BeanInterface {
+public class
+MeterReadingBean implements BeanInterface {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
