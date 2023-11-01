@@ -37,15 +37,19 @@ public class MeterMasterController {
             }
             else if(meterMasterBean==null)
             {
-                meterDtlResp=new ResponseEntity<>("Meter Detail not present",HttpStatus.NO_CONTENT);
+                meterDtlResp=new ResponseEntity<>(new Message("No Record Found"),HttpStatus.BAD_REQUEST);
             }
-            else {
-                meterDtlResp=new ResponseEntity<>("Invalid Request",HttpStatus.BAD_REQUEST);
-            }
-        } catch (Exception e) {
-            System.out.println(e);
+
+            }catch(DataIntegrityViolationException d)
+            {
+            Throwable rootCause = d.getRootCause();
+            String msg=rootCause.getMessage().substring(0,rootCause.getMessage().indexOf("Detail:"));
+            meterDtlResp = new ResponseEntity<>(new Message(msg),HttpStatus.BAD_REQUEST);
+            }catch(Exception e)
+            {
+            meterDtlResp=new ResponseEntity<>(new Message("Exception: "+e.getMessage().substring(0,e.getMessage().indexOf("Detail:"))),HttpStatus.BAD_REQUEST);
             e.printStackTrace();
-        }
+            }
         return meterDtlResp;
     }
 
@@ -61,19 +65,16 @@ public class MeterMasterController {
             }
             else if(meterList.size()==0)
             {
-                meterDtlResp=new ResponseEntity<>("Meter Detail not present",HttpStatus.NO_CONTENT);
+                meterDtlResp=new ResponseEntity<>(new Message("No Record Found"),HttpStatus.BAD_REQUEST);
             }
-            else {
-                meterDtlResp=new ResponseEntity<>("Invalid Request",HttpStatus.BAD_REQUEST);
-            }
-          } catch (DataIntegrityViolationException d)
+          }catch(DataIntegrityViolationException d)
            {
             Throwable rootCause = d.getRootCause();
             String msg=rootCause.getMessage().substring(0,rootCause.getMessage().indexOf("Detail:"));
-               meterDtlResp = new ResponseEntity<>(new Message(msg),HttpStatus.INTERNAL_SERVER_ERROR);
-           } catch (Exception e)
+               meterDtlResp = new ResponseEntity<>(new Message(msg),HttpStatus.BAD_REQUEST);
+           }catch (Exception e)
            {
-               meterDtlResp = new ResponseEntity<>(new Message("something went wrong or some exception occurred "+e.getMessage()),HttpStatus.INTERNAL_SERVER_ERROR);
+               meterDtlResp = new ResponseEntity<>(new Message("Exception : "+e.getMessage().substring(0,e.getMessage().indexOf("Detail:"))),HttpStatus.BAD_REQUEST);
 
            }
         return meterDtlResp;
@@ -110,7 +111,7 @@ public class MeterMasterController {
         }*/ catch (Exception e) {
             System.out.println(e);
             e.printStackTrace();
-            return new ResponseEntity<>("Internal Server Error", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message("Internal Server Error"), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -125,10 +126,10 @@ public class MeterMasterController {
         }catch (DataIntegrityViolationException d){
             Throwable rootCause = d.getRootCause();
             String msg=rootCause.getMessage().substring(0,rootCause.getMessage().indexOf("Detail:"));
-            meterListResp = new ResponseEntity<>(new Message(msg),HttpStatus.INTERNAL_SERVER_ERROR);
+            meterListResp = new ResponseEntity<>(new Message(msg),HttpStatus.BAD_REQUEST);
             return meterListResp;
         }catch (Exception e){
-            meterListResp = new ResponseEntity<>(new Message(" something went wrong or some exception occurred "),HttpStatus.INTERNAL_SERVER_ERROR);
+            meterListResp = new ResponseEntity<>(new Message(" something went wrong or some exception occurred "),HttpStatus.BAD_REQUEST);
             return meterListResp;
         }
         return meterListResp;
@@ -145,10 +146,10 @@ public class MeterMasterController {
         }catch (DataIntegrityViolationException d){
             Throwable rootCause = d.getRootCause();
             String msg=rootCause.getMessage().substring(0,rootCause.getMessage().indexOf("Detail:"));
-            meterListResp = new ResponseEntity<>(new Message(msg),HttpStatus.INTERNAL_SERVER_ERROR);
+            meterListResp = new ResponseEntity<>(new Message(msg),HttpStatus.BAD_REQUEST);
             return meterListResp;
         }catch (Exception e){
-            meterListResp = new ResponseEntity<>(new Message(" something went wrong or some exception occurred "),HttpStatus.INTERNAL_SERVER_ERROR);
+            meterListResp = new ResponseEntity<>(new Message(" something went wrong or some exception occurred "),HttpStatus.BAD_REQUEST);
             return meterListResp;
         }
         return meterListResp;

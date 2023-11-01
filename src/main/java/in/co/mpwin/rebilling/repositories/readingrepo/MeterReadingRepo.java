@@ -52,6 +52,10 @@ public interface MeterReadingRepo extends CrudRepository<MeterReadingBean,Long> 
 
     MeterReadingBean findByMeterNoAndReadingDateAndReadingTypeAndStatus(String meterNo, Date readingDate, String readingType, String status);
 
+    // here DATE(reading_date) is used in query to compare only date part of reading_date column ignoring time
+    @Query(value ="SELECT * FROM ecell.re_meter_reading_trx WHERE meter_no=:meterNo AND status=:status AND DATE(reading_date)=:readingDate ORDER BY id DESC LIMIT 1",nativeQuery = true)
+    MeterReadingBean findByMeterNoAndReadingDateWithoutTimeAndAndStatus(@Param("meterNo") String meterNo, @Param("readingDate") Date readingDate,@Param("status") String status);
+
 
 
     @Query(value = "SELECT * FROM ecell.re_meter_reading_trx WHERE meter_no=:meterNo AND status=:status ORDER BY reading_date DESC LIMIT 1", nativeQuery = true)

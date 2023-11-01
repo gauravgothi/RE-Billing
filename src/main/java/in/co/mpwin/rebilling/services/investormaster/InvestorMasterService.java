@@ -2,10 +2,13 @@ package in.co.mpwin.rebilling.services.investormaster;
 
 import in.co.mpwin.rebilling.beans.feedermaster.FeederMasterBean;
 import in.co.mpwin.rebilling.beans.investormaster.InvestorMasterBean;
+import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.AuditControlServices;
 import in.co.mpwin.rebilling.miscellanious.ValidatorService;
 import in.co.mpwin.rebilling.repositories.investormaster.InvestorMasterRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -60,7 +63,7 @@ public class InvestorMasterService {
         InvestorMasterBean imb = new InvestorMasterBean();
         try {
 
-            //check for existence of feeder if already created with same feeder number
+            //check for existence of investor code if already created with same investor code
             InvestorMasterBean temp = investorMasterRepo.findByInvestorCodeAndStatus(investorMasterBean.getInvestorCode(),"active");
             if(temp!=null) {
                 return null;
@@ -77,6 +80,11 @@ public class InvestorMasterService {
             investorMasterBean.setIfscCode(new ValidatorService().removeSpaceFromString(investorMasterBean.getIfscCode()));
             investorMasterBean.setMicr(new ValidatorService().removeSpaceFromString(investorMasterBean.getMicr()));
             investorMasterBean.setNldc(new ValidatorService().removeSpaceFromString(investorMasterBean.getNldc()));
+            // set investor code
+            investorMasterBean.setInvestorCode("IC"+String.format("%03d",getMaxInvestorCode()+1));
+
+
+
 
             imb = investorMasterRepo.save(investorMasterBean);
         }catch (Exception exception){
@@ -84,5 +92,30 @@ public class InvestorMasterService {
             return null;
         }
         return imb;
+    }
+
+    public List<InvestorMasterBean> getAllInvestorByDeveloperIdAndPlantCode(String developerId, String plantCode, String status) {
+        List<InvestorMasterBean> investorMasterBeanList = new ArrayList<>();
+        try {
+            investorMasterBeanList = investorMasterRepo.findByDeveloperIdAndPalntCodeAndStatus(developerId,plantCode,status);
+            if(investorMasterBeanList.isEmpty())
+                throw new ApiException(HttpStatus.BAD_REQUEST,"Investor not found against developer id "+developerId+" and plant code "+plantCode);
+
+        }catch (ApiException apiException) {
+            throw apiException;
+        } catch (DataIntegrityViolationException d) {
+            throw d;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return investorMasterBeanList;
+    }
+
+    public Integer getMaxInvestorCode()
+    {
+        Integer max = investorMasterRepo.findMaxInvestorCode();
+        if(max==null)
+            max=0;
+        return max;
     }
 }

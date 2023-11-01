@@ -326,7 +326,8 @@ public class MeterReadingService {
         return meterConsumptionDto;
     }
     public MeterReadingBean GetLastReadingByMeterNoAndStatus(String meterNo, Date date) {
-        MeterReadingBean currentReadingBean = meterReadingRepo.findByMeterNoAndReadingDateAndReadingTypeAndStatus(meterNo,date,"NR","active");
+       // first we check reading on punching date, if reading exist on punching date then throw api exception.
+        MeterReadingBean currentReadingBean = meterReadingRepo.findByMeterNoAndReadingDateWithoutTimeAndAndStatus(meterNo,date,"active");
         if(currentReadingBean!=null)
             throw new ApiException(HttpStatus.BAD_REQUEST,"Reading("+currentReadingBean.getEActiveEnergy()+") of meter no. for this month on date "+currentReadingBean.getReadingDate()+" is already present.");
         return meterReadingRepo.findJustBefore(meterNo,date);

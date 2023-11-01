@@ -1,10 +1,12 @@
 package in.co.mpwin.rebilling.beans.thirdparty;
 
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import in.co.mpwin.rebilling.interfaces.BeanInterface;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
@@ -13,15 +15,17 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 @Getter
-@Setter @ToString
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "ThirdPartyBean")
-@Table(name = "re_third_party",uniqueConstraints = { @UniqueConstraint(name = "re_third_party_ukey", columnNames={"consumer_code","status"})})
-public class ThirdPartyBean implements BeanInterface  {
+@Entity(name = "ThirdPartyBeanHistory")
+@Table(name = "re_third_party_history")
+public class ThirdPartyBeanHistory implements BeanInterface  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long hid;
+
     private long id;
     @Column(name="consumer_code")
     private String consumerCode;
@@ -112,7 +116,7 @@ public class ThirdPartyBean implements BeanInterface  {
     @Column(name="period_of_ppwa")
     private String periodOfPpwa;
 
-    @Column(name="adjustment_unit_percent") //@Digits(integer = 5,fraction = 2)
+    @Column(name="adjustment_unit_percent") @Digits(integer = 5,fraction = 2)
     private BigDecimal adjustmentUnitPercent;
 
     @Column(name="userid")
@@ -130,4 +134,12 @@ public class ThirdPartyBean implements BeanInterface  {
     @Column(name = "remark")
     private String remark;
 
+    @Column(name = "hcreated_by")
+    private String hcreatedBy;
+
+    @Column(name = "hcreated_on")
+    private Timestamp hcreatedOn;
+
+    @Column(name = "hremark")
+    private String hremark;
 }

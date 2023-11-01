@@ -8,7 +8,9 @@ import java.util.List;
 
 @Repository
 public interface ThirdPartyRepo extends CrudRepository<ThirdPartyBean, Long> {
+    List<ThirdPartyBean> findAll();
     List<ThirdPartyBean> findAllByStatus(String status);
+
 
 
     List<ThirdPartyBean> findAllByInvestorCodeAndStatus(String investorCode, String status);
