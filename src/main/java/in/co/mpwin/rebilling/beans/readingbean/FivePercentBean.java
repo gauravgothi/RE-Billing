@@ -3,6 +3,8 @@ package in.co.mpwin.rebilling.beans.readingbean;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Getter@Setter @ToString
 @NoArgsConstructor@AllArgsConstructor
 @Entity(name = "FivePercentBean")
@@ -42,4 +44,5 @@ public class FivePercentBean {
     private String percentage;
     private String result;
     private String remark="NA";
+
 }

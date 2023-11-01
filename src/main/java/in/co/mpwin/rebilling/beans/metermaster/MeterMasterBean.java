@@ -11,7 +11,7 @@ import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Digits;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-@Getter
+
 @Setter @ToString
 @Entity(name="MeterMasterBean")@Table(name="re_meter_master")
 public class MeterMasterBean implements MeterMasterInterface {
@@ -69,5 +69,97 @@ public class MeterMasterBean implements MeterMasterInterface {
     @Column(name = "is_mapped")
     String isMapped="no";
 
+    public Long getId() {
+        return id;
+    }
 
+    public String getMeterNumber() {
+        return meterNumber;
+    }
+
+    public String getMake() {
+        return make;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getMeterClass() {
+        return meterClass;
+    }
+
+    public String getMeterCtr() {
+        return meterCtr;
+    }
+
+    public String getMeterPtr() {
+        return meterPtr;
+    }
+
+    public String getMeCtr() {
+        return meCtr;
+    }
+
+    public String getMePtr() {
+        return mePtr;
+    }
+
+    public String getDialBmf() {
+        return dialBmf;
+    }
+
+    public String getEquipClass() {
+        return equipClass;
+    }
+
+    public String getPhase() {
+        return phase;
+    }
+
+    public String getMeterGroup() {
+        return meterGroup;
+    }
+
+    public BigDecimal getMf() {
+        if (this.mf != null)
+            return new BigDecimal(String.valueOf(this.mf));
+        return mf;
+    }
+
+    public String getInstallDate() {
+        return installDate;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public String getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public Timestamp getCreatedOn() {
+        return createdOn;
+    }
+
+    public Timestamp getUpdatedOn() {
+        return updatedOn;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public String getIsMapped() {
+        return isMapped;
+    }
 }

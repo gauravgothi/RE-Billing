@@ -52,7 +52,9 @@ public class ConsumptionPercentageController {
                 //reportDtoResp = new ResponseEntity<>(consumptionPercentageDtoList, HttpStatus.OK);
         } catch (ApiException apiException){
             reportDtoResp = new ResponseEntity<>(new Message(apiException.getMessage()),apiException.getHttpStatus());
-        }catch (ParseException e) {
+        }catch (ArithmeticException arithmeticException){
+            reportDtoResp = new ResponseEntity<>(new Message("Arithmetic Exception Occured"),HttpStatus.BAD_REQUEST);
+        } catch (ParseException e) {
             reportDtoResp = new ResponseEntity<>(new Message("Month is not in valid format(Mmm-yyyy)"),HttpStatus.BAD_REQUEST);
         }catch (Exception e){
             e.printStackTrace();

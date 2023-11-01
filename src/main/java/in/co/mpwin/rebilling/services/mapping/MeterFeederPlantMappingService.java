@@ -204,7 +204,12 @@ public class MeterFeederPlantMappingService {
             List<String> plants = new ArrayList<>();
             try {
                 plants = meterFeederPlantMappingRepo.findDistinctPlantCodeByDeveloperIdAndStatus(developerId, status);
-            } catch (Exception e) {
+                if(plants.size()==0)
+                    throw new ApiException(HttpStatus.BAD_REQUEST,"Developer "+developerId +" not have any plant mapping");
+            } catch (ApiException apiException){
+                throw apiException;
+            }
+            catch (Exception e) {
                 throw e;
             }
             return plants;
@@ -214,7 +219,13 @@ public class MeterFeederPlantMappingService {
             List<MeterFeederPlantMappingBean> mappingBean = new ArrayList<>();
             try {
                 mappingBean = meterFeederPlantMappingRepo.findAllByDeveloperIdAndStatusOrderByEndDateAsc(di, status);
-            } catch (Exception e) {
+                if (mappingBean.size() == 0)
+                    throw new ApiException(HttpStatus.BAD_REQUEST,"Developer "+ di+" is not mapped to any plant..");
+            } catch (ApiException apiException) {
+                apiException.printStackTrace();
+                System.out.println(apiException.getMessage());
+            }
+            catch (Exception e) {
                 throw e;
             }
             return mappingBean;

@@ -112,7 +112,7 @@ public class ThirdPartyBean implements BeanInterface  {
     @Column(name="period_of_ppwa")
     private String periodOfPpwa;
 
-    @Column(name="adjustment_unit_percent") @Digits(integer = 5,fraction = 2)
+    @Column(name="adjustment_unit_percent") //@Digits(integer = 5,fraction = 2)
     private BigDecimal adjustmentUnitPercent;
 
     @Column(name="userid")

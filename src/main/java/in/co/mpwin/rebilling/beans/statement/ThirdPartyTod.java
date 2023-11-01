@@ -39,8 +39,9 @@ public class ThirdPartyTod {
     @Column(name="tp_adjustment")
     private BigDecimal tpAdjustment;
 
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "solar_statement_id",nullable = false)
+    @JoinColumn(name = "solar_statement_id",nullable = false,referencedColumnName = "id")
     private SolarStatementBean solarStatementBean;
 
     public SolarStatementBean getSolarStatementBean() {
@@ -100,4 +101,5 @@ public class ThirdPartyTod {
             return new BigDecimal(String.valueOf(this.tpAdjustment));
         return tpAdjustment;
     }
+
 }
