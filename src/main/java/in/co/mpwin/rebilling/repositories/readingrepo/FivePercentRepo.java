@@ -43,4 +43,8 @@ public interface FivePercentRepo extends CrudRepository<FivePercentBean,Long> {
     @Query(value = "UPDATE ecell.re_5perc_report_trx AS u SET meter_selected_flag = ?1 WHERE u.id = ?2",nativeQuery = true)
     void setMeterSelectedFlagById(String meterSelectedFlag, Long id);
 
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE ecell.re_5perc_report_trx AS u SET status = ?3 WHERE (u.main_meter_number = ?1 OR u.check_meter_number = ?1) AND u.month_year = ?2",nativeQuery = true)
+    void discardFivePercentBean(String meterNo, String monthYear, String status);
 }

@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Digits;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 
 import javax.validation.constraints.NotNull;
@@ -12,7 +13,7 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 @Getter
-@Setter
+@Setter @ToString
 @Entity(name="AmrValidatedReading")
 @Table(name="re_amr_validated_reading_trx")
 public class AmrValidatedReading implements BeanInterface {

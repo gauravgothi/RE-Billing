@@ -1,17 +1,14 @@
 package in.co.mpwin.rebilling.beans.xmlfilebean;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
 //@Entity
 @Getter
-@Setter
+@Setter @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 //@Table(name = "parsed_data_d1")

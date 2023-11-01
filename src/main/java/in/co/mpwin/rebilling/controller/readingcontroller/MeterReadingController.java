@@ -178,12 +178,14 @@ public class MeterReadingController {
         return createReadResp;
     }
 
-    //this is used by HT to view AMR accepted or force accepted meter readings
+    //this is used by HT to view AMR accepted or force accepted or dev_reject meter readings
     @GetMapping("/amr_accepted/monthYear/{monthYear}")
     public ResponseEntity<?> getAmrAcceptedReadings(@PathVariable("monthYear") String monthYear){
         ResponseEntity readingDtosResp = null;
         try {
                 List<MeterReadingBean> readings = meterReadingService.getAmrAcceptedReadings(monthYear);
+                if (readings.size() == 0)
+                    throw new ApiException(HttpStatus.BAD_REQUEST,"Not any reading left");
             readingDtosResp = new ResponseEntity<>(readings,HttpStatus.OK);
         }catch (ApiException apiException){
             readingDtosResp = new ResponseEntity<>(new Message(apiException.getMessage()),apiException.getHttpStatus());

@@ -2,10 +2,7 @@ package in.co.mpwin.rebilling.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
@@ -74,4 +71,34 @@ public class BifurcateConsumptionDto {
     private BigDecimal fGrandConsumptionKwh;
     @Column(name="funallocated_kwh_active_energy")@NotNull
     private BigDecimal fUnallocatedConsumptionKwh;
+
+    @Override
+    public String toString() {
+        return "BifurcateConsumptionDto{" +
+                "hDevId='" + hDevId + '\'' +
+                ", hDevUsername='" + hDevUsername + '\'' +
+                ", hDevName='" + hDevName + '\'' +
+                ", hDevPlantcode='" + hDevPlantcode + '\'' +
+                ", hDevPlantName='" + hDevPlantName + '\'' +
+                ", hCircleName='" + hCircleName + '\'' +
+                ", hMeterNumber='" + hMeterNumber + '\'' +
+                ", hCategory='" + hCategory + '\'' +
+                ", hMf=" + hMf +
+                ", hReadingDate=" + hReadingDate +
+                ", hmonth='" + hmonth + '\'' +
+                ", hMaxDemand=" + hMaxDemand +
+                ", hConsumptionKwh=" + hConsumptionKwh +
+                ", hRkvah=" + hRkvah +
+                ", hAdjustment=" + hAdjustment +
+                ", hAssessment=" + hAssessment +
+                ", hGrandConsumptionKwh=" + hGrandConsumptionKwh +
+                ", bifurcateInvestorDtoList=" + bifurcateInvestorDtoList +
+                ", fSumConsumptionKwh=" + fSumConsumptionKwh +
+                ", fSumAssessment=" + fSumAssessment +
+                ", fSumFixedAdjustmentValue=" + fSumFixedAdjustmentValue +
+                ", fSumAdjustment=" + fSumAdjustment +
+                ", fGrandConsumptionKwh=" + fGrandConsumptionKwh +
+                ", fUnallocatedConsumptionKwh=" + fUnallocatedConsumptionKwh +
+                '}';
+    }
 }

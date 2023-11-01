@@ -4,10 +4,11 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
 
-@Setter
+@Setter @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "InvestorPpwaMappingBean")

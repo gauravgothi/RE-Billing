@@ -10,9 +10,15 @@ import java.util.List;
 public interface ThirdPartyRepo extends CrudRepository<ThirdPartyBean, Long> {
     List<ThirdPartyBean> findAll();
     List<ThirdPartyBean> findAllByStatus(String status);
+
+
+
+    List<ThirdPartyBean> findAllByInvestorCodeAndStatus(String investorCode, String status);
+
     List<ThirdPartyBean> findByConsumerCodeAndStatus(String consumerCode, String active);
 
     List<ThirdPartyBean> findByInvestorCodeAndStatus(String investorId, String status);
 
     List<ThirdPartyBean> findByPlantCodeAndStatus(String plantCode, String status);
+
 }

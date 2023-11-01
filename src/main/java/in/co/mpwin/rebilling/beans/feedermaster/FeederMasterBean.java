@@ -5,10 +5,11 @@ import in.co.mpwin.rebilling.interfaces.BeanInterface;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.sql.Timestamp;
 
-@Getter @Setter
+@Getter @Setter @ToString
 @Entity(name="FeederMasterBean")@Table(name="re_feeder_master",uniqueConstraints = @UniqueConstraint(name = "re_feeder_master_ukey", columnNames={"feeder_no", "status"}))
 public class FeederMasterBean implements BeanInterface {
 

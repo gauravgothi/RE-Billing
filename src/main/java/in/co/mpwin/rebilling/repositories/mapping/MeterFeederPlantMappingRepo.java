@@ -28,7 +28,7 @@ public interface MeterFeederPlantMappingRepo extends CrudRepository<MeterFeederP
 
     List<MeterFeederPlantMappingBean> findByStandbyMeterNoAndStatus(String smn, String status);
 
-    @Query(value = "SELECT * from ecell.re_meter_feeder_plant_mapping WHERE status =:status AND (main_meter_no=:meterNo OR check_meter_no =:meterNo);",
+    @Query(value = "SELECT * from ecell.re_meter_feeder_plant_mapping WHERE status =:status AND (main_meter_no=:meterNo OR check_meter_no =:meterNo) ORDER BY id DESC LIMIT 1;",
         nativeQuery = true)
     MeterFeederPlantMappingBean findByAnyMeterNoAndStatus(@Param("meterNo") String meterNo,
                                             @Param("status") String status);

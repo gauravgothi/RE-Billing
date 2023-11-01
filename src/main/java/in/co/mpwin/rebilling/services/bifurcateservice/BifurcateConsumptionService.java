@@ -385,6 +385,35 @@ public class BifurcateConsumptionService {
         }
     }
 
+    public List<Map<String,String>> getAllMeters(){
+        try {
+            List<Map<String,String>> meters = new ArrayList<>();
+            //current username which must be circle name
+            String username = new TokenInfo().getCurrentUsername();
+            String role = new TokenInfo().getCurrentUserRole();
+            if (!(role.equals("AMRCELL") || role.equals("HTCELL")) )
+                throw new ApiException(HttpStatus.BAD_REQUEST,"Login user should be either AMR or HT Cell user");
+
+            List<BifurcateBean> bifurcateBeanList = bifurcateBeanRepo.findDistinctMeterNumber();
+            if (bifurcateBeanList.size() == 0)
+                throw new ApiException(HttpStatus.BAD_REQUEST,"Meter Consumption is not bifurcated yet for given month..");
+            for (BifurcateBean row : bifurcateBeanList){
+                Map<String,String> m = new HashMap<>();
+                m.put("meterNumber", row.gethMeterNumber());
+                m.put("meterCategory", row.gethCategory());
+                meters.add(m);
+            }
+            return meters;
+
+        }catch (ApiException apiException){
+            throw apiException;
+        }catch (DataIntegrityViolationException d){
+            throw d;
+        }catch (Exception e){
+            throw e;
+        }
+    }
+
     public BifurcateBean getBifurcateBeanByInvestorCodeAndMonth(String investorCode,String monthYear,String status){
         try {
             return bifurcateBeanRepo.findByLInvestorCodeAndHmonthAndStatus(investorCode,monthYear,"active");

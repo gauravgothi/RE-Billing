@@ -1,16 +1,13 @@
 package in.co.mpwin.rebilling.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.validation.constraints.Digits;
 import java.math.BigDecimal;
 import java.util.List;
 
 @Getter
-@Setter
+@Setter @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class ConsumptionPercentageDto2 {
