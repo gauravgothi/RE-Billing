@@ -2,16 +2,19 @@ package in.co.mpwin.rebilling.controller.mapping;
 
 import in.co.mpwin.rebilling.beans.mapping.MeterFeederPlantMappingBean;
 import in.co.mpwin.rebilling.beans.plantmaster.PlantMasterBean;
+import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.Message;
 import in.co.mpwin.rebilling.services.mapping.MeterFeederPlantMappingService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
 import java.util.List;
 
 @RestController
@@ -22,33 +25,30 @@ public class MeterFeederPlantMappingController {
     @Autowired
     MeterFeederPlantMappingService meterFeederPlantMappingService;
 
-
-    @RequestMapping(method = RequestMethod.POST,value = "/MFP_Mapping")
-    public ResponseEntity<?> createMeterFeederPlantMapping(@RequestBody @Valid MeterFeederPlantMappingBean meterFeederPlantMappingBean){
+    @RequestMapping(method = RequestMethod.POST,value = "/mfp")
+    public ResponseEntity<?> createMeterFeederPlantMapping(@RequestBody MeterFeederPlantMappingBean meterFeederPlantMappingBean){
         ResponseEntity resp = null;
-        MeterFeederPlantMappingBean mfpm = new MeterFeederPlantMappingBean();
         try {
-
-            mfpm  = meterFeederPlantMappingService.createMapping(meterFeederPlantMappingBean);
-
-            if(mfpm!=null)
+            MeterFeederPlantMappingBean mfpm  = meterFeederPlantMappingService.createNewMapping(meterFeederPlantMappingBean);
+            resp =  new ResponseEntity<>(mfpm, HttpStatus.CREATED);
+            } catch (ApiException apiException) {
+            resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+            } catch (DataIntegrityViolationException d) {
+            resp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+            }catch (NullPointerException ex) {
+            resp = new ResponseEntity<>(new Message(ex.getMessage().substring(0,250)), HttpStatus.BAD_REQUEST);
+            }catch(ParseException ex)
             {
-               resp =  new ResponseEntity<>(new Message(mfpm.getId() + " is created successfully."), HttpStatus.OK);
-            }else if(mfpm==null) {
-                resp = new ResponseEntity<>(new Message( "Mapping is already exist."), HttpStatus.BAD_REQUEST);
-            }else {
-                resp = new ResponseEntity<>(new Message("something went wrong"), HttpStatus.BAD_REQUEST);
-            }
-        }catch (Exception e){
+                resp = new ResponseEntity<>(new Message(ex.getMessage().substring(0,250)), HttpStatus.BAD_REQUEST);
+            }catch (Exception e) {
             e.printStackTrace();
             resp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
-        }
-
+             }
         return resp;
     }
 
 
-    @RequestMapping(method=RequestMethod.GET,value="/MFP_Mapping")
+    @RequestMapping(method=RequestMethod.GET,value="")
     public ResponseEntity<MeterFeederPlantMappingBean> getAllMapping(){
         ResponseEntity resp = null;
         try {
@@ -221,4 +221,7 @@ public class MeterFeederPlantMappingController {
         }
         return resp;
     }
+
+
+
 }

@@ -2,10 +2,15 @@ package in.co.mpwin.rebilling.services.feedermaster;
 
 import in.co.mpwin.rebilling.beans.feedermaster.FeederMasterBean;
 import in.co.mpwin.rebilling.beans.metermaster.MeterMasterBean;
+import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.AuditControlServices;
+import in.co.mpwin.rebilling.miscellanious.Message;
 import in.co.mpwin.rebilling.miscellanious.ValidatorService;
 import in.co.mpwin.rebilling.repositories.feedermaster.FeederMasterRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -31,9 +36,15 @@ public class FeederMasterService {
     public List<FeederMasterBean> getAllFeederByLocationId(String locationId,String status){
         List<FeederMasterBean> allFeederByLocation = new ArrayList<>();
         try {
-            allFeederByLocation= feederMasterRepo.findByLocationIdAndStatus(locationId,status);
+            allFeederByLocation = feederMasterRepo.findByLocationIdAndStatus(locationId,status);
+            if(allFeederByLocation.isEmpty())
+                throw new ApiException(HttpStatus.BAD_REQUEST,"feeder list not found for location id : "+locationId);
+        }catch (ApiException apiException) {
+           throw apiException;
+        } catch (DataIntegrityViolationException d) {
+           throw  d;
         } catch (Exception e) {
-            e.printStackTrace();
+            throw e;
         }
         return allFeederByLocation;
     }
