@@ -13,6 +13,7 @@ import in.co.mpwin.rebilling.dto.BifurcateInvestorDto;
 import in.co.mpwin.rebilling.dto.MeterConsumptionDto;
 import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.AuditControlServices;
+import in.co.mpwin.rebilling.miscellanious.ConstantField;
 import in.co.mpwin.rebilling.miscellanious.DateMethods;
 import in.co.mpwin.rebilling.miscellanious.TokenInfo;
 import in.co.mpwin.rebilling.repositories.metermaster.MeterMasterRepo;
@@ -30,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -65,6 +67,7 @@ public class SolarStatementService {
     @Autowired
     private MeterMasterRepo meterMasterRepo;
 
+    @Transactional
     public List<SolarStatementBean> getSolarStatement(String meterNo, String monthYear) throws ParseException {
         try {
             //check if solar statement is already exist if exist then return beanlist otherwise generate bean and return
@@ -190,7 +193,7 @@ public class SolarStatementService {
                 solarStatementBean.setEDiffKvah(meterConsumptionDto.getEDiffKvah());
                 solarStatementBean.setEConsumptionKvah(meterConsumptionDto.getEConsumptionKvah());
 
-                solarStatementBean.setWheelingChargePercent(BigDecimal.valueOf(5.91));
+                solarStatementBean.setWheelingChargePercent(new BigDecimal(ConstantField.wheelingChargePercent));
                 solarStatementBean.setStatus("active");
 
                 BigDecimal meterTod1 = meterConsumptionDto.getEConsumptionTod1();
@@ -236,7 +239,7 @@ public class SolarStatementService {
                     thirdPartyTod.setTpName(thirdPartyBean.getConsumerName());
                     thirdPartyTod.setTpPercentage(thirdPartyBean.getAdjustmentUnitPercent());
                     thirdPartyTod.setSolarStatementBean(solarStatementBean);
-
+                    //solarStatementBean.setInvestorProjectCapacity(thirdPartyBean.getPlantCapacity());
                     //if tod adjstment 0 then individual adjustment is also 0
                     if (solarStatementBean.getTotalAdjustment().compareTo(BigDecimal.valueOf(0)) >= 0){
                         thirdPartyTod.setTpAdjustment(thirdPartyTod.getTpPercentage().multiply(solarStatementBean.getTotalAdjustment()

@@ -14,6 +14,7 @@ import javax.xml.parsers.SAXParserFactory;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.stream.Collectors;
@@ -267,8 +268,7 @@ public class XmlSaxParserService {
         return parsedData;
     }
 
-        public MeterReadingBean convertXmlParserBeanToMeterReadingBean (XmlParserBean xmlParserBean)
-        {
+        public MeterReadingBean convertXmlParserBeanToMeterReadingBean (XmlParserBean xmlParserBean) throws ParseException {
             MeterReadingBean meterReadingBean = new MeterReadingBean();
             try {
                 meterReadingBean.setMeterNo(xmlParserBean.getDataEntityD1().getG1());//1
@@ -365,6 +365,7 @@ public class XmlSaxParserService {
                 meterReadingBean.setRemark("NA");//39
             } catch (Exception e) {
                 e.printStackTrace();
+                throw e;
             }
             return meterReadingBean;
         }

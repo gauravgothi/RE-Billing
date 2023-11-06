@@ -60,6 +60,26 @@ public class PasswordEncoderGenerator {
 //        java.sql.Timestamp ourJavaTimestamp = new java.sql.Timestamp(calendar.getTime().getTime());
 //        System.out.println(ourJavaTimestamp);;
 
+
+
+//        Date date = new SimpleDateFormat("dd-MM-yyyy").parse("01-10-2023");
+//
+//        Calendar cal = Calendar.getInstance();
+//        cal.setTime(date);
+//        cal.add(Calendar.DATE, -1);
+//        Date oneDayBefore = cal.getTime();
+//        System.out.println(new SimpleDateFormat("MMM-yyyy").format(oneDayBefore));
+//
+//        LinkedHashSet<String> gfg = new LinkedHashSet<String>();
+//        // Adding element to LinkedHashSet
+//        gfg.add("Geeks");
+//        gfg.add("for");
+//        gfg.add("geeks");
+//        LinkedHashSet<String> newgfg = new LinkedHashSet<>(gfg);
+//        int initialSetSize,finalSetSize;
+//
+        System.out.println("Working Directory = " + System.getProperty("user.dir"));
+
 /*
         Date date = new SimpleDateFormat("dd-MM-yyyy").parse("01-10-2023");
 
@@ -69,18 +89,31 @@ public class PasswordEncoderGenerator {
         Date oneDayBefore = cal.getTime();
         System.out.println(new SimpleDateFormat("MMM-yyyy").format(oneDayBefore));
 
-        LinkedHashSet<String> gfg = new LinkedHashSet<String>();
-        // Adding element to LinkedHashSet
-        gfg.add("Geeks");
-        gfg.add("for");
-        gfg.add("geeks");
-        LinkedHashSet<String> newgfg = new LinkedHashSet<>(gfg);
-        int initialSetSize,finalSetSize;
+
 
 
 
         // Create a new LinkedHashSet to store elements to add
         //LinkedHashSet<String> elementsToAdd = new LinkedHashSet<String>(gfg);
+
+
+//        do {
+//            gfg = new LinkedHashSet<>(newgfg);
+//            initialSetSize = newgfg.size();
+//            // Iterating LinkedHashSet using enhanced for loop
+//            for (String itr : gfg) {
+//                if (itr.equals("for")) {
+//                    newgfg.add("from");
+//                }
+//            }
+//
+//            finalSetSize = newgfg.size();
+//        }while (initialSetSize != finalSetSize);
+//
+//        // Now, print the modified LinkedHashSet
+//        for (String itr : newgfg) {
+//            System.out.println(itr);
+//        }
 
         do {
             gfg = new LinkedHashSet<>(newgfg);
@@ -99,6 +132,7 @@ public class PasswordEncoderGenerator {
         for (String itr : newgfg) {
             System.out.println(itr);
         }*/
+
 
         LocalDate endDate = LocalDate.now();
         System.out.println("local end date ="+endDate);

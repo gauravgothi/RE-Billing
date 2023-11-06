@@ -10,7 +10,9 @@ import in.co.mpwin.rebilling.repositories.feedermaster.FeederMasterRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -75,8 +77,15 @@ public class FeederMasterService {
         FeederMasterBean feederMasterBean = new FeederMasterBean();
         try{
             feederMasterBean = feederMasterRepo.findByFeederNumberAndStatus(feederNumber,status);
+            if (feederMasterBean == null)
+                throw new ApiException(HttpStatus.BAD_REQUEST,"Feeder Number not exist in feeder master..");
+        }catch (ApiException apiException){
+            throw apiException;
+        }catch (DataIntegrityViolationException d){
+            throw d;
         }catch (Exception e){
             e.printStackTrace();
+            throw e;
         }
         return feederMasterBean;
     }

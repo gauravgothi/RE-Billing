@@ -32,7 +32,8 @@ public class SolarStatementController {
         try {
                 List<SolarStatementBean> solarStatementBeanList = solarStatementService.getSolarStatement(meterNo,monthYear);
                 byte[] solarStatementInPdf = solarStatementReportService.exportSolarStatement("pdf",solarStatementBeanList);
-            statementResp = new ResponseEntity<>( solarStatementInPdf, HttpStatus.OK);
+                statementResp = new ResponseEntity<>( solarStatementInPdf, HttpStatus.OK);
+
         }catch (ApiException apiException) {
             statementResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
         } catch (DataIntegrityViolationException d) {

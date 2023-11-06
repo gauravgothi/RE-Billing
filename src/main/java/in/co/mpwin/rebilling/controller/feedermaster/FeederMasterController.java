@@ -102,8 +102,12 @@ public class FeederMasterController {
                 feederResp = new ResponseEntity<>(new Message("Something went wrong."), HttpStatus.BAD_REQUEST);
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        }catch (ApiException apiException){
+            feederResp = new ResponseEntity(new Message(apiException.getMessage()),apiException.getHttpStatus());
+        }catch (DataIntegrityViolationException d){
+            feederResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+        }catch (Exception e){
+            feederResp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
         }
         return feederResp;
     }

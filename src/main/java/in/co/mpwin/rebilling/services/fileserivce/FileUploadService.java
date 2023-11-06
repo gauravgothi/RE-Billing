@@ -13,12 +13,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.text.ParseException;
 
 @Service
 public class FileUploadService {
@@ -31,7 +35,7 @@ public class FileUploadService {
     MeterReadingBean meterReadingBean;
     @Autowired
     XmlParserBean xmlParserBean;*/
-    public ResponseEntity<?> handleFileUpload(MultipartFile xmlFile ) {
+    public ResponseEntity<?> handleFileUpload(MultipartFile xmlFile ) throws IOException, ParserConfigurationException, ParseException, SAXException {
 
         ResponseEntity resp = null;
 
@@ -53,7 +57,7 @@ public class FileUploadService {
 
                 if(xmlParserBean.getDataEntityD1().getG1().equals(null))
                 {
-                    resp = new ResponseEntity<>(new Message("XML file is not in correct format"), HttpStatus.OK);
+                    resp = new ResponseEntity<>(new Message("XML file is not in correct format"), HttpStatus.BAD_REQUEST);
                 }
                 else {
                     //saving data into meter reading entity or bean
@@ -62,7 +66,7 @@ public class FileUploadService {
                     //Saving XML file data into Meterreading Table
                     MeterReadingBean meterReadingBean = meterReadingService.createMeterReading(passMRB);
                     if (meterReadingBean.getMeterNo().equals(null)) {
-                        resp = new ResponseEntity<>(new Message("Reading data can't insert into table"), HttpStatus.OK);
+                        resp = new ResponseEntity<>(new Message("Reading data can't insert into table"), HttpStatus.BAD_REQUEST);
                     } else {
                         resp = new ResponseEntity<>(new Message("File uploaded successfully"), HttpStatus.OK);
                     }
@@ -74,19 +78,16 @@ public class FileUploadService {
 
 
         }catch (ApiException apiException){
-            resp = new ResponseEntity<>(new Message(apiException.getMessage()),apiException.getHttpStatus());
+            throw apiException;
+        }catch (IOException ioException)
+        {   throw ioException;
         }
         catch (DataIntegrityViolationException d)
         {
-            Throwable rootCause = d.getRootCause();
-            String msg=rootCause.getMessage().substring(0,rootCause.getMessage().indexOf("Detail:"));
-
-            resp = new ResponseEntity<>(new Message(msg),HttpStatus.INTERNAL_SERVER_ERROR);
-            return resp;
+            throw d;
         }
         catch (Exception e) {
-            resp = new ResponseEntity<>(new Message("Error in File uploading"),HttpStatus.INTERNAL_SERVER_ERROR);
-            return resp;
+            throw e;
         }
         return resp;
     }

@@ -2,6 +2,9 @@ package in.co.mpwin.rebilling.controller.mapping;
 
 import in.co.mpwin.rebilling.beans.mapping.MeterFeederPlantMappingBean;
 import in.co.mpwin.rebilling.beans.plantmaster.PlantMasterBean;
+
+import in.co.mpwin.rebilling.dto.CompleteMappingDto;
+
 import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.Message;
 import in.co.mpwin.rebilling.services.mapping.MeterFeederPlantMappingService;
@@ -223,5 +226,21 @@ public class MeterFeederPlantMappingController {
     }
 
 
+    @GetMapping("/view-complete/meter/{meter}")
+    public ResponseEntity<?> getCompleteMappingByMeterNumber(@PathVariable("meter") String meterNumber){
+        ResponseEntity viewMappingDtoResp;
+        try {
+                CompleteMappingDto completeMappingDto =
+                        meterFeederPlantMappingService.getCompleteMappingByMeterNumber(meterNumber);
+                viewMappingDtoResp = new ResponseEntity<>(completeMappingDto,HttpStatus.OK);
+        }catch (ApiException apiException){
+            viewMappingDtoResp = new ResponseEntity<>(new Message(apiException.getMessage()),apiException.getHttpStatus());
+        }catch (DataIntegrityViolationException d){
+            viewMappingDtoResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+        }catch (Exception e){
+            viewMappingDtoResp = new ResponseEntity<>(new Message(e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+        return viewMappingDtoResp;
+    }
 
 }
