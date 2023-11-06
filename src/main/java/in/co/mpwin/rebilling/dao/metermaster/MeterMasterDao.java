@@ -1,10 +1,13 @@
 package in.co.mpwin.rebilling.dao.metermaster;
 
 import in.co.mpwin.rebilling.beans.metermaster.MeterMasterBean;
+import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.AuditControlServices;
 import in.co.mpwin.rebilling.miscellanious.ValidatorService;
 import in.co.mpwin.rebilling.repositories.metermaster.MeterMasterRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
@@ -47,17 +50,6 @@ public class MeterMasterDao {
         MeterMasterBean mmb = new MeterMasterBean();
         try {
 
-           /* meterMasterBean.setCreatedOn(new DateMethods().getServerTime());
-            meterMasterBean.setUpdatedOn(new DateMethods().getServerTime());
-            meterMasterBean.setCreatedBy(new TokenInfo().getCurrentUsername());
-            meterMasterBean.setUpdatedBy(new TokenInfo().getCurrentUsername());
-            meterMasterBean.setStatus("active");
-            meterMasterBean.setRemark("NA");*/
-
-            //To check the duplicate meter-make-status combination
-//            boolean isExist=meterMasterRepo.existsByMeterNumberAndMakeAndStatus(meterMasterBean.getMeterNumber(),
-//                                                    meterMasterBean.getMake(),meterMasterBean.getStatus());
-
             //To check the duplicate meter-make-status combination
             boolean isExist = false;
             List<MeterMasterBean> meterMasterBeanList = meterMasterRepo.findByMeterNumberAndMakeAndStatus(meterMasterBean.getMeterNumber(),
@@ -65,7 +57,7 @@ public class MeterMasterDao {
             if(meterMasterBeanList.size()>0) {
                 isExist = true;
                 System.out.println("isExist : " + isExist);
-                return null;
+                throw new ApiException(HttpStatus.BAD_REQUEST,"Meter serial number with make is already exist.");
             }
             //Set the Audit control parameters, Globally
             new AuditControlServices().setInitialAuditControlParameters(meterMasterBean);
@@ -73,6 +65,10 @@ public class MeterMasterDao {
             meterMasterBean.setMeterNumber(new ValidatorService().removeSpaceFromString(meterMasterBean.getMeterNumber()));
 
             mmb = meterMasterRepo.save(meterMasterBean);
+        }catch (ApiException apiException){
+            throw apiException;
+        }catch (DataIntegrityViolationException d){
+            throw d;
         }catch (Exception e){
             System.out.println(e);
             e.printStackTrace();

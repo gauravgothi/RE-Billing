@@ -60,44 +60,47 @@ public class PasswordEncoderGenerator {
 //        System.out.println(ourJavaTimestamp);;
 
 
-        Date date = new SimpleDateFormat("dd-MM-yyyy").parse("01-10-2023");
+//        Date date = new SimpleDateFormat("dd-MM-yyyy").parse("01-10-2023");
+//
+//        Calendar cal = Calendar.getInstance();
+//        cal.setTime(date);
+//        cal.add(Calendar.DATE, -1);
+//        Date oneDayBefore = cal.getTime();
+//        System.out.println(new SimpleDateFormat("MMM-yyyy").format(oneDayBefore));
+//
+//        LinkedHashSet<String> gfg = new LinkedHashSet<String>();
+//        // Adding element to LinkedHashSet
+//        gfg.add("Geeks");
+//        gfg.add("for");
+//        gfg.add("geeks");
+//        LinkedHashSet<String> newgfg = new LinkedHashSet<>(gfg);
+//        int initialSetSize,finalSetSize;
+//
+        System.out.println("Working Directory = " + System.getProperty("user.dir"));
 
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        cal.add(Calendar.DATE, -1);
-        Date oneDayBefore = cal.getTime();
-        System.out.println(new SimpleDateFormat("MMM-yyyy").format(oneDayBefore));
-
-        LinkedHashSet<String> gfg = new LinkedHashSet<String>();
-        // Adding element to LinkedHashSet
-        gfg.add("Geeks");
-        gfg.add("for");
-        gfg.add("geeks");
-        LinkedHashSet<String> newgfg = new LinkedHashSet<>(gfg);
-        int initialSetSize,finalSetSize;
 
 
 
         // Create a new LinkedHashSet to store elements to add
         //LinkedHashSet<String> elementsToAdd = new LinkedHashSet<String>(gfg);
 
-        do {
-            gfg = new LinkedHashSet<>(newgfg);
-            initialSetSize = newgfg.size();
-            // Iterating LinkedHashSet using enhanced for loop
-            for (String itr : gfg) {
-                if (itr.equals("for")) {
-                    newgfg.add("from");
-                }
-            }
-
-            finalSetSize = newgfg.size();
-        }while (initialSetSize != finalSetSize);
-
-        // Now, print the modified LinkedHashSet
-        for (String itr : newgfg) {
-            System.out.println(itr);
-        }
+//        do {
+//            gfg = new LinkedHashSet<>(newgfg);
+//            initialSetSize = newgfg.size();
+//            // Iterating LinkedHashSet using enhanced for loop
+//            for (String itr : gfg) {
+//                if (itr.equals("for")) {
+//                    newgfg.add("from");
+//                }
+//            }
+//
+//            finalSetSize = newgfg.size();
+//        }while (initialSetSize != finalSetSize);
+//
+//        // Now, print the modified LinkedHashSet
+//        for (String itr : newgfg) {
+//            System.out.println(itr);
+//        }
 
 
     }

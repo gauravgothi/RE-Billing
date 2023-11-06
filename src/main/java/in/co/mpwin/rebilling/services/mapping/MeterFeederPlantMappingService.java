@@ -2,15 +2,20 @@ package in.co.mpwin.rebilling.services.mapping;
 
 import in.co.mpwin.rebilling.beans.developermaster.DeveloperMasterBean;
 import in.co.mpwin.rebilling.beans.feedermaster.FeederMasterBean;
+import in.co.mpwin.rebilling.beans.investormaster.InvestorMasterBean;
+import in.co.mpwin.rebilling.beans.machinemaster.MachineMasterBean;
+import in.co.mpwin.rebilling.beans.mapping.InvestorMachineMappingBean;
 import in.co.mpwin.rebilling.beans.mapping.MeterFeederPlantMappingBean;
 import in.co.mpwin.rebilling.beans.plantmaster.PlantMasterBean;
 import in.co.mpwin.rebilling.beans.thirdparty.DeveloperPlantDto;
+import in.co.mpwin.rebilling.dto.CompleteMappingDto;
 import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.AuditControlServices;
 import in.co.mpwin.rebilling.miscellanious.ValidatorService;
 import in.co.mpwin.rebilling.repositories.mapping.MeterFeederPlantMappingRepo;
 import in.co.mpwin.rebilling.services.developermaster.DeveloperMasterService;
 import in.co.mpwin.rebilling.services.feedermaster.FeederMasterService;
+import in.co.mpwin.rebilling.services.investormaster.InvestorMasterService;
 import in.co.mpwin.rebilling.services.machinemaster.MachineMasterService;
 import in.co.mpwin.rebilling.services.plantmaster.PlantMasterService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +24,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class MeterFeederPlantMappingService {
@@ -30,7 +34,9 @@ public class MeterFeederPlantMappingService {
     @Autowired private DeveloperMasterService developerMasterService;
     @Autowired private PlantMasterService plantMasterService;
     @Autowired private FeederMasterService feederMasterService;
+    @Autowired private InvestorMasterService investorMasterService;
     @Autowired private MachineMasterService machineMasterService;
+    @Autowired private InvestorMachineMappingService investorMachineMappingService;
 
 
     public MeterFeederPlantMappingBean createMapping(MeterFeederPlantMappingBean meterFeederPlantMappingBean) {
@@ -233,4 +239,60 @@ public class MeterFeederPlantMappingService {
 
         }
 
+        public CompleteMappingDto getCompleteMappingByMeterNumber(String meterNumber) {
+            CompleteMappingDto completeMappingDto = new CompleteMappingDto();
+            try {
+                    MeterFeederPlantMappingBean mfp1= meterFeederPlantMappingRepo
+                            .findByAnyMeterNoAndStatus(meterNumber,"active");
+                    if (mfp1==null)
+                        throw new ApiException(HttpStatus.BAD_REQUEST,"No active mapping of Plant found for given meter..");
+                    //Set meters of that plant which is selected meter
+                    completeMappingDto.setMeterNumber(meterNumber);
+                    completeMappingDto.setMainMeterNumber(mfp1.getMainMeterNo());
+                    completeMappingDto.setCheckMeterNumber(mfp1.getCheckMeterNo());
+                    completeMappingDto.setStandbyMeterNumber(mfp1.getStandbyMeterNo());
+                    //Set Feeder of meter which is selected ultimately it is plant's feeder
+                    FeederMasterBean feederMasterBean = feederMasterService.getFeederByFeederNumber(mfp1.getFeederCode(),"active");
+                    completeMappingDto.setFeederMasterBean(feederMasterBean);
+                    //Set the Developer and plant of selected meter
+                    DeveloperMasterBean developerMasterBean = developerMasterService.getDeveloperById(Long.valueOf(mfp1.getDeveloperId()),"active");
+                    PlantMasterBean plantMasterBean = plantMasterService.getPlantByPlantCode(mfp1.getPlantCode(),"active");
+                    completeMappingDto.setDeveloperMasterBean(developerMasterBean);
+                    completeMappingDto.setPlantMasterBean(plantMasterBean);
+                    //Set Investor list of plant
+                    List<InvestorMasterBean> investorMasterBeanList = new ArrayList<>();
+                    List<Map<String,List<MachineMasterBean>>> machinesOfInvestors = new ArrayList<>();
+                    //Fetch Distinct Investor list from InvestorMachine Mapping belongs by Meter Feeder Mapping id
+                    List<InvestorMachineMappingBean> investorMachineMappingBeans = investorMachineMappingService.getMappingByMFPId(mfp1.getId(), "active");
+                    if (investorMachineMappingBeans.size() == 0)
+                        throw new ApiException(HttpStatus.BAD_REQUEST, "Not Any Investor Mapped to this plant..");
+                    //get distinct investor codes
+                    List<String> investorCodes = investorMachineMappingBeans.stream().map(InvestorMachineMappingBean::getInvestorCode)
+                        .distinct().collect(Collectors.toList());
+                    for (String investorCode:investorCodes){
+                            Map<String,List<MachineMasterBean>> machinesOfAnInvestor = new HashMap<>();
+                            InvestorMasterBean investorMasterBean =
+                                    investorMasterService.getInvestorByInvestorCode(investorCode,"active");
+                            //add investor master bean wrt investor code
+                            investorMasterBeanList.add(investorMasterBean);
+                            //Get machine codes by investor code
+                            List<String> machineCodes = investorMachineMappingService.getMappingByInvestorCode(investorCode, "active").
+                                stream().map(InvestorMachineMappingBean::getMachineCode).collect(Collectors.toList());
+                            // after getting machine codes of an investor then take machine master list
+                            List<MachineMasterBean> machineMasterBeanList = machineMasterService.getAllMachineByMachineCodeList(machineCodes, "active");
+                            machinesOfAnInvestor.put(investorCode,machineMasterBeanList);
+                                machinesOfInvestors.add(machinesOfAnInvestor);
+                    }
+                completeMappingDto.setInvestorMasterBeanList(investorMasterBeanList);
+                completeMappingDto.setMachinesOfInvestors(machinesOfInvestors);
+                return completeMappingDto;
+
+            }catch (ApiException apiException){
+                throw apiException;
+            }catch (DataIntegrityViolationException d){
+                throw d;
+            }catch (Exception e){
+                throw e;
+        }
+    }
 }

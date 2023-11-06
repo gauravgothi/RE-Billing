@@ -1,9 +1,11 @@
 package in.co.mpwin.rebilling.controller.feedermaster;
 
 import in.co.mpwin.rebilling.beans.feedermaster.FeederMasterBean;
+import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.Message;
 import in.co.mpwin.rebilling.services.feedermaster.FeederMasterService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -100,8 +102,12 @@ public class FeederMasterController {
                 feederResp = new ResponseEntity<>(new Message("Something went wrong."), HttpStatus.BAD_REQUEST);
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        }catch (ApiException apiException){
+            feederResp = new ResponseEntity(new Message(apiException.getMessage()),apiException.getHttpStatus());
+        }catch (DataIntegrityViolationException d){
+            feederResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+        }catch (Exception e){
+            feederResp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
         }
         return feederResp;
     }

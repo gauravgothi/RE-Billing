@@ -118,9 +118,13 @@ public class MeterMasterService {
         MeterMasterBean mmb = new MeterMasterBean();
         try {
                 mmb = meterMasterDao.createMeterMaster(meterMasterBean);
-        }catch (Exception e) {
-                System.out.print(e);
-                e.printStackTrace();
+        }catch (ApiException apiException){
+            throw apiException;
+        }catch (DataIntegrityViolationException d){
+            throw d;
+        }catch (Exception e){
+            e.printStackTrace();
+            throw e;
         }
         return mmb;
     }

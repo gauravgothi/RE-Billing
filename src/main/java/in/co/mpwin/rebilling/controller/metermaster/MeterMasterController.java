@@ -89,30 +89,23 @@ public class MeterMasterController {
         ResponseEntity meterInsrtResp = null;
         try {
             mmb = meterMasterService.createMeterMaster(meterMasterBean);
-
             if (mmb != null) {
                 //meterInsrtResp = new ResponseEntity<>(meterMasterBean.getMeterNumber()+" is created successfully", HttpStatus.OK);
                 meterInsrtResp = new ResponseEntity<>(new Message(mmb.getMeterNumber() + " is created successfully."), HttpStatus.OK);
 
-            } else if (mmb == null) {
-
-                meterInsrtResp = new ResponseEntity<>(new Message(meterMasterBean.getMeterNumber() + " is already exist."), HttpStatus.BAD_REQUEST);
-            } else {
-                meterInsrtResp = new ResponseEntity<>(new Message("something went wrong"), HttpStatus.BAD_REQUEST);
             }
-            return meterInsrtResp;
+        }catch (ApiException apiException){
 
-        }
-        /*catch(DataIntegrityViolationException d)
-        {
-            System.out.println("Personal Message: "+d);
-            //d.printStackTrace();
-            return new ResponseEntity<>("Meter already exist",HttpStatus.BAD_REQUEST);
-        }*/ catch (Exception e) {
-            System.out.println(e);
+            meterInsrtResp = new ResponseEntity(new Message(apiException.getMessage()),apiException.getHttpStatus());
+        }catch (DataIntegrityViolationException d){
+            Throwable rootCause = d.getRootCause();
+            String msg=rootCause.getMessage().substring(0,rootCause.getMessage().indexOf("Detail:"));
+            meterInsrtResp = new ResponseEntity<>(new Message(msg),HttpStatus.BAD_REQUEST);
+        }catch (Exception e){
             e.printStackTrace();
-            return new ResponseEntity<>(new Message("Internal Server Error"), HttpStatus.BAD_REQUEST);
+            meterInsrtResp = new ResponseEntity<>(new Message(e.getMessage()),HttpStatus.BAD_REQUEST);
         }
+        return meterInsrtResp;
     }
 
     @GetMapping(value = "/list/byUser")
@@ -129,7 +122,7 @@ public class MeterMasterController {
             meterListResp = new ResponseEntity<>(new Message(msg),HttpStatus.BAD_REQUEST);
             return meterListResp;
         }catch (Exception e){
-            meterListResp = new ResponseEntity<>(new Message(" something went wrong or some exception occurred "),HttpStatus.BAD_REQUEST);
+            meterListResp = new ResponseEntity<>(new Message(e.getMessage()),HttpStatus.BAD_REQUEST);
             return meterListResp;
         }
         return meterListResp;
@@ -149,7 +142,7 @@ public class MeterMasterController {
             meterListResp = new ResponseEntity<>(new Message(msg),HttpStatus.BAD_REQUEST);
             return meterListResp;
         }catch (Exception e){
-            meterListResp = new ResponseEntity<>(new Message(" something went wrong or some exception occurred "),HttpStatus.BAD_REQUEST);
+            meterListResp = new ResponseEntity<>(new Message(e.getMessage()),HttpStatus.BAD_REQUEST);
             return meterListResp;
         }
         return meterListResp;

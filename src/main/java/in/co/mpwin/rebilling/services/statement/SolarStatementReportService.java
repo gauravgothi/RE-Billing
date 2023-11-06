@@ -47,6 +47,7 @@ public class SolarStatementReportService {
             return JasperExportManager.exportReportToPdf(jasperPrint);
         }
 
+
         return new byte[0];
     }
 }

@@ -2,6 +2,9 @@
 <!-- Created with Jaspersoft Studio version 6.20.6.final using JasperReports Library version 6.20.6-5c96b6aa8a39ac1dc6b6bea4b81168e16dd39231  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="solarReport_todSubReport" pageWidth="595" pageHeight="842" columnWidth="545" leftMargin="0" rightMargin="25" topMargin="0" bottomMargin="0" whenResourceMissingType="Empty" uuid="21e00caa-faba-4e48-aa99-a3ed940331c1">
     <property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+<!--    <property name="net.sf.jasperreports.text.truncate.at.char" value="false"/>-->
+<!--    <property name="net.sf.jasperreports.export.pdf.force.linebreak.policy" value="true"/>-->
+    <property name="net.sf.jasperreports.default.font.name" value="DejaVu Sans"/>
     <property name="net.sf.jasperreports.print.keep.full.text" value="true"/>
     <property name="net.sf.jasperreports.print.create.bookmarks" value="true"/>
     <queryString>
@@ -37,11 +40,16 @@
     <detail>
         <band height="20" splitType="Stretch">
             <property name="com.jaspersoft.studio.unit.height" value="px"/>
-            <textField>
-                <reportElement x="0" y="0" width="20" height="20" uuid="288d7adc-64ec-44ad-8d93-b6ca4130b420">
+            <frame>
+                <reportElement x="0" y="0" width="555" height="20" isPrintWhenDetailOverflows="true" positionType="Float" uuid="803694c6-ee66-4f28-bba0-fe7ae6a994e2">
+                    <property name="com.jaspersoft.studio.unit.y" value="px"/>
+                    <property name="com.jaspersoft.studio.unit.height" value="px"/>
+                </reportElement>
+            <textField isStretchWithOverflow="true">
+                <reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="20" height="20" uuid="288d7adc-64ec-44ad-8d93-b6ca4130b420">
                     <property name="com.jaspersoft.studio.unit.width" value="px"/>
                 </reportElement>
-                <box>
+                <box padding="-2">
                     <pen lineWidth="0.5"/>
                     <topPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
                     <leftPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
@@ -49,16 +57,16 @@
                     <rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
                 </box>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
-                    <font size="10" isBold="true"/>
+                    <font fontName="DejaVu Sans" size="10" isBold="false"/>
                 </textElement>
                 <textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
             </textField>
-            <textField>
-                <reportElement x="20" y="0" width="135" height="20" uuid="1b06ec68-decf-4a76-a63e-835b6b3c269e">
+            <textField isStretchWithOverflow="true">
+                <reportElement stretchType="RelativeToTallestObject" positionType="Float" x="20" y="0" width="135" height="20" uuid="1b06ec68-decf-4a76-a63e-835b6b3c269e">
                     <property name="com.jaspersoft.studio.unit.x" value="px"/>
                     <property name="com.jaspersoft.studio.unit.width" value="px"/>
                 </reportElement>
-                <box>
+                <box padding="-13">
                     <pen lineWidth="0.5"/>
                     <topPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
                     <leftPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
@@ -66,12 +74,13 @@
                     <rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
                 </box>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
-                    <font size="10" isBold="true"/>
+                    <font fontName="DejaVu Sans" size="10" isBold="false"/>
                 </textElement>
-                <textFieldExpression><![CDATA[$F{tpName}+"("+$F{tpPercentage}+")"]]></textFieldExpression>
+                <textFieldExpression><![CDATA[$F{tpName}+" ("+$F{tpPercentage}+")"]]></textFieldExpression>
             </textField>
-            <textField>
-                <reportElement x="155" y="0" width="65" height="20" uuid="90ad8db7-a12d-4699-b289-1de66b89ce52">
+
+            <textField isStretchWithOverflow="true">
+                <reportElement stretchType="RelativeToTallestObject" positionType="Float" x="155" y="0" width="65" height="20" uuid="90ad8db7-a12d-4699-b289-1de66b89ce52">
                     <property name="com.jaspersoft.studio.unit.x" value="px"/>
                     <property name="com.jaspersoft.studio.unit.width" value="px"/>
                 </reportElement>
@@ -83,12 +92,13 @@
                     <rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
                 </box>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
-                    <font size="10" isBold="true"/>
+                    <font fontName="DejaVu Sans" size="10" isBold="false"/>
                 </textElement>
+
                 <textFieldExpression><![CDATA[$F{tpTod1}]]></textFieldExpression>
             </textField>
-            <textField>
-                <reportElement x="285" y="0" width="65" height="20" uuid="57f59925-e90d-4742-9eaf-444ba060527d">
+            <textField isStretchWithOverflow="true">
+                <reportElement stretchType="RelativeToTallestObject" positionType="Float" x="285" y="0" width="65" height="20" uuid="57f59925-e90d-4742-9eaf-444ba060527d">
                     <property name="com.jaspersoft.studio.unit.x" value="px"/>
                 </reportElement>
                 <box>
@@ -99,12 +109,13 @@
                     <rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
                 </box>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
-                    <font size="10" isBold="true"/>
+                    <font fontName="DejaVu Sans" size="10" isBold="false"/>
                 </textElement>
+
                 <textFieldExpression><![CDATA[$F{tpTod3}]]></textFieldExpression>
             </textField>
-            <textField>
-                <reportElement x="220" y="0" width="65" height="20" uuid="67e3e68d-64e6-481f-a1a1-3a2c14604698">
+            <textField isStretchWithOverflow="true">
+                <reportElement stretchType="RelativeToTallestObject" positionType="Float" x="220" y="0" width="65" height="20" uuid="67e3e68d-64e6-481f-a1a1-3a2c14604698">
                     <property name="com.jaspersoft.studio.unit.x" value="px"/>
                 </reportElement>
                 <box>
@@ -115,12 +126,13 @@
                     <rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
                 </box>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
-                    <font size="10" isBold="true"/>
+                    <font fontName="DejaVu Sans" size="10" isBold="false"/>
                 </textElement>
+
                 <textFieldExpression><![CDATA[$F{tpTod2}]]></textFieldExpression>
-            </textField>
-            <textField>
-                <reportElement x="350" y="0" width="65" height="20" uuid="4e8a2f43-2d38-4d27-8bc5-e2cb9126155b">
+            </textField >
+            <textField isStretchWithOverflow="true">
+                <reportElement stretchType="RelativeToTallestObject" positionType="Float" x="350" y="0" width="65" height="20" uuid="4e8a2f43-2d38-4d27-8bc5-e2cb9126155b">
                     <property name="com.jaspersoft.studio.unit.x" value="px"/>
                 </reportElement>
                 <box>
@@ -131,12 +143,13 @@
                     <rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
                 </box>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
-                    <font size="10" isBold="true"/>
+                    <font fontName="DejaVu Sans" size="10" isBold="false"/>
                 </textElement>
+
                 <textFieldExpression><![CDATA[$F{tpTod4}]]></textFieldExpression>
             </textField>
-            <textField>
-                <reportElement x="415" y="0" width="60" height="20" uuid="90bcd7a5-51b8-4993-b773-980469e8ea60">
+            <textField isStretchWithOverflow="true">
+                <reportElement stretchType="RelativeToTallestObject" positionType="Float" x="415" y="0" width="60" height="20" uuid="90bcd7a5-51b8-4993-b773-980469e8ea60">
                     <property name="com.jaspersoft.studio.unit.x" value="px"/>
                 </reportElement>
                 <box>
@@ -147,12 +160,12 @@
                     <rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
                 </box>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
-                    <font size="10" isBold="true"/>
+                    <font fontName="DejaVu Sans" size="10" isBold="false"/>
                 </textElement>
                 <textFieldExpression><![CDATA[$F{tpAdjustment}]]></textFieldExpression>
             </textField>
-            <textField>
-                <reportElement x="475" y="0" width="80" height="20" uuid="131b2be2-6a64-4437-b9ee-deae9ca40e7f">
+            <textField isStretchWithOverflow="true">
+                <reportElement stretchType="RelativeToTallestObject" positionType="Float" x="475" y="0" width="80" height="20" uuid="131b2be2-6a64-4437-b9ee-deae9ca40e7f">
                     <property name="com.jaspersoft.studio.unit.x" value="px"/>
                     <property name="com.jaspersoft.studio.unit.width" value="px"/>
                 </reportElement>
@@ -164,10 +177,12 @@
                     <rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
                 </box>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
-                    <font size="10" isBold="true"/>
+                    <font fontName="DejaVu Sans" size="10" isBold="false"/>
                 </textElement>
                 <textFieldExpression><![CDATA[$F{tpKwhExport}]]></textFieldExpression>
             </textField>
+
+            </frame>
         </band>
     </detail>
 </jasperReport>

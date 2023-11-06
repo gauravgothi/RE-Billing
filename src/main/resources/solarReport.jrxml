@@ -2,8 +2,10 @@
 <!-- Created with Jaspersoft Studio version 6.20.6.final using JasperReports Library version 6.20.6-5c96b6aa8a39ac1dc6b6bea4b81168e16dd39231  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="solarReport" pageWidth="595" pageHeight="842" columnWidth="545" leftMargin="25" rightMargin="25" topMargin="25" bottomMargin="25" uuid="c93b5fb5-6522-4f8a-8f56-cb87af5ff7dc">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="SolarBean-Array"/>
+<!--	<property name="net.sf.jasperreports.text.truncate.at.char" value="false"/>-->
 	<property name="net.sf.jasperreports.print.keep.full.text" value="true"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<property name="net.sf.jasperreports.default.font.name" value="DejaVu Sans"/>
 		<defaultValueExpression><![CDATA[".\\"]]></defaultValueExpression>
 	</parameter>
 	<queryString>
@@ -1147,7 +1149,7 @@ GPH Compound, Pologround, Indore]]></text>
 		<band height="20" splitType="Stretch">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<subreport overflowType="Stretch">
-				<reportElement positionType="Float" x="0" y="0" width="545" height="20" uuid="abbf3fb7-84bb-4f47-84d7-04679e84699e">
+				<reportElement positionType="Float" isPrintWhenDetailOverflows="true" x="0" y="0" width="545" height="20" uuid="abbf3fb7-84bb-4f47-84d7-04679e84699e">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{thirdPartyTodSet})]]></dataSourceExpression>
