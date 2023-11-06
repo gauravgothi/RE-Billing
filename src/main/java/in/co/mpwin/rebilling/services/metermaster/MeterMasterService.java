@@ -4,12 +4,14 @@ import in.co.mpwin.rebilling.beans.mapping.MeterFeederPlantMappingBean;
 import in.co.mpwin.rebilling.beans.metermaster.MeterMasterBean;
 import in.co.mpwin.rebilling.dao.metermaster.MeterMasterDao;
 import in.co.mpwin.rebilling.jwt.exception.ApiException;
+import in.co.mpwin.rebilling.miscellanious.DateMethods;
 import in.co.mpwin.rebilling.miscellanious.TokenInfo;
 import in.co.mpwin.rebilling.repositories.metermaster.MeterMasterRepo;
 import in.co.mpwin.rebilling.services.developermaster.DeveloperMasterService;
 import in.co.mpwin.rebilling.services.mapping.MeterFeederPlantMappingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
@@ -23,16 +25,12 @@ import java.util.stream.Stream;
 
 @Service
 public class MeterMasterService {
-    @Autowired
-    MeterMasterDao meterMasterDao;
+    @Autowired private MeterMasterDao  meterMasterDao;
 
-    @Autowired
-    MeterFeederPlantMappingService mfpService;
+    @Autowired private MeterFeederPlantMappingService mfpService;
 
-    @Autowired
-    DeveloperMasterService developerMasterService;
-    @Autowired
-    MeterMasterRepo meterMasterRepo;
+    @Autowired private  DeveloperMasterService developerMasterService;
+    @Autowired private MeterMasterRepo meterMasterRepo;
 
     public MeterMasterBean getMeterDetailsByMeterNo(String meterno, String status) {
         MeterMasterBean meterMasterBean = new MeterMasterBean();
@@ -129,8 +127,12 @@ public class MeterMasterService {
         return mmb;
     }
 
-    public void updateMeterStatusAndMappingByMeterNo(String oldMeterNumber, String status, String isMapped) {
-    meterMasterRepo.updateMeterStatusAndMappingByMeterNo(oldMeterNumber, status, isMapped);
+    public  MeterMasterBean updateMeterStatusAndMappingByMeterNo(String meterNumber, String status, String isMapped) {
+       MeterMasterBean meterBean = meterMasterRepo.findByMeterNumberAndStatus(meterNumber,status);
+       meterBean.setIsMapped(isMapped);
+       meterBean.setUpdatedBy(new TokenInfo().getCurrentUsername());
+       meterBean.setUpdatedOn(new DateMethods().getServerTime());
+       return meterMasterRepo.save(meterBean);
     }
 
     public List<MeterMasterBean> getMeterDetailsByCategory(String category, String status, String isMapped) {
@@ -184,5 +186,25 @@ public class MeterMasterService {
         }catch (Exception e){
             throw e;
         }
+    }
+
+    public List<MeterMasterBean> getMeterByStatusAndIsMappped(String status, String mapped) {
+        try{
+        List<MeterMasterBean> unmappedMeters =  meterMasterRepo.findByStatusAndIsMappedOrderById(status,mapped);
+        if (unmappedMeters.isEmpty())
+            throw new ApiException(HttpStatus.BAD_REQUEST,"new meter list are not found in meter master.");
+        return unmappedMeters;
+        } catch (ApiException apiException) {
+            throw apiException;
+        } catch (DataIntegrityViolationException d) {
+            throw d;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<MeterMasterBean> getUnmappedMeterBeans(String status, String isMapped) {
+        return meterMasterRepo.findByStatusAndIsMapped(status,isMapped);
+
     }
 }

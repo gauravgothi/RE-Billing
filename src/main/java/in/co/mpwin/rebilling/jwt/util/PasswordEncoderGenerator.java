@@ -10,6 +10,7 @@ import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -60,6 +61,7 @@ public class PasswordEncoderGenerator {
 //        System.out.println(ourJavaTimestamp);;
 
 
+
 //        Date date = new SimpleDateFormat("dd-MM-yyyy").parse("01-10-2023");
 //
 //        Calendar cal = Calendar.getInstance();
@@ -78,11 +80,22 @@ public class PasswordEncoderGenerator {
 //
         System.out.println("Working Directory = " + System.getProperty("user.dir"));
 
+/*
+        Date date = new SimpleDateFormat("dd-MM-yyyy").parse("01-10-2023");
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.DATE, -1);
+        Date oneDayBefore = cal.getTime();
+        System.out.println(new SimpleDateFormat("MMM-yyyy").format(oneDayBefore));
+
+
 
 
 
         // Create a new LinkedHashSet to store elements to add
         //LinkedHashSet<String> elementsToAdd = new LinkedHashSet<String>(gfg);
+
 
 //        do {
 //            gfg = new LinkedHashSet<>(newgfg);
@@ -102,6 +115,27 @@ public class PasswordEncoderGenerator {
 //            System.out.println(itr);
 //        }
 
+        do {
+            gfg = new LinkedHashSet<>(newgfg);
+            initialSetSize = newgfg.size();
+            // Iterating LinkedHashSet using enhanced for loop
+            for (String itr : gfg) {
+                if (itr.equals("for")) {
+                    newgfg.add("from");
+                }
+            }
+
+            finalSetSize = newgfg.size();
+        }while (initialSetSize != finalSetSize);
+
+        // Now, print the modified LinkedHashSet
+        for (String itr : newgfg) {
+            System.out.println(itr);
+        }*/
+
+
+        LocalDate endDate = LocalDate.now();
+        System.out.println("local end date ="+endDate);
 
     }
 }

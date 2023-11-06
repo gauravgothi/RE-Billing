@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -64,4 +65,14 @@ public interface MeterFeederPlantMappingRepo extends CrudRepository<MeterFeederP
 
     @Query(value = "select * from ecell.re_meter_feeder_plant_mapping where developer_id=:developerId and plant_code=:plantId and status=:status order by id DESC limit 1", nativeQuery = true)
     MeterFeederPlantMappingBean findByDeveloperIdAndPlantIdAndStatus(@Param("developerId") String developerId,@Param("plantId") String plantId, @Param("status") String status);
+
+    @Query(value = "select * from ecell.re_meter_feeder_plant_mapping where end_date>:endDate AND status=:status", nativeQuery = true)
+    List<MeterFeederPlantMappingBean> findMappedMeterListByEndDate(@Param("endDate") LocalDate endDate,@Param("status") String status );
+
+    @Query(value = "select * from ecell.re_meter_feeder_plant_mapping where main_meter_no=:meterNumber AND end_date>:endDate AND status=:status", nativeQuery = true)
+    MeterFeederPlantMappingBean findByMainMeterNoAndEndDateAndStatus(@Param("meterNumber")  String meterNumber,@Param("endDate") LocalDate endDate, @Param("status") String status);
+    @Query(value = "select * from ecell.re_meter_feeder_plant_mapping where check_meter_no=:meterNumber AND end_date>:endDate AND status=:status", nativeQuery = true)
+    MeterFeederPlantMappingBean findByCheckMeterNoAndEndDateAndStatus(@Param("meterNumber") String meterNumber,@Param("endDate") LocalDate endDate,@Param("status")  String active);
+    @Query(value = "select * from ecell.re_meter_feeder_plant_mapping where standby_meter_no=:meterNumber AND end_date>:endDate AND status=:status", nativeQuery = true)
+    MeterFeederPlantMappingBean findByStandbyMeterNoAndEndDateAndStatus(@Param("meterNumber") String meterNumber,@Param("endDate") LocalDate endDate,@Param("status")  String active);
 }

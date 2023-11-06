@@ -130,6 +130,24 @@ public class PlantMasterController {
         return plantResp;
     }
 
+    @RequestMapping(method= RequestMethod.GET,value="/list")
+    public ResponseEntity<PlantMasterBean> getAllPlantMasterForMfpMapping(){
+        ResponseEntity plantResp = null;
+        try {
+            String status = "active";
+            List<PlantMasterBean> plantList = plantMasterService.getAllPlantMasterBean(status);
+            plantResp = new ResponseEntity<>(plantList, HttpStatus.OK);
+        }catch (ApiException apiException) {
+            plantResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException d) {
+            plantResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+        }catch (Exception e) {
+            e.printStackTrace();
+            plantResp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, 200)), HttpStatus.BAD_REQUEST);
+        }
+        return plantResp;
+    }
+
 }
 
 

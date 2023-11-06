@@ -29,14 +29,17 @@ public class DeveloperMasterController {
         try {
             String status = "active";
             List<DeveloperMasterBean> developerMasterBeanList = developerMasterService.getAllDeveloperMasterBean(status);
-
-            if (!developerMasterBeanList.isEmpty())
+            if (developerMasterBeanList.isEmpty())
+               throw new ApiException(HttpStatus.BAD_REQUEST,"Developer list is not available.");
                 developerResp = new ResponseEntity<>(developerMasterBeanList, HttpStatus.OK);
-            else if (developerMasterBeanList.isEmpty())
-                developerResp = new ResponseEntity<>(new Message("Developer list is not available."),HttpStatus.BAD_REQUEST);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+            }catch (ApiException apiException) {
+                developerResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+            } catch (DataIntegrityViolationException d) {
+                    developerResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+            } catch (Exception e) {
+                e.printStackTrace();
+                developerResp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, 200)), HttpStatus.BAD_REQUEST);
+            }
         return developerResp;
     }
 

@@ -132,5 +132,23 @@ public class FeederMasterController {
         }
         return feederResp;
     }
+    // get filtered feeder list for mfp mapping with the help of selected plant's location id
+    @RequestMapping(method= RequestMethod.GET,value="/list/locationId/{locationId}")
+    public ResponseEntity<?> getAllFeederByLocationIdForMapping(@PathVariable("locationId") String locationId){
+        ResponseEntity feederResp = null;
+        try {
+            String status = "active";
+            List<FeederMasterBean> feederList = feederMasterService.getAllFeederByLocationId(locationId,status);
+            feederResp = new ResponseEntity<>(feederList, HttpStatus.OK);
+            }catch (ApiException apiException) {
+            feederResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException d) {
+            feederResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            feederResp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, 200)), HttpStatus.BAD_REQUEST);
+        }
+        return feederResp;
+    }
+
 
 }
