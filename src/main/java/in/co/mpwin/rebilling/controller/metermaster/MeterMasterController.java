@@ -154,4 +154,24 @@ public class MeterMasterController {
         }
         return meterListResp;
     }
+ // get list of meter bean where status = active and  is_mapped = no for mfp mapping
+    @GetMapping(value = "/list/unmapped")
+    public ResponseEntity<?> getUnmappedMeterBeans(){
+        ResponseEntity meterListResp  = null;
+        try {
+            List<MeterMasterBean> meterList = meterMasterService.getUnmappedMeterBeans("active","no");
+            if(meterList.isEmpty())
+                throw new ApiException(HttpStatus.BAD_REQUEST,"active and unmapped meter list not found in meter master");
+            meterListResp = new ResponseEntity<>(meterList,HttpStatus.OK);
+        }catch (ApiException apiException){
+            meterListResp = new ResponseEntity<>(new Message(apiException.getMessage()),apiException.getHttpStatus());
+        }catch (DataIntegrityViolationException d){
+            Throwable rootCause = d.getRootCause();
+            String msg=rootCause.getMessage().substring(0,rootCause.getMessage().indexOf("Detail:"));
+            meterListResp = new ResponseEntity<>(new Message(msg),HttpStatus.BAD_REQUEST);
+        }catch (Exception e){
+            meterListResp = new ResponseEntity<>(new Message("Exception : "+e.getMessage().substring(0,e.getMessage().indexOf("Detail:"))),HttpStatus.BAD_REQUEST);
+        }
+        return meterListResp;
+    }
 }

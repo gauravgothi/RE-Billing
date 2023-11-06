@@ -64,7 +64,6 @@ public class MeterMasterDao {
                     meterMasterBean.getMake(),meterMasterBean.getStatus());
             if(meterMasterBeanList.size()>0) {
                 isExist = true;
-                System.out.println("isExist : " + isExist);
                 return null;
             }
             //Set the Audit control parameters, Globally

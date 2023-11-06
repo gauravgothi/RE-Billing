@@ -10,6 +10,7 @@ import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -59,7 +60,7 @@ public class PasswordEncoderGenerator {
 //        java.sql.Timestamp ourJavaTimestamp = new java.sql.Timestamp(calendar.getTime().getTime());
 //        System.out.println(ourJavaTimestamp);;
 
-
+/*
         Date date = new SimpleDateFormat("dd-MM-yyyy").parse("01-10-2023");
 
         Calendar cal = Calendar.getInstance();
@@ -97,8 +98,10 @@ public class PasswordEncoderGenerator {
         // Now, print the modified LinkedHashSet
         for (String itr : newgfg) {
             System.out.println(itr);
-        }
+        }*/
 
+        LocalDate endDate = LocalDate.now();
+        System.out.println("local end date ="+endDate);
 
     }
 }

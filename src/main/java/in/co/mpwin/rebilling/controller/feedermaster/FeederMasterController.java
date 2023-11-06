@@ -1,9 +1,11 @@
 package in.co.mpwin.rebilling.controller.feedermaster;
 
 import in.co.mpwin.rebilling.beans.feedermaster.FeederMasterBean;
+import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.Message;
 import in.co.mpwin.rebilling.services.feedermaster.FeederMasterService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -126,5 +128,23 @@ public class FeederMasterController {
         }
         return feederResp;
     }
+    // get filtered feeder list for mfp mapping with the help of selected plant's location id
+    @RequestMapping(method= RequestMethod.GET,value="/list/locationId/{locationId}")
+    public ResponseEntity<?> getAllFeederByLocationIdForMapping(@PathVariable("locationId") String locationId){
+        ResponseEntity feederResp = null;
+        try {
+            String status = "active";
+            List<FeederMasterBean> feederList = feederMasterService.getAllFeederByLocationId(locationId,status);
+            feederResp = new ResponseEntity<>(feederList, HttpStatus.OK);
+            }catch (ApiException apiException) {
+            feederResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException d) {
+            feederResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            feederResp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, 200)), HttpStatus.BAD_REQUEST);
+        }
+        return feederResp;
+    }
+
 
 }
