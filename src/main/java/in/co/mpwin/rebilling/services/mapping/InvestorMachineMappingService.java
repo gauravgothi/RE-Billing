@@ -1,53 +1,71 @@
 package in.co.mpwin.rebilling.services.mapping;
 
+import in.co.mpwin.rebilling.beans.investormaster.InvestorMasterBean;
+import in.co.mpwin.rebilling.beans.machinemaster.MachineMasterBean;
 import in.co.mpwin.rebilling.beans.mapping.InvestorMachineMappingBean;
 import in.co.mpwin.rebilling.beans.mapping.MeterFeederPlantMappingBean;
+import in.co.mpwin.rebilling.dto.InvestorMachineMappingDto;
+import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.AuditControlServices;
 import in.co.mpwin.rebilling.miscellanious.ValidatorService;
 import in.co.mpwin.rebilling.repositories.mapping.InvestorMachineMappingRepo;
+import in.co.mpwin.rebilling.repositories.mapping.MeterFeederPlantMappingRepo;
+import in.co.mpwin.rebilling.services.investormaster.InvestorMasterService;
+import in.co.mpwin.rebilling.services.machinemaster.MachineMasterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 @Service
 public class InvestorMachineMappingService {
 
-    @Autowired
-    InvestorMachineMappingRepo investorMachineMappingRepo;
-    public InvestorMachineMappingBean createMapping(InvestorMachineMappingBean investorMachineMappingBean) {
-        System.out.println("mfp_id "+investorMachineMappingBean.getMfpId()+" investor_code = "+investorMachineMappingBean.getInvestorCode());
+    @Autowired private InvestorMachineMappingRepo investorMachineMappingRepo;
 
-        InvestorMachineMappingBean imm = new InvestorMachineMappingBean();
-        // remove space if any from mfp_id , investor_id and machine_id
-        investorMachineMappingBean.setInvestorCode((new ValidatorService().removeSpaceFromString(investorMachineMappingBean.getInvestorCode())));
-        investorMachineMappingBean.setMachineCode((new ValidatorService().removeSpaceFromString(investorMachineMappingBean.getMachineCode())));
+    @Autowired private InvestorMasterService investorMasterService;
 
-        try {
+    @Autowired private MachineMasterService machineMasterService;
 
-            //check for existence of mapping if already exist with same mapping then return null
-            InvestorMachineMappingBean temp = investorMachineMappingRepo.findByMFPIdInvestorIdMachineId(investorMachineMappingBean.getMfpId(),investorMachineMappingBean.getInvestorCode(),
-                    investorMachineMappingBean.getMachineCode());
+    @Autowired private MeterFeederPlantMappingRepo meterFeederPlantMappingRepo;
 
-            if(temp!=null) {
-                return null;
+
+
+    @Transactional
+    public String createMapping(InvestorMachineMappingDto investorMachineMappingDto) {
+               try {
+            List<String> machineCodes = new ArrayList<>();
+            LocalDate endDate = LocalDate.now();
+            MeterFeederPlantMappingBean mfpBean =meterFeederPlantMappingRepo.findByDeveloperIdAndPlantIdAndEndDateAndStatus(String.valueOf(investorMachineMappingDto.getDeveloperMasterBean().getId()),
+                    investorMachineMappingDto.getPlantMasterBean().getPlantCode(), endDate,"active");
+                   if(mfpBean==null)
+                       throw new ApiException(HttpStatus.BAD_REQUEST,"mfp mapping not found for developer id "+investorMachineMappingDto.getDeveloperMasterBean().getId()+" and plant code "+investorMachineMappingDto.getPlantMasterBean().getPlantCode());
+            InvestorMasterBean investorBean = investorMasterService.getInvestorById(investorMachineMappingDto.getInvestorMasterBean().getId(), "active");
+            investorMachineMappingDto.getMachineMasterBeanList().forEach(i -> machineCodes.add(i.getMachineCode()));
+            List<MachineMasterBean> machineMasterBeans = machineMasterService.getAllMachineByMachineCodeList(machineCodes, "active");
+            int machineMasterCount = machineMasterBeans.size();
+            int frontEndMachineCount = investorMachineMappingDto.getMachineMasterBeanList().size();
+            if (frontEndMachineCount != machineMasterCount)
+                throw new ApiException(HttpStatus.BAD_REQUEST, "All the selected machines are not present in machine master.");
+            for (MachineMasterBean machine : machineMasterBeans) {
+                InvestorMachineMappingBean newBean = new InvestorMachineMappingBean();
+                newBean.setMfpId(mfpBean.getId());
+                newBean.setInvestorCode(investorBean.getInvestorCode());
+                newBean.setMachineCode(machine.getMachineCode());
+                new AuditControlServices().setInitialAuditControlParameters(newBean);
+                investorMachineMappingRepo.save(newBean);
             }
-            //Set the Audit control parameters, Globally
-            new AuditControlServices().setInitialAuditControlParameters(investorMachineMappingBean);
-
-
-            imm = investorMachineMappingRepo.save(investorMachineMappingBean);
-        }catch (DataIntegrityViolationException ex)
-        {
-            throw  ex;
-        }
-        catch (Exception e) {
+            return "investor machine mapping has been created successfully.";
+        } catch (ApiException apiException) {
+            throw apiException;
+        } catch (DataIntegrityViolationException d) {
+            throw d;
+        } catch (Exception e) {
             throw e;
         }
-        return imm;
-
-
     }
 
     public List<InvestorMachineMappingBean> getAllMapping(String status) {

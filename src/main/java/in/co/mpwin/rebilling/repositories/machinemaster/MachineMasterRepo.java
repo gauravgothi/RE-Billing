@@ -26,5 +26,12 @@ public interface MachineMasterRepo extends CrudRepository<MachineMasterBean,Long
     public Long getMaxSequence();
     @Query(value = "SELECT * FROM ecell.re_machine_master WHERE machine_code IN (:machineCodes) AND status=:status",nativeQuery = true)
     List<MachineMasterBean> findAllMachineByMachineCodeList(@Param("machineCodes") List<String> machineCodes, String status);
+    @Query(value = "SELECT * FROM ecell.re_machine_master WHERE machine_code NOT IN (:mappedMachineCode) AND status=:status ORDER BY id DESC",nativeQuery = true)
+    List<MachineMasterBean> findAllMachineExcludingMappedMachineCodeList(@Param("mappedMachineCode")  List<String> mappedMachineCode,@Param("status") String status);
 
+    @Query(value = "SELECT MAX(CAST(SPLIT_PART(machine_code,'C',2)AS INTEGER)) FROM ecell.re_machine_master WHERE machine_code like 'MNC%'",nativeQuery = true)
+    Integer findMaxMachineCode();
+
+
+    MachineMasterBean findByMachineNameIgnoreCaseAndStatus(String machineName, String active);
 }

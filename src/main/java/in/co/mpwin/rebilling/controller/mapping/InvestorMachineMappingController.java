@@ -1,9 +1,12 @@
 package in.co.mpwin.rebilling.controller.mapping;
 
 import in.co.mpwin.rebilling.beans.mapping.InvestorMachineMappingBean;
+import in.co.mpwin.rebilling.dto.InvestorMachineMappingDto;
+import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.Message;
 import in.co.mpwin.rebilling.services.mapping.InvestorMachineMappingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,37 +14,34 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/mapping")
+@RequestMapping("/im/mapping")
 @CrossOrigin(origins="*")
 public class InvestorMachineMappingController {
 
-    @Autowired
-    InvestorMachineMappingService investorMachineMappingService;
+    @Autowired private InvestorMachineMappingService investorMachineMappingService;
 
-    @RequestMapping(method = RequestMethod.POST,value = "/IM_Mapping")
-    public ResponseEntity<?> createInvestorMachineMapping(@RequestBody InvestorMachineMappingBean investorMachineMappingBean){
+    @RequestMapping(method = RequestMethod.POST,value = "")
+    public ResponseEntity<?> createInvestorMachineMapping(@RequestBody InvestorMachineMappingDto investorMachineMappingDto){
         ResponseEntity resp = null;
-        InvestorMachineMappingBean imm = new InvestorMachineMappingBean();
+
         try {
 
-            imm  = investorMachineMappingService.createMapping(investorMachineMappingBean);
+          String msg  = investorMachineMappingService.createMapping(investorMachineMappingDto);
+          resp =  new ResponseEntity<>(new Message(msg), HttpStatus.CREATED);
 
-            if(imm!=null)
-            {
-                resp =  new ResponseEntity<>(new Message(imm.getId() + " mapping is created successfully."), HttpStatus.OK);
-            }else if(imm==null) {
-                resp = new ResponseEntity<>(new Message( "Mapping is already exist."), HttpStatus.BAD_REQUEST);
-            }else {
-                resp = new ResponseEntity<>(new Message("something went wrong"), HttpStatus.BAD_REQUEST);
-            }
-        }catch (Exception e){
+        }catch (ApiException apiException) {
+            resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException d) {
+
+            resp = new ResponseEntity<>(new Message("Data Integrity Violation :"+d.getMessage().substring(0,d.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+        } catch (Exception e){
             e.printStackTrace();
             resp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
         }
 
         return resp;
     }
-    @RequestMapping(method= RequestMethod.GET,value="/IM_Mapping")
+    @RequestMapping(method= RequestMethod.GET,value="")
     public ResponseEntity<InvestorMachineMappingBean> getAllMapping(){
         ResponseEntity resp = null;
         try {
@@ -63,7 +63,7 @@ public class InvestorMachineMappingController {
         return resp;
     }
 
-    @RequestMapping(method = RequestMethod.GET,value = "/IM_Mapping/id/{id}")
+    @RequestMapping(method = RequestMethod.GET,value = "/id/{id}")
     public ResponseEntity<?> getMappingId(@PathVariable("id") Long id){
         String status = "active";
         ResponseEntity resp = null;
@@ -86,8 +86,8 @@ public class InvestorMachineMappingController {
     }
 
 
-    @RequestMapping(method=RequestMethod.GET, value="/IM_Mapping/mfp_id/{mfp_id}")
-    public ResponseEntity<?> getMappingMFPId(@PathVariable("mfp_id") Long mfpId){
+    @RequestMapping(method=RequestMethod.GET, value="/mfpId/{mfpId}")
+    public ResponseEntity<?> getMappingMFPId(@PathVariable("mfpId") Long mfpId){
         String status = "active";
         ResponseEntity resp = null;
         List<InvestorMachineMappingBean> mappingBean = null;
@@ -109,8 +109,8 @@ public class InvestorMachineMappingController {
     }
 
 
-    @RequestMapping(method=RequestMethod.GET,value="/IM_Mapping/investor_code/{investor_code}")
-    public ResponseEntity<?> getMappingByInvestorCode(@PathVariable("investor_code") String investorCode ){
+    @RequestMapping(method=RequestMethod.GET,value="/investorCode/{investorCode}")
+    public ResponseEntity<?> getMappingByInvestorCode(@PathVariable("investorCode") String investorCode ){
         String status = "active";
         ResponseEntity resp = null;
         List<InvestorMachineMappingBean> mappingBean = null;
@@ -130,8 +130,8 @@ public class InvestorMachineMappingController {
         }
         return resp;
     }
-    @RequestMapping(method=RequestMethod.GET,value="/IM_Mapping/machine_code/{machine_code}")
-    public ResponseEntity<?> getMappingByMachineCode(@PathVariable("machine_code") String machineCode ){
+    @RequestMapping(method=RequestMethod.GET,value="/machineCode/{machineCode}")
+    public ResponseEntity<?> getMappingByMachineCode(@PathVariable("machineCode") String machineCode ){
         String status = "active";
         ResponseEntity resp = null;
         List<InvestorMachineMappingBean> mappingBean = null;

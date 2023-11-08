@@ -44,10 +44,10 @@ public class MeterReplacementController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message("Last reading not available for meter no. "+meterNo));
          else
              return ResponseEntity.status(HttpStatus.OK).body(res);
-            }catch (DataIntegrityViolationException ex) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message(ex.getMessage()));
-        } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message(ex.getMessage()));
+            }catch (DataIntegrityViolationException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage().substring(0, e.getMessage().indexOf("Detail")));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message(e.getMessage().substring(0, e.getMessage().indexOf("Detail"))));
         }
 
     }
@@ -57,17 +57,17 @@ public class MeterReplacementController {
         try {
             Boolean resp = meterReplacementService.replaceMeterMethod(meterReplacementRequest.getOldMeterBean(), meterReplacementRequest.getNewMeterBean());
             if(resp)
-            return ResponseEntity.status(HttpStatus.OK).body("Meter replacement done.");
+            return ResponseEntity.status(HttpStatus.OK).body(new Message("Meter replacement done."));
             else
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Something went wrong.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message("Something went wrong."));
         } catch (ApiException apiException) {
             return ResponseEntity.status(apiException.getHttpStatus()).body(new Message(apiException.getMessage()));
-        } catch (DataIntegrityViolationException d) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message(d.getMessage().substring(0,250)));
+        } catch (DataIntegrityViolationException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message(e.getMessage().substring(0, e.getMessage().indexOf("Detail"))));
         } catch (NullPointerException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message(e.getMessage().substring(0,250)));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message(e.getMessage().substring(0, e.getMessage().indexOf("Detail"))));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message(e.getMessage().substring(0,250)));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message(e.getMessage().substring(0, e.getMessage().indexOf("Detail"))));
         }
     }
     @RequestMapping(method= RequestMethod.GET,value="/category/{category}/status/{status}/mapped/{mapped}")
@@ -84,7 +84,7 @@ public class MeterReplacementController {
             }
             else if(meterMasterBean.size()==0)
             {
-                meterDtlResp=new ResponseEntity<>(new Message("Meter Details not present for meter category "+category),HttpStatus.NO_CONTENT);
+                meterDtlResp=new ResponseEntity<>(new Message("Meter Details not present for meter category "+category),HttpStatus.BAD_REQUEST);
             }
             else
             {
@@ -94,10 +94,10 @@ public class MeterReplacementController {
         {
             Throwable rootCause = d.getRootCause();
             String msg=rootCause.getMessage().substring(0,rootCause.getMessage().indexOf("Detail:"));
-            meterDtlResp = new ResponseEntity<>(new Message(msg),HttpStatus.INTERNAL_SERVER_ERROR);
+            meterDtlResp = new ResponseEntity<>(new Message(msg),HttpStatus.BAD_REQUEST);
         } catch (Exception e)
         {
-            meterDtlResp = new ResponseEntity<>(new Message("something went wrong or some exception occurred "+e.getMessage()),HttpStatus.INTERNAL_SERVER_ERROR);
+            meterDtlResp = new ResponseEntity<>(new Message("exception occurred : "+e.getMessage().substring(0, e.getMessage().indexOf("Detail"))),HttpStatus.BAD_REQUEST);
 
         }
         return meterDtlResp;
@@ -128,7 +128,7 @@ public class MeterReplacementController {
             resp = new ResponseEntity<>(new Message(msg),HttpStatus.BAD_REQUEST);
         } catch (Exception e)
         {
-            resp= new ResponseEntity<>(new Message("something went wrong or some exception occurred "+e.getMessage()),HttpStatus.BAD_REQUEST);
+            resp= new ResponseEntity<>(new Message("exception occurred: "+e.getMessage().substring(0, e.getMessage().indexOf("Detail"))),HttpStatus.BAD_REQUEST);
 
         }
         return  resp;
@@ -152,7 +152,7 @@ public class MeterReplacementController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message("Date parse error : Month should be in MMM-yyyy."));
         }
         catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message(ex.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message(ex.getMessage().substring(0, ex.getMessage().indexOf("Detail"))));
         }
 
     }
@@ -170,7 +170,7 @@ public class MeterReplacementController {
             response = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             e.printStackTrace();
-            response = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, 200)), HttpStatus.BAD_REQUEST);
+            response = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
         }
         return response;
 
@@ -188,7 +188,7 @@ public class MeterReplacementController {
             response = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             e.printStackTrace();
-            response = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, 200)), HttpStatus.BAD_REQUEST);
+            response = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
         }
         return response;
     }
@@ -205,10 +205,10 @@ public class MeterReplacementController {
             response = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
         } catch (DataIntegrityViolationException d) {
 
-            response = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+            response = new ResponseEntity<>(new Message("Data Integrity Violation : "+d.getMessage().substring(0, d.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             e.printStackTrace();
-            response = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, 200)), HttpStatus.BAD_REQUEST);
+            response = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
         }
         return response;
 

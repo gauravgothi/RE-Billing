@@ -43,8 +43,14 @@ public class InvestorMasterService {
         InvestorMasterBean investorMasterBean = new InvestorMasterBean();
         try {
             investorMasterBean = investorMasterRepo.findByIdAndStatus(id, status);
+            if(investorMasterBean==null)
+                throw new ApiException(HttpStatus.BAD_REQUEST, "Investor id "+id+" does not exist.\"");
+        }catch (ApiException apiException){
+            throw apiException;
+        }catch (DataIntegrityViolationException d){
+            throw d;
         }catch (Exception e){
-            e.printStackTrace();
+            throw e;
         }
         return investorMasterBean;
     }
@@ -62,11 +68,10 @@ public class InvestorMasterService {
     public InvestorMasterBean createInvestorMaster(InvestorMasterBean investorMasterBean){
         InvestorMasterBean imb = new InvestorMasterBean();
         try {
-
-            //check for existence of investor code if already created with same investor code
-            InvestorMasterBean temp = investorMasterRepo.findByInvestorCodeAndStatus(investorMasterBean.getInvestorCode(),"active");
+            //check for existence of investor by name if already created with same investor name throw api exception
+            InvestorMasterBean temp = investorMasterRepo.findByInvestorNameIgnoreCaseAndStatus(investorMasterBean.getInvestorName(),"active");
             if(temp!=null) {
-                return null;
+                throw new ApiException(HttpStatus.BAD_REQUEST,"Investor with same name is already exist with investor code: "+temp.getInvestorCode()+" and plant name: "+temp.getInvestorName());
             }
             //Set the Audit control parameters, Globally
             new AuditControlServices().setInitialAuditControlParameters(investorMasterBean);
@@ -82,14 +87,13 @@ public class InvestorMasterService {
             investorMasterBean.setNldc(new ValidatorService().removeSpaceFromString(investorMasterBean.getNldc()));
             // set investor code
             investorMasterBean.setInvestorCode("IC"+String.format("%03d",getMaxInvestorCode()+1));
-
-
-
-
             imb = investorMasterRepo.save(investorMasterBean);
-        }catch (Exception exception){
-            exception.printStackTrace();
-            return null;
+        }catch (ApiException apiException) {
+            throw apiException;
+        } catch (DataIntegrityViolationException d) {
+            throw d;
+        } catch (Exception e) {
+            throw e;
         }
         return imb;
     }
@@ -106,7 +110,7 @@ public class InvestorMasterService {
         } catch (DataIntegrityViolationException d) {
             throw d;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw e;
         }
         return investorMasterBeanList;
     }
