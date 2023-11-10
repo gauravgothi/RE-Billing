@@ -24,52 +24,52 @@ public class MachineMasterController {
 
     @RequestMapping(method= RequestMethod.GET,value="")
     public ResponseEntity<MachineMasterBean> getAllMachineMaster(){
-        ResponseEntity machineResp = null;
+        ResponseEntity resp = null;
         try {
             String status = "active";
             List<MachineMasterBean> machineList = machineMasterService.getAllMachineMasterBean(status);
 
             if(machineList.size()>0)
             {
-                machineResp= new ResponseEntity<>(machineList, HttpStatus.OK);
+                resp= new ResponseEntity<>(machineList, HttpStatus.OK);
             }
             else if(machineList.size()==0)
             {
-                machineResp=new ResponseEntity<>( new Message("Machine list is not available"),HttpStatus.BAD_REQUEST);
+                resp=new ResponseEntity<>( new Message("Machine list is not available"),HttpStatus.BAD_REQUEST);
             }
         }catch (ApiException apiException) {
-            machineResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
-        } catch (DataIntegrityViolationException d) {
-            machineResp = new ResponseEntity<>(new Message("Data Integrity Violation"+d.getMessage().substring(0, 200)),HttpStatus.BAD_REQUEST);
+            resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException e) {
+            resp = new ResponseEntity<>(new Message("Data Integrity Violation : "+e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            e.printStackTrace();
-            machineResp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, 200)),HttpStatus.BAD_REQUEST);
+            resp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
         }
-        return machineResp;
+        return resp;
     }
 
 
     @RequestMapping(method = RequestMethod.POST,value = "")
     public ResponseEntity<?> createMachineMaster(@Valid @RequestBody MachineMasterBean machineMasterBean){
         MachineMasterBean mmb = new MachineMasterBean();
-        ResponseEntity machineInsrtResp = null;
+        ResponseEntity resp = null;
         try {
 
             mmb = machineMasterService.createMachineMaster(machineMasterBean);
 
             if(mmb!=null)
             {
-                machineInsrtResp =  new ResponseEntity<>(new Message(mmb.getMachineCode() + " is created successfully."),HttpStatus.OK);
+                resp =  new ResponseEntity<>(new Message(mmb.getMachineCode() + " is created successfully."),HttpStatus.OK);
             }else if(mmb==null) {
-                machineInsrtResp = new ResponseEntity<>(new Message(machineMasterBean.getMachineCode() + " is already exist."), HttpStatus.BAD_REQUEST);
-            }else {
-                machineInsrtResp = new ResponseEntity<>(new Message("something went wrong"), HttpStatus.BAD_REQUEST);
+                resp = new ResponseEntity<>(new Message("machine can not created due to some error."), HttpStatus.BAD_REQUEST);
             }
-        }catch (Exception e){
-            e.printStackTrace();
+        }catch (ApiException apiException) {
+            resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException e) {
+            resp = new ResponseEntity<>(new Message("Data Integrity Violation : "+e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+           resp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
         }
-
-        return machineInsrtResp;
+        return resp;
     }
 
 
@@ -84,12 +84,13 @@ public class MachineMasterController {
                 machineResp  = new ResponseEntity<>(machineBean, HttpStatus.OK);
             } else if (machineBean == null) {
                 machineResp  = new ResponseEntity<>(new Message(machineCode + " does not exist."), HttpStatus.BAD_REQUEST);
-            } else {
-                machineResp = new ResponseEntity<>(new Message("Something went wrong."), HttpStatus.BAD_REQUEST);
             }
-
+        } catch (ApiException apiException) {
+            machineResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException e) {
+            machineResp = new ResponseEntity<>(new Message("Data Integrity Violation : "+e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            e.printStackTrace();
+            machineResp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
         }
         return machineResp ;
     }
@@ -104,13 +105,14 @@ public class MachineMasterController {
                 machineResp = new ResponseEntity<>(machineBean , HttpStatus.OK);
             } else if (machineBean  == null) {
                 machineResp = new ResponseEntity<>(new Message(id + " id does not exist."), HttpStatus.BAD_REQUEST);
-            } else {
-                machineResp = new ResponseEntity<>(new Message("Something went wrong."), HttpStatus.BAD_REQUEST);
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            } catch (ApiException apiException) {
+                machineResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+            } catch (DataIntegrityViolationException e) {
+                machineResp = new ResponseEntity<>(new Message("Data Integrity Violation : "+e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+            } catch (Exception e) {
+                machineResp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+            }
         return machineResp;
     }
 
@@ -125,14 +127,37 @@ public class MachineMasterController {
                 machineResp = new ResponseEntity<>(machineList, HttpStatus.OK);
             } else if (machineList.size() == 0) {
                 machineResp = new ResponseEntity<>(new Message( " machine list does not exist for "+locationId), HttpStatus.BAD_REQUEST);
-            } else {
-                machineResp = new ResponseEntity<>(new Message("Something went wrong."), HttpStatus.BAD_REQUEST);
             }
 
+        } catch (ApiException apiException) {
+            machineResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException e) {
+            machineResp = new ResponseEntity<>(new Message("Data Integrity Violation : "+e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            e.printStackTrace();
+            machineResp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
         }
         return machineResp;
     }
+
+
+    // get list of machine from machine master excluding machine code which is present in investor_machine mapping table
+    @RequestMapping(method = RequestMethod.GET,value = "/list/unmapped")
+    public ResponseEntity<?> getUnmappedMachineList() {
+        ResponseEntity resp = null;
+        try {
+            List<MachineMasterBean> unmappedMachines = machineMasterService.getUnmappedMachineBeans();
+            resp = new ResponseEntity<>(unmappedMachines,HttpStatus.OK);
+        } catch (ApiException apiException) {
+            resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException e) {
+
+            resp = new ResponseEntity<>(new Message("Data Integrity Violation : "+e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            e.printStackTrace();
+            resp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+        }
+        return resp;
+    }
+
 
 }

@@ -369,4 +369,11 @@ public class MeterFeederPlantMappingService {
     }
 
 
+    public MeterFeederPlantMappingBean getMfpMappingByDeveloperAndPlantAndEndDate(String developerID, String plantCode, LocalDate endDate) {
+
+        MeterFeederPlantMappingBean mfpBean = meterFeederPlantMappingRepo.findByDeveloperIdAndPlantIdAndEndDateAndStatus(developerID,plantCode,endDate,"active");
+        if(mfpBean==null)
+            throw new ApiException(HttpStatus.BAD_REQUEST,"mfp mapping not found for developer id "+developerID+" and plant code "+plantCode);
+        return mfpBean;
+    }
 }

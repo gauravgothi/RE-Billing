@@ -75,4 +75,9 @@ public interface MeterFeederPlantMappingRepo extends CrudRepository<MeterFeederP
     MeterFeederPlantMappingBean findByCheckMeterNoAndEndDateAndStatus(@Param("meterNumber") String meterNumber,@Param("endDate") LocalDate endDate,@Param("status")  String active);
     @Query(value = "select * from ecell.re_meter_feeder_plant_mapping where standby_meter_no=:meterNumber AND end_date>:endDate AND status=:status", nativeQuery = true)
     MeterFeederPlantMappingBean findByStandbyMeterNoAndEndDateAndStatus(@Param("meterNumber") String meterNumber,@Param("endDate") LocalDate endDate,@Param("status")  String active);
+    @Query(value = "select distinct plant_code from ecell.re_meter_feeder_plant_mapping where developer_id=:developerId AND end_date>:endDate AND status=:status",nativeQuery = true)
+    List<String> findDistinctPlantCodeByDeveloperIdAndEndDateAndStatus(@Param("developerId")  String developerId,@Param("endDate") LocalDate endDate,@Param("status")  String active);
+
+    @Query(value = "select * from ecell.re_meter_feeder_plant_mapping where developer_id=:developerId And plant_code=:plantCode AND end_date>:endDate AND status=:status",nativeQuery = true)
+    MeterFeederPlantMappingBean findByDeveloperIdAndPlantIdAndEndDateAndStatus(@Param("developerId") String developerID,@Param("plantCode") String plantCode,@Param("endDate") LocalDate endDate, @Param("status") String active);
 }

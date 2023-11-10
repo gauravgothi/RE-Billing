@@ -3,6 +3,7 @@ package in.co.mpwin.rebilling.repositories.mapping;
 import in.co.mpwin.rebilling.beans.mapping.InvestorMachineMappingBean;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -24,4 +25,7 @@ public interface InvestorMachineMappingRepo extends CrudRepository<InvestorMachi
     List<InvestorMachineMappingBean> findByMfpIdAndStatus(Long mfpId, String status);
 
     List<InvestorMachineMappingBean> findByMachineCodeAndStatus(String machineCode, String status);
+    @Query(value ="select distinct machine_code from ecell.re_investor_machine_mapping where status=:status",nativeQuery = true)
+    List<String> findMachineCodesByStatus(@Param("status") String active);
+
 }
