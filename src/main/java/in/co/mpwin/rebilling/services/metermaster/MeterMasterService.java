@@ -203,8 +203,8 @@ public class MeterMasterService {
         }
     }
 
-    public List<MeterMasterBean> getUnmappedMeterBeans(String status, String isMapped) {
-        return meterMasterRepo.findByStatusAndIsMapped(status,isMapped);
+    public List<MeterMasterBean> getUnmappedMeterBeans(String status, String isMapped, String category) {
+        return meterMasterRepo.findByStatusAndIsMappedAndCategory(status,isMapped,category);
 
     }
 }

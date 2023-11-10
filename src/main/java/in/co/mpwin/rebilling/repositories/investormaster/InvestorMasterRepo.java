@@ -24,4 +24,6 @@ public interface InvestorMasterRepo extends CrudRepository<InvestorMasterBean,Lo
 
     @Query(value = "SELECT MAX(CAST(SPLIT_PART(investor_code,'C',2)AS INTEGER)) FROM ecell.re_investor_master WHERE investor_code like 'IC%'",nativeQuery = true)
     Integer findMaxInvestorCode();
+
+    InvestorMasterBean findByInvestorNameIgnoreCaseAndStatus(String investorName, String active);
 }

@@ -63,6 +63,8 @@ public class AuditControlServices {
             this.setInitialAuditControlParametersOfInvoiceBean((InvoiceBean) obj);
         }else if (obj instanceof ThirdPartyBean){
             this.setInitialAuditControlParametersOfInvoiceBean((ThirdPartyBean) obj);
+        }else if (obj instanceof InvestorMachineMappingBean){
+            this.setInitialAuditControlParametersOfInvoiceBean((InvestorMachineMappingBean) obj);
         }
 
     }
@@ -182,6 +184,15 @@ public class AuditControlServices {
         tpBean.setUpdatedBy(new TokenInfo().getCurrentUsername());
         tpBean.setStatus("active");
         tpBean.setRemark("NA");
+    }
+
+    private void setInitialAuditControlParametersOfInvoiceBean(InvestorMachineMappingBean investorMachineMappingBean) {
+        investorMachineMappingBean.setCreatedOn(new DateMethods().getServerTime());
+        investorMachineMappingBean.setUpdatedOn(new DateMethods().getServerTime());
+        investorMachineMappingBean.setCreatedBy(new TokenInfo().getCurrentUsername());
+        investorMachineMappingBean.setUpdatedBy(new TokenInfo().getCurrentUsername());
+        investorMachineMappingBean.setStatus("active");
+        investorMachineMappingBean.setRemark("NA");
     }
 
     public static void main(String arg[]) throws ParseException {

@@ -174,4 +174,6 @@ public interface MeterMasterRepo extends CrudRepository<MeterMasterBean, Long> {
     List<MeterMasterBean> findByMeterNumberInAndStatusAndIsMapped(@Param("mappedMeters") List<String> mappedMeters,@Param("status") String status,@Param("mapped") String mapped);
     @Query(value = "select * from ecell.re_meter_master where meter_number=:meterNo AND status=:status AND is_mapped=:mapped ORDER BY id ASC", nativeQuery = true)
     MeterMasterBean findByMeterNumberAndStatusAndIsMapped(@Param("meterNo") String meterNo,@Param("status") String status, @Param("mapped") String mapped);
+
+    List<MeterMasterBean> findByStatusAndIsMappedAndCategory(String status, String isMapped, String category);
 }

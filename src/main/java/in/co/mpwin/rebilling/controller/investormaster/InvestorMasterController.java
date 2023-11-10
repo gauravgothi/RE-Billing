@@ -1,9 +1,11 @@
 package in.co.mpwin.rebilling.controller.investormaster;
 
 import in.co.mpwin.rebilling.beans.investormaster.InvestorMasterBean;
+import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.Message;
 import in.co.mpwin.rebilling.services.investormaster.InvestorMasterService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,9 +32,13 @@ public class InvestorMasterController {
                 investorResp = new ResponseEntity<>(investorMasterBeanList, HttpStatus.OK);
             else if (investorMasterBeanList.isEmpty())
                 investorResp = new ResponseEntity<>(new Message("Investor list is not available."),HttpStatus.BAD_REQUEST);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+            }catch (ApiException apiException) {
+                investorResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+            } catch (DataIntegrityViolationException e) {
+                investorResp= new ResponseEntity<>(new Message("Data Integrity Violation : "+e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+            } catch (Exception e) {
+                investorResp= new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+            }
         return investorResp;
     }
 
@@ -46,9 +52,13 @@ public class InvestorMasterController {
                 investorResp = new ResponseEntity<>(investorMasterBeanList, HttpStatus.OK);
             else if (investorMasterBeanList.isEmpty())
                 investorResp = new ResponseEntity<>(new Message("Investor list is not available."),HttpStatus.BAD_REQUEST);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+            }catch (ApiException apiException) {
+                investorResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+            } catch (DataIntegrityViolationException e) {
+                investorResp= new ResponseEntity<>(new Message("Data Integrity Violation : "+e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+            } catch (Exception e) {
+                investorResp= new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+            }
         return investorResp;
     }
 
@@ -65,10 +75,13 @@ public class InvestorMasterController {
             } else {
                 investorResp = new ResponseEntity<>(new Message("Something went wrong."), HttpStatus.BAD_REQUEST);
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            } catch (ApiException apiException) {
+                investorResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+            } catch (DataIntegrityViolationException e) {
+                investorResp= new ResponseEntity<>(new Message("Data Integrity Violation : "+e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+            } catch (Exception e) {
+                investorResp= new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+            }
         return investorResp;
     }
 
@@ -85,10 +98,13 @@ public class InvestorMasterController {
             } else {
                 investorResp = new ResponseEntity<>(new Message("Something went wrong."), HttpStatus.BAD_REQUEST);
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            } catch (ApiException apiException) {
+                investorResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+            } catch (DataIntegrityViolationException e) {
+                investorResp= new ResponseEntity<>(new Message("Data Integrity Violation : "+e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+            } catch (Exception e) {
+                investorResp= new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+            }
         return investorResp;
     }
 
@@ -97,21 +113,20 @@ public class InvestorMasterController {
         InvestorMasterBean imb = new InvestorMasterBean();
         ResponseEntity investorInsrtResp = null;
         try {
-
             imb = investorMasterService.createInvestorMaster(investorMasterBean);
-
             if(imb!=null)
             {
-                //meterInsrtResp = new ResponseEntity<>(meterMasterBean.getMeterNumber()+" is created successfully", HttpStatus.OK);
                 investorInsrtResp =  new ResponseEntity<>(new Message(imb.getInvestorCode() + " is created successfully."),HttpStatus.OK);
             }else if(imb==null) {
-                investorInsrtResp = new ResponseEntity<>(new Message(investorMasterBean.getInvestorCode() + " already exist or something went wrong"), HttpStatus.BAD_REQUEST);
-            }else {
-                investorInsrtResp = new ResponseEntity<>(new Message("something went wrong"), HttpStatus.BAD_REQUEST);
+                investorInsrtResp = new ResponseEntity<>(new Message("investor could not created due to some error"), HttpStatus.BAD_REQUEST);
             }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+            }catch (ApiException apiException) {
+                investorInsrtResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+            } catch (DataIntegrityViolationException e) {
+                investorInsrtResp= new ResponseEntity<>(new Message("Data Integrity Violation : "+e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+            } catch (Exception e) {
+                investorInsrtResp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+            }
         return investorInsrtResp;
     }
 }

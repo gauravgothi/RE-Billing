@@ -30,11 +30,11 @@ public class PlantMasterController {
             plantResp = new ResponseEntity<>(plantList, HttpStatus.OK);
             }catch (ApiException apiException) {
                 plantResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
-            } catch (DataIntegrityViolationException d) {
-                plantResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+            } catch (DataIntegrityViolationException e) {
+                plantResp =  new ResponseEntity<>(new Message("Data Integrity Violation : "+e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
             }catch (Exception e) {
                 e.printStackTrace();
-                plantResp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, 200)), HttpStatus.BAD_REQUEST);
+                plantResp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
             }
             return plantResp;
     }
@@ -43,24 +43,25 @@ public class PlantMasterController {
     @RequestMapping(method = RequestMethod.POST,value = "")
     public ResponseEntity<?> createPlantMaster(@Valid @RequestBody PlantMasterBean plantMasterBean){
         PlantMasterBean pmb = new PlantMasterBean();
-        ResponseEntity plantInsrtResp = null;
+        ResponseEntity resp = null;
         try {
 
             pmb = plantMasterService.createPlantMaster(plantMasterBean);
 
             if(pmb!=null)
             {
-               plantInsrtResp =  new ResponseEntity<>(new Message(pmb.getPlantCode() + " is created successfully."),HttpStatus.OK);
+                resp =  new ResponseEntity<>(new Message(pmb.getPlantCode() + " is created successfully."),HttpStatus.OK);
             }else if(pmb==null) {
-                plantInsrtResp = new ResponseEntity<>(new Message(plantMasterBean.getPlantCode() + " is already exist."), HttpStatus.BAD_REQUEST);
-            }else {
-                plantInsrtResp = new ResponseEntity<>(new Message("something went wrong"), HttpStatus.BAD_REQUEST);
+                resp = new ResponseEntity<>(new Message(" plant could not created due to some error."), HttpStatus.BAD_REQUEST);
             }
-        }catch (Exception e){
-            e.printStackTrace();
+        }catch (ApiException apiException) {
+            resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException e) {
+            resp = new ResponseEntity<>(new Message("Data Integrity Violation : "+e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            resp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
         }
-
-        return plantInsrtResp;
+        return resp;
     }
 
 
@@ -79,8 +80,12 @@ public class PlantMasterController {
                 plantResp= new ResponseEntity<>(new Message("Something went wrong."), HttpStatus.BAD_REQUEST);
             }
 
+        } catch (ApiException apiException) {
+            plantResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException e) {
+            plantResp = new ResponseEntity<>(new Message("Data Integrity Violation : "+e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            e.printStackTrace();
+            plantResp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
         }
         return plantResp;
     }
@@ -101,8 +106,12 @@ public class PlantMasterController {
                 plantResp = new ResponseEntity<>(new Message("Something went wrong."), HttpStatus.BAD_REQUEST);
             }
 
+        } catch (ApiException apiException) {
+            plantResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException e) {
+            plantResp = new ResponseEntity<>(new Message("Data Integrity Violation : "+e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            e.printStackTrace();
+            plantResp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
         }
         return plantResp;
     }
@@ -121,11 +130,11 @@ public class PlantMasterController {
                 throw new ApiException(HttpStatus.BAD_REQUEST, "something went wrong to get plant list "+locationId);
             } catch (ApiException apiException) {
              plantResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
-         } catch (DataIntegrityViolationException d) {
-             plantResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+         } catch (DataIntegrityViolationException e) {
+             plantResp = new ResponseEntity<>(new Message("Data Integrity Violation : "+e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
          }catch (Exception e) {
              e.printStackTrace();
-             plantResp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, 200)), HttpStatus.BAD_REQUEST);
+             plantResp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
          }
         return plantResp;
     }
@@ -139,14 +148,33 @@ public class PlantMasterController {
             plantResp = new ResponseEntity<>(plantList, HttpStatus.OK);
         }catch (ApiException apiException) {
             plantResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
-        } catch (DataIntegrityViolationException d) {
-            plantResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+        } catch (DataIntegrityViolationException e) {
+            plantResp = new ResponseEntity<>(new Message("Data Integrity Violation : "+e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
         }catch (Exception e) {
             e.printStackTrace();
-            plantResp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, 200)), HttpStatus.BAD_REQUEST);
+            plantResp = new ResponseEntity<>(new Message("Exception: " +e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
         }
         return plantResp;
     }
+
+    // to get the plant list for investor machine mapping where plant should exit in mfp mapping with developer
+    @RequestMapping(method= RequestMethod.GET,value="/list/developerId/{developerId}")
+    public ResponseEntity<PlantMasterBean> getAllPlantMasterForInvestorMachineMapping(@PathVariable String developerId){
+        ResponseEntity plantResp = null;
+        try {
+            List<PlantMasterBean> plantList = plantMasterService.getAllPlantMasterBeanByDeveloperId(developerId);
+            plantResp = new ResponseEntity<>(plantList, HttpStatus.OK);
+        }catch (ApiException apiException) {
+            plantResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException e) {
+            plantResp = new ResponseEntity<>(new Message("Data Integrity Violation : "+e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+        }catch (Exception e) {
+            e.printStackTrace();
+            plantResp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+        }
+        return plantResp;
+    }
+
 
 }
 
