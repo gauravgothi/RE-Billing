@@ -29,23 +29,25 @@ public class GlobalExceptionHandler {
        return new ResponseEntity<>(new Message("Database connection error. Please try again later or contact database admin."), HttpStatus.BAD_REQUEST);
     }
     @ExceptionHandler(JsonParseException.class)
-    public ResponseEntity<String> handleJsonParseException(JsonParseException ex) {
+    public ResponseEntity<?> handleJsonParseException(JsonParseException ex) {
         // Log the exception
         // You can use a logging framework like Log4j or SLF4J for logging
         ex.printStackTrace();
 
         // Create an error response and return it to the client
         String errorMessage = "JsonParseException:" + ex.getOriginalMessage();
-        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new Message(errorMessage), HttpStatus.BAD_REQUEST);
     }
     @ExceptionHandler(JsonMappingException.class)
-    public ResponseEntity<String> handleJsonMappingException(JsonMappingException ex) {
+    public ResponseEntity<?> handleJsonMappingException(JsonMappingException ex) {
         // Log the exception
         // You can use a logging framework like Log4j or SLF4J for logging
         ex.printStackTrace();
 
         // Create an error response and return it to the client
         String errorMessage = "JsonMappingException:" + ex.getOriginalMessage();
-        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new Message(errorMessage), HttpStatus.BAD_REQUEST);
     }
+
+
 }

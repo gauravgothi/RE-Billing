@@ -24,28 +24,27 @@ public class MachineMasterController {
 
     @RequestMapping(method= RequestMethod.GET,value="")
     public ResponseEntity<MachineMasterBean> getAllMachineMaster(){
-        ResponseEntity machineResp = null;
+        ResponseEntity resp = null;
         try {
             String status = "active";
             List<MachineMasterBean> machineList = machineMasterService.getAllMachineMasterBean(status);
 
             if(machineList.size()>0)
             {
-                machineResp= new ResponseEntity<>(machineList, HttpStatus.OK);
+                resp= new ResponseEntity<>(machineList, HttpStatus.OK);
             }
             else if(machineList.size()==0)
             {
-                machineResp=new ResponseEntity<>( new Message("Machine list is not available"),HttpStatus.BAD_REQUEST);
+                resp=new ResponseEntity<>( new Message("Machine list is not available"),HttpStatus.BAD_REQUEST);
             }
         }catch (ApiException apiException) {
-            machineResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
-        } catch (DataIntegrityViolationException d) {
-            machineResp = new ResponseEntity<>(new Message("Data Integrity Violation"+d.getMessage().substring(0, 200)),HttpStatus.BAD_REQUEST);
+            resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException e) {
+            resp = new ResponseEntity<>(new Message("Data Integrity Violation : "+e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            e.printStackTrace();
-            machineResp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, 200)),HttpStatus.BAD_REQUEST);
+            resp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
         }
-        return machineResp;
+        return resp;
     }
 
 

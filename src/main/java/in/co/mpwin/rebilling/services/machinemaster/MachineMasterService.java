@@ -25,11 +25,12 @@ public class MachineMasterService {
         List<MachineMasterBean> allMachineList = new ArrayList<>();
         try {
             allMachineList= machineMasterRepo.findAllByStatus(status);
-        }catch(DataIntegrityViolationException d)
-        {
+        }catch (ApiException apiException) {
+            throw apiException;
+        } catch (DataIntegrityViolationException d) {
             throw d;
-        }catch (Exception e) {
-            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
         return allMachineList;
     }
