@@ -60,7 +60,6 @@ public class MeterMasterDao {
                 System.out.println("isExist : " + isExist);
                 throw new ApiException(HttpStatus.BAD_REQUEST,"Meter serial number with make is already exist.");
 
-                return null;
 
             }
             //Set the Audit control parameters, Globally

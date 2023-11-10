@@ -342,8 +342,8 @@ public class MeterFeederPlantMappingService {
                             machinesOfAnInvestor.put(investorCode,machineMasterBeanList);
                                 machinesOfInvestors.add(machinesOfAnInvestor);
                     }
-                completeMappingDto.setInvestorMasterBeanList(investorMasterBeanList);
-                completeMappingDto.setMachinesOfInvestors(machinesOfInvestors);
+                completeMappingDto.setInvestorMasterBeanList(investorMasterBeanList);//set investor list
+                completeMappingDto.setMachinesOfInvestors(machinesOfInvestors);//set machines on key of investor
                 return completeMappingDto;
 
             }catch (ApiException apiException){
