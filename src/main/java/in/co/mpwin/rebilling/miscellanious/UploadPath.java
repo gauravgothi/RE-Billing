@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 public class UploadPath {
-    public static String uploadedPath="C:/REBilling/Upload/File/";//change drive f/d/c
+    public static String uploadedPath=ConstantField.uploadedPathOfReading;//change drive f/d/c
     public static String createUploadedPath() {
         String currentMonthFolder=new SimpleDateFormat("MMM_yyyy").format(new java.sql.Timestamp(Calendar.getInstance().getTime().getTime()))+"/";
         //UploadPath.uploadedPath=UploadPath.uploadedPath+currentMonthFolder;
