@@ -40,7 +40,7 @@ public class SolarStatementController {
             statementResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             e.printStackTrace();
-            statementResp = new ResponseEntity<>(new Message("Exception: "+e.getMessage().substring(0,200)), HttpStatus.BAD_REQUEST);
+            statementResp = new ResponseEntity<>(new Message(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
         return statementResp;
     }

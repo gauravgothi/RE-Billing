@@ -79,6 +79,9 @@ public class InvoiceBean implements BeanInterface {
     private BigDecimal lFixedAdjustmentVal;
     @Column(name="ladjustment")@NotNull
     private BigDecimal lAdjustment;
+
+    @Column(name="lfree_unit")@NotNull
+    private BigDecimal lFreeUnit;
     @Column(name="lactive_rate")@NotNull
     private BigDecimal lActiveRate;
     @Column(name="lreactive_rate")@NotNull
@@ -107,6 +110,9 @@ public class InvoiceBean implements BeanInterface {
     private BigDecimal lineFixAdjAmt;
     @Column(name="line_adjustment_unit_amt")@NotNull
     private BigDecimal lineAdjustmentUnitAmt;
+
+    @Column(name="line_free_unit_amt")@NotNull
+    private BigDecimal lineFreeUnitAmt;
     @Column(name="total_amount")@NotNull
     private BigDecimal totalAmount;
 
@@ -251,6 +257,12 @@ public class InvoiceBean implements BeanInterface {
         return lAdjustment;
     }
 
+    public BigDecimal getlFreeUnit() {
+        if (this.lFreeUnit != null)
+            return new BigDecimal(String.valueOf(this.lFreeUnit));
+        return lFreeUnit;
+    }
+
     public BigDecimal getlActiveRate() {
         if (this.lActiveRate != null)
             return new BigDecimal(String.valueOf(this.lActiveRate));
@@ -317,6 +329,12 @@ public class InvoiceBean implements BeanInterface {
         if (this.lineAdjustmentUnitAmt != null)
             return new BigDecimal(String.valueOf(this.lineAdjustmentUnitAmt));
         return lineAdjustmentUnitAmt;
+    }
+
+    public BigDecimal getLineFreeUnitAmt() {
+        if (this.lineFreeUnitAmt != null)
+            return new BigDecimal(String.valueOf(this.lineFreeUnitAmt));
+        return lineFreeUnitAmt;
     }
 
     public BigDecimal getTotalAmount() {

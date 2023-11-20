@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -243,17 +244,17 @@ public class SolarStatementService {
                     //if tod adjstment 0 then individual adjustment is also 0
                     if (solarStatementBean.getTotalAdjustment().compareTo(BigDecimal.valueOf(0)) >= 0){
                         thirdPartyTod.setTpAdjustment(thirdPartyTod.getTpPercentage().multiply(solarStatementBean.getTotalAdjustment()
-                        ).divide(BigDecimal.valueOf(100)).setScale(2));
+                        ).divide(BigDecimal.valueOf(100)).setScale(2, RoundingMode.HALF_DOWN));
                         thirdPartyTod.setTpTod3(thirdPartyTod.getTpPercentage().multiply(solarStatementBean.getTotalTod3())
-                                .divide(BigDecimal.valueOf(100)).setScale(2));
+                                .divide(BigDecimal.valueOf(100)).setScale(2, RoundingMode.HALF_DOWN));
                         thirdPartyTod.setTpTod1(thirdPartyTod.getTpPercentage().multiply(solarStatementBean.getTotalTod1())
-                                .divide(BigDecimal.valueOf(100)).setScale(2));
+                                .divide(BigDecimal.valueOf(100)).setScale(2, RoundingMode.HALF_DOWN));
                         thirdPartyTod.setTpTod2(thirdPartyTod.getTpPercentage().multiply(solarStatementBean.getTotalTod2())
-                                .divide(BigDecimal.valueOf(100)).setScale(2));
+                                .divide(BigDecimal.valueOf(100)).setScale(2, RoundingMode.HALF_DOWN));
                         thirdPartyTod.setTpTod4(thirdPartyTod.getTpPercentage().multiply(solarStatementBean.getTotalTod4())
-                                .divide(BigDecimal.valueOf(100)).setScale(2));
+                                .divide(BigDecimal.valueOf(100)).setScale(2, RoundingMode.HALF_DOWN));
                         thirdPartyTod.setTpKwhExport(thirdPartyTod.getTpPercentage().multiply(solarStatementBean.geteConsumptionActiveEnergy())
-                                .divide(BigDecimal.valueOf(100)).setScale(2));
+                                .divide(BigDecimal.valueOf(100)).setScale(2,RoundingMode.HALF_DOWN));
                     }
 
                     thirdPartyTodSet.add(thirdPartyTod);

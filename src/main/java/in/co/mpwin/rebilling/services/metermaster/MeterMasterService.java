@@ -146,9 +146,14 @@ public class MeterMasterService {
     public List<Map<String,String>> getMetersByUser(){
         List<Map<String,String>> meterList = new ArrayList<>();
         try {
+                String roleName = new TokenInfo().getCurrentUserRole();
+                if (!roleName.equalsIgnoreCase("DEVELOPER"))
+                    throw new ApiException(HttpStatus.BAD_REQUEST,"Current User must be developer to access this.");
                 String username = new TokenInfo().getCurrentUsername();
                 String developerId = String.valueOf(developerMasterService.getDeveloperIdByUsername(username));
                 List<MeterFeederPlantMappingBean> mfpBeans = mfpService.getMappingByDeveloperId(developerId,"active");
+                if (mfpBeans.isEmpty())
+                    throw new ApiException(HttpStatus.BAD_REQUEST,"Not any Meter Feeder Plant mapping is present for user.");
                 List<String> meters = mfpBeans.stream().flatMap(m-> Stream.of(m.getMainMeterNo(),m.getCheckMeterNo())).distinct().collect(Collectors.toList());
                 for (String meter : meters){
                     Map<String,String> m = new HashMap<>();
