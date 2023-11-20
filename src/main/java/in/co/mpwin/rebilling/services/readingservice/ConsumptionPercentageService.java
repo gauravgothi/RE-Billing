@@ -85,7 +85,7 @@ public class ConsumptionPercentageService {
                 percentageDto.setMainReadingDifference(current.subtract(previous).abs());
                 percentageDto.setMainMf(meterMasterService.getMeterDetailsByMeterNo(meterNumber, "active").getMf());
                 percentageDto.setMainConsumption(percentageDto.getMainReadingDifference().multiply(percentageDto.getMainMf())
-                        .setScale(6,RoundingMode.HALF_DOWN));
+                        .setScale(2,RoundingMode.HALF_DOWN));
                 percentageDto.setMainTotalConsumption(percentageDto.getMainConsumption().add(percentageDto.getMainAssessment()));
 
             }else{
@@ -104,7 +104,7 @@ public class ConsumptionPercentageService {
                 percentageDto.setCheckReadingDifference(current.subtract(previous));
                 percentageDto.setCheckMf(meterMasterService.getMeterDetailsByMeterNo(meterNumber, "active").getMf());
                 percentageDto.setCheckConsumption(percentageDto.getCheckReadingDifference().multiply(percentageDto.getCheckMf())
-                        .setScale(6,RoundingMode.HALF_DOWN));
+                        .setScale(2,RoundingMode.HALF_DOWN));
                 percentageDto.setCheckTotalConsumption(percentageDto.getCheckConsumption().add(percentageDto.getCheckAssessment()));
             }else{
                 percentageDto.setCheckAssessment(BigDecimal.valueOf(-1));

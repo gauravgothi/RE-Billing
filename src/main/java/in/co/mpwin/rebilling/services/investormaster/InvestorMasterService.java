@@ -85,6 +85,7 @@ public class InvestorMasterService {
             investorMasterBean.setIfscCode(new ValidatorService().removeSpaceFromString(investorMasterBean.getIfscCode()));
             investorMasterBean.setMicr(new ValidatorService().removeSpaceFromString(investorMasterBean.getMicr()));
             investorMasterBean.setNldc(new ValidatorService().removeSpaceFromString(investorMasterBean.getNldc()));
+            investorMasterBean.setPpaFreeUnit(new ValidatorService().removeSpaceFromString(investorMasterBean.getPpaFreeUnit()));
             // set investor code
             investorMasterBean.setInvestorCode("IC"+String.format("%03d",getMaxInvestorCode()+1));
             imb = investorMasterRepo.save(investorMasterBean);

@@ -305,9 +305,9 @@ public class MeterReadingService {
                 Date endReadDate = dateMethods.getCurrentAndPreviousDate(monthYear).get(1);
                 List<MeterReadingBean> meterReadingBeanList = meterReadingRepo.findByMeterNoAndCurrentStatesInBetween
                         (meterNo,currentStates,startReadDate,endReadDate,"active");
-                if (meterReadingBeanList.size()==0) throw new ApiException(HttpStatus.BAD_REQUEST,"Not any Reading Present in month");
-                if (meterReadingBeanList.size()>2) throw new ApiException(HttpStatus.BAD_REQUEST,"More than 2 reading in given month");
-                if (meterReadingBeanList.size()<2) throw new ApiException(HttpStatus.BAD_REQUEST,"Less than 2 reading in given month");
+                if (meterReadingBeanList.size()==0) throw new ApiException(HttpStatus.BAD_REQUEST,"Not any Reading(ht accept or developer accept) Present in month");
+                if (meterReadingBeanList.size()>2) throw new ApiException(HttpStatus.BAD_REQUEST,"More than 2 reading present for meter in given month");
+                if (meterReadingBeanList.size()<2) throw new ApiException(HttpStatus.BAD_REQUEST,"Less than 2 reading present for meter in given month");
 
                 if (meterReadingBeanList.size()==2){
                     MeterMasterBean meterMasterBean = meterMasterRepo.findByMeterNumberAndStatus(meterNo,"active");

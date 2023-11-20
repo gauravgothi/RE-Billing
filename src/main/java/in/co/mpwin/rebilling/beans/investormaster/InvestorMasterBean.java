@@ -10,6 +10,7 @@ import lombok.ToString;
 
 
 import javax.validation.constraints.Email;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Date;
 
@@ -78,6 +79,9 @@ public class InvestorMasterBean implements BeanInterface {
     private String particulars;
     @Column(name = "ppa_date")
     private Date ppaDate;
+
+    @Column(name ="supple_ppa_free_unit")//this is free unit
+    private String ppaFreeUnit="0";
 
 
     @Column(name = "created_by")

@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 
 @Service
@@ -48,7 +49,7 @@ public class InvoiceService {
             // 1.investor must be bifurcated for given month   2.investor must not be third party
             boolean isBifurcationDone = bifurcateConsumptionService.isExistsInvestorInBifurcateBean(investorCode,monthYear,"active");
             InvestorMasterBean investorMasterBean = investorMasterService.getInvestorByInvestorCode(investorCode,"active");
-            boolean isBuyerThirdParty = investorMasterBean.getBuyer().equals("Third Party");
+            boolean isBuyerThirdParty = investorMasterBean.getBuyer().equalsIgnoreCase("Third Party");
             InvoiceBean alreadyExistInvoice = invoiceBeanRepo
                     .findByInvestorCodeAndBillingMonthAndStatus(investorCode,monthYear,"active");
             if (!isBifurcationDone)
@@ -84,10 +85,12 @@ public class InvoiceService {
                         String.valueOf(plantMasterBean
                                 .getCommissionedDate()));
                 invoiceBean.setParticulars(investorMasterBean.getParticulars());
+
                 invoiceBean.setLKwhActiveEnergy(bifurcateBean.getlConsumptionKwh()); //this is the kwh export unit
                 invoiceBean.setLRkvah(bifurcateBean.getLrkvah());
                 invoiceBean.setLFixedAdjustmentVal(bifurcateBean.getlFixedAdjustmentPer()); //adjustment percent and value clearity needed
                 invoiceBean.setLAdjustment(bifurcateBean.getlAdjustment());
+                invoiceBean.setLFreeUnit(new BigDecimal(investorMasterBean.getPpaFreeUnit()));
                 invoiceBean.setLActiveRate(bifurcateBean.getlMachineActiveRate());
                 invoiceBean.setLReactiveRate(bifurcateBean.getlMachineAReactiveRate());
                 invoiceBean.setBankName(investorMasterBean.getBankName());
@@ -98,15 +101,19 @@ public class InvoiceService {
                 invoiceBean.setLcdevId(bifurcateBean.gethDevId()); //developer id clarity needed
                 invoiceBean.setType(plantMasterBean.getType());
                 //set active energy amount = unit * active rate
-                invoiceBean.setLineKwhAmount(invoiceBean.getlKwhActiveEnergy().multiply(invoiceBean.getlActiveRate()).setScale(6));
+                invoiceBean.setLineKwhAmount(invoiceBean.getlKwhActiveEnergy().multiply(invoiceBean.getlActiveRate()).setScale(2, RoundingMode.HALF_DOWN));
                 //set rkvah charges = unit * reactive rate
-                invoiceBean.setLineRkvahAmount(invoiceBean.getlRkvah().multiply(invoiceBean.getlReactiveRate()).setScale(6));
+                invoiceBean.setLineRkvahAmount(invoiceBean.getlRkvah().multiply(invoiceBean.getlReactiveRate()).setScale(2,RoundingMode.HALF_DOWN));
                 //set fix adjustment amount = fix adjustment value * active rate
-                invoiceBean.setLineFixAdjAmt(invoiceBean.getlFixedAdjustmentVal().multiply(invoiceBean.getlActiveRate()).setScale(6));
-                //set adjustment unit amount = total adjustment line unit * active rate
-                invoiceBean.setLineAdjustmentUnitAmt(invoiceBean.getlAdjustment().multiply(invoiceBean.getlActiveRate()).setScale(6));
+                invoiceBean.setLineFixAdjAmt(invoiceBean.getlFixedAdjustmentVal().multiply(invoiceBean.getlActiveRate()).setScale(2,RoundingMode.HALF_DOWN));
+                //set adjustment unit amount = adjustment line unit * active rate
+                invoiceBean.setLineAdjustmentUnitAmt(invoiceBean.getlAdjustment().multiply(invoiceBean.getlActiveRate()).setScale(2,RoundingMode.HALF_DOWN));
+                //set free unit amount of = free unit of investor under the ppa supplementry * active rate
+                invoiceBean.setLineAdjustmentUnitAmt(invoiceBean.getlAdjustment().multiply(invoiceBean.getlFreeUnit()).setScale(2,RoundingMode.HALF_DOWN
+                ));
                 invoiceBean.setTotalAmount(invoiceBean.getLineKwhAmount().add(invoiceBean.getLineRkvahAmount())
-                        .subtract(invoiceBean.getLineFixAdjAmt()).subtract(invoiceBean.getLineAdjustmentUnitAmt()));
+                        .subtract(invoiceBean.getLineFixAdjAmt()).subtract(invoiceBean.getLineAdjustmentUnitAmt())
+                        .subtract(invoiceBean.getLineFreeUnitAmt()));
                 invoiceBean.setGrandTotalAmount(invoiceBean.getTotalAmount());
                 invoiceBean.setGrandTotalAmountRounded(BigDecimal.valueOf(invoiceBean.getGrandTotalAmount().longValue()));
                 invoiceBean.setAmountWords(Currency.convertToIndianCurrency(invoiceBean.getGrandTotalAmountRounded()));
@@ -194,13 +201,13 @@ public class InvoiceService {
                     invoiceBean.setLcdevId(bifurcateBean.gethDevId()); //developer id clarity needed
                     invoiceBean.setType(plantMasterBean.getType());
                     //set active energy amount = unit * active rate
-                    invoiceBean.setLineKwhAmount(invoiceBean.getlKwhActiveEnergy().multiply(invoiceBean.getlActiveRate()).setScale(6));
+                    invoiceBean.setLineKwhAmount(invoiceBean.getlKwhActiveEnergy().multiply(invoiceBean.getlActiveRate()).setScale(2,RoundingMode.HALF_DOWN));
                     //set rkvah charges = unit * reactive rate
-                    invoiceBean.setLineRkvahAmount(invoiceBean.getlRkvah().multiply(invoiceBean.getlReactiveRate()).setScale(6));
+                    invoiceBean.setLineRkvahAmount(invoiceBean.getlRkvah().multiply(invoiceBean.getlReactiveRate()).setScale(2,RoundingMode.HALF_DOWN));
                     //set fix adjustment amount = fix adjustment value * active rate
-                    invoiceBean.setLineFixAdjAmt(invoiceBean.getlFixedAdjustmentVal().multiply(invoiceBean.getlActiveRate()).setScale(6));
+                    invoiceBean.setLineFixAdjAmt(invoiceBean.getlFixedAdjustmentVal().multiply(invoiceBean.getlActiveRate()).setScale(2,RoundingMode.HALF_DOWN));
                     //set adjustment unit amount = total adjustment line unit * active rate
-                    invoiceBean.setLineAdjustmentUnitAmt(invoiceBean.getlAdjustment().multiply(invoiceBean.getlActiveRate()).setScale(6));
+                    invoiceBean.setLineAdjustmentUnitAmt(invoiceBean.getlAdjustment().multiply(invoiceBean.getlActiveRate()).setScale(2,RoundingMode.HALF_DOWN));
                     invoiceBean.setTotalAmount(invoiceBean.getLineKwhAmount().add(invoiceBean.getLineRkvahAmount())
                             .subtract(invoiceBean.getLineFixAdjAmt()).subtract(invoiceBean.getLineAdjustmentUnitAmt()));
 

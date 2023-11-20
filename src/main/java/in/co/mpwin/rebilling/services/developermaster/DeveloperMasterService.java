@@ -78,7 +78,7 @@ public class DeveloperMasterService {
         try {
             Long developerId = developerMasterRepo.findIdByDeveloperUsername(username);
             if (developerId == null)
-                throw new ApiException(HttpStatus.BAD_REQUEST,"User is not the developer");
+                throw new ApiException(HttpStatus.BAD_REQUEST,"Developer "+username+" is not present in developer master");
             else
                 return developerId;
         }catch (ApiException apiException){

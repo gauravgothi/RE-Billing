@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -162,7 +163,7 @@ public class BifurcateConsumptionService {
              bifurcateDto.setHConsumptionKwh(meterConsumptionDto.getEConsumptionActiveEnergy());
              bifurcateDto.setHRkvah(BigDecimal.valueOf(0));
              bifurcateDto.setHAssessment(meterConsumptionDto.getEConsumptionAssesment());
-             bifurcateDto.setHAdjustment(meterConsumptionDto.getEAdjustment().multiply(meterConsumptionDto.getMf()).setScale(6));
+             bifurcateDto.setHAdjustment(meterConsumptionDto.getEAdjustment().multiply(meterConsumptionDto.getMf()).setScale(2, RoundingMode.HALF_DOWN));
              bifurcateDto.setHGrandConsumptionKwh(bifurcateDto.getHConsumptionKwh().add(bifurcateDto.getHAssessment()
                      .subtract(bifurcateDto.getHAdjustment())));
 
@@ -253,10 +254,11 @@ public class BifurcateConsumptionService {
                 //First check the validation of Bifurcate Dto provided by front end
                 if ((dto.getHConsumptionKwh().compareTo(BigDecimal.valueOf(0)) == 0) || (dto.getFSumConsumptionKwh().compareTo(BigDecimal.valueOf(0)) == 0))
                     throw new ApiException(HttpStatus.BAD_REQUEST,"Kwh Export must not be zero.");
-                else if (dto.getHConsumptionKwh().compareTo(dto.getFSumConsumptionKwh()) < 0) //kwh export must be equal or less than footer sum
-                    throw new ApiException(HttpStatus.BAD_REQUEST,"Kwh Export must be equal or greater to Total Kwh Export of investors.");
-                else if (dto.getHAdjustment().compareTo(dto.getFSumAdjustment()) != 0) //total adjustment header and footer sum must be equal
-                    throw new ApiException(HttpStatus.BAD_REQUEST,"Total adjustment unit must be equal to Total Adjustment unit of investors.");
+                //commented out due to case where adjustment unit is present
+//                else if (dto.getHConsumptionKwh().compareTo(dto.getFSumConsumptionKwh()) < 0) //kwh export must be equal or less than footer sum
+//                    throw new ApiException(HttpStatus.BAD_REQUEST,"Kwh Export must be equal or greater to Total Kwh Export of investors.");
+//                else if (dto.getHAdjustment().compareTo(dto.getFSumAdjustment()) != 0) //total adjustment header and footer sum must be equal
+//                    throw new ApiException(HttpStatus.BAD_REQUEST,"Total adjustment unit must be equal to Total Adjustment unit of investors.");
                 else if (dto.getHAssessment().compareTo(dto.getFSumAssessment()) != 0) //total assessment header and footer must be equal
                     throw new ApiException(HttpStatus.BAD_REQUEST,"Total assessment unit must be equal to Total assessment unit of investors.");
                 else if (dto.getHGrandConsumptionKwh().compareTo(dto.getFGrandConsumptionKwh()) < 0) //grand total must be less or equal to footer
