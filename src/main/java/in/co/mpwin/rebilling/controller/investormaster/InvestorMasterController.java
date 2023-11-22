@@ -37,7 +37,7 @@ public class InvestorMasterController {
             } catch (DataIntegrityViolationException e) {
                 investorResp= new ResponseEntity<>(new Message("Data Integrity Violation : "+e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
             } catch (Exception e) {
-                investorResp= new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+                investorResp= new ResponseEntity<>(new Message("Exception: " + e.getMessage()), HttpStatus.BAD_REQUEST);
             }
         return investorResp;
     }
@@ -57,7 +57,7 @@ public class InvestorMasterController {
             } catch (DataIntegrityViolationException e) {
                 investorResp= new ResponseEntity<>(new Message("Data Integrity Violation : "+e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
             } catch (Exception e) {
-                investorResp= new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+                investorResp= new ResponseEntity<>(new Message("Exception: " + e.getMessage()), HttpStatus.BAD_REQUEST);
             }
         return investorResp;
     }
@@ -80,7 +80,7 @@ public class InvestorMasterController {
             } catch (DataIntegrityViolationException e) {
                 investorResp= new ResponseEntity<>(new Message("Data Integrity Violation : "+e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
             } catch (Exception e) {
-                investorResp= new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+                investorResp= new ResponseEntity<>(new Message("Exception: " + e.getMessage()), HttpStatus.BAD_REQUEST);
             }
         return investorResp;
     }
@@ -103,7 +103,7 @@ public class InvestorMasterController {
             } catch (DataIntegrityViolationException e) {
                 investorResp= new ResponseEntity<>(new Message("Data Integrity Violation : "+e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
             } catch (Exception e) {
-                investorResp= new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+                investorResp= new ResponseEntity<>(new Message("Exception: " + e.getMessage()), HttpStatus.BAD_REQUEST);
             }
         return investorResp;
     }
@@ -125,7 +125,7 @@ public class InvestorMasterController {
             } catch (DataIntegrityViolationException e) {
                 investorInsrtResp= new ResponseEntity<>(new Message("Data Integrity Violation : "+e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
             } catch (Exception e) {
-                investorInsrtResp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+                investorInsrtResp = new ResponseEntity<>(new Message("Exception: " + e.getMessage()), HttpStatus.BAD_REQUEST);
             }
         return investorInsrtResp;
     }

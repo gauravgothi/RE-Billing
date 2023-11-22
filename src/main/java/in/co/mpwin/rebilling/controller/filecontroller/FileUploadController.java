@@ -36,7 +36,7 @@ public class FileUploadController {
             resp = new ResponseEntity<>(new Message(msg),HttpStatus.BAD_REQUEST);
             return resp;
         } catch (Exception e) {
-            resp = new ResponseEntity<>(new Message("Can't upload the file"),HttpStatus.BAD_REQUEST);
+            resp = new ResponseEntity<>(new Message("Can't upload the file :"+e.getMessage()),HttpStatus.BAD_REQUEST);
             return resp;
         }
         return resp;

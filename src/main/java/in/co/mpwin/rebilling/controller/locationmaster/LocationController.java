@@ -1,11 +1,13 @@
 package in.co.mpwin.rebilling.controller.locationmaster;
 
 import in.co.mpwin.rebilling.beans.locationmaster.LocationMaster;
+import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.Message;
 import in.co.mpwin.rebilling.repositories.locationmaster.LocationMasterRepo;
 import in.co.mpwin.rebilling.services.locationmaster.LocationMasterService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +27,7 @@ public class LocationController {
     @Autowired
     private LocationMasterRepo locationMasterRepo;
 
-    @RequestMapping(method = RequestMethod.GET, value = "")
+    @RequestMapping(method = RequestMethod.GET, value="")
     public ResponseEntity<LocationMaster> getAllLocationMaster() {
         String status = "active";
         ResponseEntity locationResp = null;
@@ -83,5 +85,56 @@ public class LocationController {
             e.printStackTrace();
         }
         return locationResp;
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/regions")
+    public ResponseEntity<?> getRegions()
+    {
+        ResponseEntity resp = null;
+        try{
+            List<String> list = locationMasterService.getAllRegion("active");
+            resp = new ResponseEntity<>(list,HttpStatus.OK);
+        }catch (ApiException apiException) {
+            resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException d) {
+            resp = new ResponseEntity<>(new Message("Data Integrity Violation : "+d.getMessage()), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            resp = new ResponseEntity<>(new Message("Exception: " + e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+        return resp;
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/circles/regionname/{regionname}")
+    public ResponseEntity<?> getCirclesByRegion(@PathVariable("regionname") String regionName)
+    {
+        ResponseEntity resp = null;
+        try{
+            List<String> list = locationMasterService.getAllCircleByRegion(regionName,"active");
+            resp = new ResponseEntity<>(list,HttpStatus.OK);
+        }catch (ApiException apiException) {
+            resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException d) {
+            resp = new ResponseEntity<>(new Message("Data Integrity Violation : "+d.getMessage()), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            resp = new ResponseEntity<>(new Message("Exception: " + e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+        return resp;
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/divisions/circlename/{circlename}")
+    public ResponseEntity<?> getDivisionByCircle(@PathVariable("circlename") String circleName)
+    {
+        ResponseEntity resp = null;
+        try{
+            List<LocationMaster> list = locationMasterService.getAllDivisonByCircle(circleName,"active");
+            resp = new ResponseEntity<>(list,HttpStatus.OK);
+        }catch (ApiException apiException) {
+            resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException d) {
+            resp = new ResponseEntity<>(new Message("Data Integrity Violation : "+d.getMessage()), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            resp = new ResponseEntity<>(new Message("Exception: " + e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+        return resp;
     }
 }

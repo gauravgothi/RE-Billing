@@ -1,8 +1,6 @@
 package in.co.mpwin.rebilling.controller.thirdparty;
 
 import in.co.mpwin.rebilling.beans.investormaster.InvestorMasterBean;
-import in.co.mpwin.rebilling.beans.invoice.InvoiceBean;
-import in.co.mpwin.rebilling.beans.mapping.MeterFeederPlantMappingBean;
 import in.co.mpwin.rebilling.beans.thirdparty.DeveloperPlantDto;
 import in.co.mpwin.rebilling.beans.thirdparty.ThirdPartyBean;
 import in.co.mpwin.rebilling.jwt.exception.ApiException;
@@ -36,11 +34,9 @@ public class ThirdPartyController {
         } catch (ApiException apiException) {
             resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
         } catch (DataIntegrityViolationException d) {
-
-            resp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+            resp = new ResponseEntity<>(new Message("Data Integrity Violation : "+d.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            e.printStackTrace();
-            resp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, 200)), HttpStatus.BAD_REQUEST);
+            resp = new ResponseEntity<>(new Message("Exception: " + e.getMessage()), HttpStatus.BAD_REQUEST);
         }
         return resp;
     }
@@ -56,10 +52,9 @@ public class ThirdPartyController {
         } catch (ApiException apiException) {
             resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
         } catch (DataIntegrityViolationException d) {
-            resp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+            resp = new ResponseEntity<>(new Message("Data Integrity Violation: "+d.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            e.printStackTrace();
-            resp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, 200)), HttpStatus.BAD_REQUEST);
+            resp = new ResponseEntity<>(new Message("Exception: " + e.getMessage()), HttpStatus.BAD_REQUEST);
         }
         return resp;
     }
@@ -73,10 +68,9 @@ public class ThirdPartyController {
         } catch (ApiException apiException) {
             resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
         } catch (DataIntegrityViolationException d) {
-            resp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+            resp = new ResponseEntity<>(new Message("Data Integrity Violation: "+d.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            e.printStackTrace();
-            resp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, 200)), HttpStatus.BAD_REQUEST);
+            resp = new ResponseEntity<>(new Message("Exception: " + e.getMessage()), HttpStatus.BAD_REQUEST);
         }
         return resp;
     }
@@ -90,10 +84,9 @@ public class ThirdPartyController {
         } catch (ApiException apiException) {
             resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
         } catch (DataIntegrityViolationException d) {
-            resp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+            resp = new ResponseEntity<>(new Message("Data Integrity Violation: "+d.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            e.printStackTrace();
-            resp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, 200)), HttpStatus.BAD_REQUEST);
+            resp = new ResponseEntity<>(new Message("Exception: " + e.getMessage()), HttpStatus.BAD_REQUEST);
         }
         return resp;
     }
@@ -108,10 +101,9 @@ public class ThirdPartyController {
         } catch (ApiException apiException) {
             resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
         } catch (DataIntegrityViolationException d) {
-            resp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+            resp = new ResponseEntity<>(new Message("Data Integrity Violation:"+d.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            e.printStackTrace();
-            resp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, 200)), HttpStatus.BAD_REQUEST);
+           resp = new ResponseEntity<>(new Message("Exception: " + e.getMessage()), HttpStatus.BAD_REQUEST);
         }
         return resp;
     }
@@ -125,10 +117,9 @@ public class ThirdPartyController {
         } catch (ApiException apiException) {
             resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
         } catch (DataIntegrityViolationException d) {
-            resp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+            resp = new ResponseEntity<>(new Message("Data Integrity Violation:"+d.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            e.printStackTrace();
-            resp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, 200)), HttpStatus.BAD_REQUEST);
+           resp = new ResponseEntity<>(new Message("Exception: " + e.getMessage()), HttpStatus.BAD_REQUEST);
         }
         return resp;
     }
@@ -142,10 +133,10 @@ public class ThirdPartyController {
         } catch (ApiException apiException) {
             resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
         } catch (DataIntegrityViolationException d) {
-            resp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+            resp = new ResponseEntity<>(new Message("Data Integrity Violation:"+d.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             e.printStackTrace();
-            resp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, 200)), HttpStatus.BAD_REQUEST);
+            resp = new ResponseEntity<>(new Message("Exception: " + e.getMessage()), HttpStatus.BAD_REQUEST);
         }
         return resp;
     }
@@ -160,10 +151,9 @@ public class ThirdPartyController {
         } catch (ApiException apiException) {
             resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
         } catch (DataIntegrityViolationException d) {
-            resp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+            resp = new ResponseEntity<>(new Message("Data Integrity Violation:"+d.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            e.printStackTrace();
-            resp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, 200)), HttpStatus.BAD_REQUEST);
+            resp = new ResponseEntity<>(new Message("Exception: " + e.getMessage()), HttpStatus.BAD_REQUEST);
         }
         return resp;
     }
@@ -178,10 +168,10 @@ public class ThirdPartyController {
         }catch (ApiException apiException) {
             resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
         } catch (DataIntegrityViolationException d) {
-            resp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+            resp = new ResponseEntity<>(new Message("Data Integrity Violation:"+d.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             e.printStackTrace();
-            resp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, 200)), HttpStatus.BAD_REQUEST);
+            resp = new ResponseEntity<>(new Message("Exception: " + e.getMessage()), HttpStatus.BAD_REQUEST);
         }
         return resp;
     }
@@ -196,10 +186,9 @@ public class ThirdPartyController {
         }catch (ApiException apiException) {
             resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
         } catch (DataIntegrityViolationException d) {
-            resp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+            resp = new ResponseEntity<>(new Message("Data Integrity Violation:"+d.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            e.printStackTrace();
-            resp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, 200)), HttpStatus.BAD_REQUEST);
+            resp = new ResponseEntity<>(new Message("Exception: " + e.getMessage()), HttpStatus.BAD_REQUEST);
         }
         return resp;
     }
@@ -214,10 +203,9 @@ public class ThirdPartyController {
         }catch (ApiException apiException) {
             resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
         } catch (DataIntegrityViolationException d) {
-            resp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+            resp = new ResponseEntity<>(new Message("Data Integrity Violation:"+d.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            e.printStackTrace();
-            resp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, 200)), HttpStatus.BAD_REQUEST);
+            resp = new ResponseEntity<>(new Message("Exception: " + e.getMessage()), HttpStatus.BAD_REQUEST);
         }
         return resp;
     }
