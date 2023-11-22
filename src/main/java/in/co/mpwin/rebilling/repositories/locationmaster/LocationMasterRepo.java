@@ -27,4 +27,11 @@ public interface LocationMasterRepo extends CrudRepository<LocationMaster,String
     List<String> findDeveloperUsernamesByLocationIdAndStatus(@Param("circleId") String circleId, @Param("status") String status);
 
     String findIdByCircleNameAndStatus(String circleName, String status);
+    @Query(value = "SELECT distinct(region_name) FROM ecell.re_location_master WHERE status = :status", nativeQuery = true)
+    List<String> findDistictRegionByStatus(@Param("status") String status);
+    @Query(value = "SELECT distinct(circle_name) FROM ecell.re_location_master WHERE region_name=:regionName AND status = :status", nativeQuery = true)
+    List<String> findDistictCircleByRegionAndStatus(@Param("regionName") String regionName,@Param("status") String status);
+
+    @Query(value = "SELECT * FROM ecell.re_location_master WHERE circle_name=:circleName AND status = :status", nativeQuery = true)
+    List<LocationMaster> findDivisionBYCircleAndStatus(@Param("circleName") String circleName,@Param("status") String status);
 }

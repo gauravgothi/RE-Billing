@@ -36,8 +36,12 @@ public class FeederMasterController {
             {
                 feederResp=new ResponseEntity<>(new Message("Feeder list is not available"),HttpStatus.BAD_REQUEST);
             }
-        }catch (Exception e) {
-            e.printStackTrace();
+        }catch (ApiException apiException) {
+            feederResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException d) {
+            feederResp = new ResponseEntity<>(new Message("Data Integrity Violation:"+d.getMessage()), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            feederResp = new ResponseEntity<>(new Message("Exception: " + e.getMessage()), HttpStatus.BAD_REQUEST);
         }
         return feederResp;
     }
@@ -57,8 +61,12 @@ public class FeederMasterController {
             {
                 feederResp=new ResponseEntity<>(new Message("Feeder list is not available"),HttpStatus.BAD_REQUEST);
             }
-        }catch (Exception e) {
-            e.printStackTrace();
+        }catch (ApiException apiException) {
+            feederResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException d) {
+            feederResp = new ResponseEntity<>(new Message("Data Integrity Violation:"+d.getMessage()), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            feederResp = new ResponseEntity<>(new Message("Exception: " + e.getMessage()), HttpStatus.BAD_REQUEST);
         }
         return feederResp;
     }
@@ -80,10 +88,13 @@ public class FeederMasterController {
             }else {
                 feederInsrtResp = new ResponseEntity<>(new Message("something went wrong"), HttpStatus.BAD_REQUEST);
             }
-        }catch (Exception e){
-            e.printStackTrace();
+        }catch (ApiException apiException) {
+            feederInsrtResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException d) {
+            feederInsrtResp = new ResponseEntity<>(new Message("Data Integrity Violation:"+d.getMessage()), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            feederInsrtResp = new ResponseEntity<>(new Message("Exception: " + e.getMessage()), HttpStatus.BAD_REQUEST);
         }
-
         return feederInsrtResp;
     }
 
@@ -105,9 +116,9 @@ public class FeederMasterController {
         }catch (ApiException apiException){
             feederResp = new ResponseEntity(new Message(apiException.getMessage()),apiException.getHttpStatus());
         }catch (DataIntegrityViolationException d){
-            feederResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+            feederResp = new ResponseEntity<>(new Message("Data Integrity Violation:"+d.getMessage()), HttpStatus.BAD_REQUEST);
         }catch (Exception e){
-            feederResp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+            feederResp = new ResponseEntity<>(new Message(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
         return feederResp;
     }
@@ -127,8 +138,12 @@ public class FeederMasterController {
                 feederResp = new ResponseEntity<>(new Message("Something went wrong."), HttpStatus.BAD_REQUEST);
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (ApiException apiException){
+            feederResp = new ResponseEntity(new Message(apiException.getMessage()),apiException.getHttpStatus());
+        }catch (DataIntegrityViolationException d){
+            feederResp = new ResponseEntity<>(new Message("Data Integrity Violation:"+d.getMessage()), HttpStatus.BAD_REQUEST);
+        }catch (Exception e){
+            feederResp = new ResponseEntity<>(new Message(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
         return feederResp;
     }
@@ -143,9 +158,9 @@ public class FeederMasterController {
             }catch (ApiException apiException) {
             feederResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
         } catch (DataIntegrityViolationException d) {
-            feederResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+            feederResp = new ResponseEntity<>(new Message("Data Integrity Violation:"+d.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            feederResp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, 200)), HttpStatus.BAD_REQUEST);
+            feederResp = new ResponseEntity<>(new Message("Exception: " + e.getMessage()), HttpStatus.BAD_REQUEST);
         }
         return feederResp;
     }

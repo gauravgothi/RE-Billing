@@ -134,8 +134,22 @@ public class PasswordEncoderGenerator {
         }*/
 
 
-        LocalDate endDate = LocalDate.now();
-        System.out.println("local end date ="+endDate);
+//        LocalDate endDate = LocalDate.now();
+//        System.out.println("local end date ="+endDate);
+
+
+        try{
+            String msg = null;
+            System.out.println("string msg ="+msg+" and length="+msg.length()+" and lower case="+msg.toLowerCase());
+        }catch(NullPointerException ex)
+        {
+            System.out.println("ex.getMessage() ="+ex.getMessage());
+            System.out.println(" \n ex.getLocalizedMessage() ="+ex.getLocalizedMessage());
+            System.out.println(" \n ex.toString() ="+ex.toString());
+            System.out.println(" \n ex.getCause() ="+ex.getCause());
+            System.out.println(" \n ex.getStackTrace()="+ex.getStackTrace());
+
+        }
 
     }
 }

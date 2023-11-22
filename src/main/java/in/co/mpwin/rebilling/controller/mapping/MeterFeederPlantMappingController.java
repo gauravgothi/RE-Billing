@@ -37,15 +37,14 @@ public class MeterFeederPlantMappingController {
             } catch (ApiException apiException) {
             resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
             } catch (DataIntegrityViolationException d) {
-            resp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+            resp = new ResponseEntity<>(new Message("Data Integrity Violation :"+d.getMessage()), HttpStatus.BAD_REQUEST);
             }catch (NullPointerException ex) {
-            resp = new ResponseEntity<>(new Message(ex.getMessage().substring(0,250)), HttpStatus.BAD_REQUEST);
+            resp = new ResponseEntity<>(new Message(ex.getMessage()), HttpStatus.BAD_REQUEST);
             }catch(ParseException ex)
             {
-                resp = new ResponseEntity<>(new Message(ex.getMessage().substring(0,250)), HttpStatus.BAD_REQUEST);
+                resp = new ResponseEntity<>(new Message(ex.getMessage()), HttpStatus.BAD_REQUEST);
             }catch (Exception e) {
-            e.printStackTrace();
-            resp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+            resp = new ResponseEntity<>(new Message(e.getMessage()), HttpStatus.BAD_REQUEST);
              }
         return resp;
     }
@@ -66,9 +65,14 @@ public class MeterFeederPlantMappingController {
             {
                 resp =new ResponseEntity<>(new Message("mapping is not available"),HttpStatus.BAD_REQUEST);
             }
-        }catch (Exception e) {
-            e.printStackTrace();
-            resp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+        }catch (ApiException apiException) {
+            resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException d) {
+            resp = new ResponseEntity<>(new Message("Data Integrity Violation :"+d.getMessage()), HttpStatus.BAD_REQUEST);
+        }catch (NullPointerException ex) {
+            resp = new ResponseEntity<>(new Message(ex.getMessage()), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            resp = new ResponseEntity<>(new Message(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
         return resp;
     }
@@ -88,9 +92,14 @@ public class MeterFeederPlantMappingController {
                 resp = new ResponseEntity<>(new Message("Something went wrong."), HttpStatus.BAD_REQUEST);
             }
 
+        } catch (ApiException apiException) {
+            resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException d) {
+            resp = new ResponseEntity<>(new Message("Data Integrity Violation :"+d.getMessage()), HttpStatus.BAD_REQUEST);
+        }catch (NullPointerException ex) {
+            resp = new ResponseEntity<>(new Message(ex.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            e.printStackTrace();
-            resp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+            resp = new ResponseEntity<>(new Message(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
         return resp;
     }
@@ -109,9 +118,14 @@ public class MeterFeederPlantMappingController {
                 resp = new ResponseEntity<>(new Message("Something went wrong."), HttpStatus.BAD_REQUEST);
             }
 
+        } catch (ApiException apiException) {
+            resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException d) {
+            resp = new ResponseEntity<>(new Message("Data Integrity Violation :"+d.getMessage()), HttpStatus.BAD_REQUEST);
+        }catch (NullPointerException ex) {
+            resp = new ResponseEntity<>(new Message(ex.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            e.printStackTrace();
-            resp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+            resp = new ResponseEntity<>(new Message(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
         return resp;
     }
@@ -130,9 +144,14 @@ public class MeterFeederPlantMappingController {
                 resp = new ResponseEntity<>(new Message("Something went wrong."), HttpStatus.BAD_REQUEST);
             }
 
+        } catch (ApiException apiException) {
+            resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException d) {
+            resp = new ResponseEntity<>(new Message("Data Integrity Violation :"+d.getMessage()), HttpStatus.BAD_REQUEST);
+        }catch (NullPointerException ex) {
+            resp = new ResponseEntity<>(new Message(ex.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            e.printStackTrace();
-            resp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+            resp = new ResponseEntity<>(new Message(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
         return resp;
     }
@@ -152,9 +171,14 @@ public class MeterFeederPlantMappingController {
                 resp = new ResponseEntity<>(new Message("Something went wrong."), HttpStatus.BAD_REQUEST);
             }
 
+        } catch (ApiException apiException) {
+            resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException d) {
+            resp = new ResponseEntity<>(new Message("Data Integrity Violation :"+d.getMessage()), HttpStatus.BAD_REQUEST);
+        }catch (NullPointerException ex) {
+            resp = new ResponseEntity<>(new Message(ex.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            e.printStackTrace();
-            resp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+            resp = new ResponseEntity<>(new Message(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
         return resp;
     }
@@ -174,9 +198,14 @@ public class MeterFeederPlantMappingController {
                 resp = new ResponseEntity<>(new Message("Something went wrong."), HttpStatus.BAD_REQUEST);
             }
 
+        } catch (ApiException apiException) {
+            resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException d) {
+            resp = new ResponseEntity<>(new Message("Data Integrity Violation :"+d.getMessage()), HttpStatus.BAD_REQUEST);
+        }catch (NullPointerException ex) {
+            resp = new ResponseEntity<>(new Message(ex.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            e.printStackTrace();
-            resp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+            resp = new ResponseEntity<>(new Message(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
         return resp;
     }
@@ -196,9 +225,14 @@ public class MeterFeederPlantMappingController {
                 resp = new ResponseEntity<>(new Message("Something went wrong."), HttpStatus.BAD_REQUEST);
             }
 
+        }catch (ApiException apiException) {
+            resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException d) {
+            resp = new ResponseEntity<>(new Message("Data Integrity Violation :"+d.getMessage()), HttpStatus.BAD_REQUEST);
+        }catch (NullPointerException ex) {
+            resp = new ResponseEntity<>(new Message(ex.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            e.printStackTrace();
-            resp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+            resp = new ResponseEntity<>(new Message(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
         return resp;
     }
@@ -218,9 +252,14 @@ public class MeterFeederPlantMappingController {
                 resp = new ResponseEntity<>(new Message("Something went wrong."), HttpStatus.BAD_REQUEST);
             }
 
+        } catch (ApiException apiException) {
+            resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException d) {
+            resp = new ResponseEntity<>(new Message("Data Integrity Violation :"+d.getMessage()), HttpStatus.BAD_REQUEST);
+        }catch (NullPointerException ex) {
+            resp = new ResponseEntity<>(new Message(ex.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            e.printStackTrace();
-            resp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+            resp = new ResponseEntity<>(new Message(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
         return resp;
     }
@@ -233,11 +272,13 @@ public class MeterFeederPlantMappingController {
                 CompleteMappingDto completeMappingDto =
                         meterFeederPlantMappingService.getCompleteMappingByMeterNumber(meterNumber);
                 viewMappingDtoResp = new ResponseEntity<>(completeMappingDto,HttpStatus.OK);
-        }catch (ApiException apiException){
-            viewMappingDtoResp = new ResponseEntity<>(new Message(apiException.getMessage()),apiException.getHttpStatus());
-        }catch (DataIntegrityViolationException d){
-            viewMappingDtoResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
-        }catch (Exception e){
+        }catch (ApiException apiException) {
+            viewMappingDtoResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException d) {
+            viewMappingDtoResp = new ResponseEntity<>(new Message("Data Integrity Violation :"+d.getMessage()), HttpStatus.BAD_REQUEST);
+        }catch (NullPointerException ex) {
+            viewMappingDtoResp = new ResponseEntity<>(new Message(ex.getMessage()), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
             viewMappingDtoResp = new ResponseEntity<>(new Message(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
         return viewMappingDtoResp;

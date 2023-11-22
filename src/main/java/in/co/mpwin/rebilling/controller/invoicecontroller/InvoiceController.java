@@ -34,10 +34,10 @@ public class InvoiceController {
         }catch (ApiException apiException) {
             loadInvoiceResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
         } catch (DataIntegrityViolationException d) {
-            loadInvoiceResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+            loadInvoiceResp = new ResponseEntity<>(new Message("Data Integrity Violation : "+d.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             e.printStackTrace();
-            loadInvoiceResp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+            loadInvoiceResp = new ResponseEntity<>(new Message(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
         return loadInvoiceResp;
     }
@@ -56,10 +56,10 @@ public class InvoiceController {
         }catch (ApiException apiException) {
             invoiceGenerateResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
         } catch (DataIntegrityViolationException d) {
-            invoiceGenerateResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+            invoiceGenerateResp = new ResponseEntity<>(new Message("Data Integrity Violation: "+d.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             e.printStackTrace();
-            invoiceGenerateResp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+            invoiceGenerateResp = new ResponseEntity<>(new Message(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
         return invoiceGenerateResp;
     }
@@ -73,10 +73,10 @@ public class InvoiceController {
         }catch (ApiException apiException) {
             invoiceGenerateResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
         } catch (DataIntegrityViolationException d) {
-            invoiceGenerateResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+            invoiceGenerateResp = new ResponseEntity<>(new Message("Data Integrity Violation: "+d.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             e.printStackTrace();
-            invoiceGenerateResp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+            invoiceGenerateResp = new ResponseEntity<>(new Message(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
         return invoiceGenerateResp;
     }
@@ -90,10 +90,10 @@ public class InvoiceController {
         }catch (ApiException apiException) {
             invoiceSaveResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
         } catch (DataIntegrityViolationException d) {
-            invoiceSaveResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+            invoiceSaveResp = new ResponseEntity<>(new Message("Data Integrity Violation: "+d.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             e.printStackTrace();
-            invoiceSaveResp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+            invoiceSaveResp = new ResponseEntity<>(new Message(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
         return invoiceSaveResp;
     }
@@ -107,10 +107,10 @@ public class InvoiceController {
         }catch (ApiException apiException) {
             invoiceSaveResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
         } catch (DataIntegrityViolationException d) {
-            invoiceSaveResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+            invoiceSaveResp = new ResponseEntity<>(new Message("Data Integrity Violation: "+d.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             e.printStackTrace();
-            invoiceSaveResp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+            invoiceSaveResp = new ResponseEntity<>(new Message(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
         return invoiceSaveResp;
     }
@@ -126,10 +126,10 @@ public class InvoiceController {
         }catch (ApiException apiException) {
             invoiceViewResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
         } catch (DataIntegrityViolationException d) {
-            invoiceViewResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+            invoiceViewResp = new ResponseEntity<>(new Message("Data Integrity Violation: "+d.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             e.printStackTrace();
-            invoiceViewResp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+            invoiceViewResp = new ResponseEntity<>(new Message(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
         return invoiceViewResp;
     }
@@ -144,10 +144,10 @@ public class InvoiceController {
         }catch (ApiException apiException) {
             invoiceViewResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
         } catch (DataIntegrityViolationException d) {
-            invoiceViewResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+            invoiceViewResp = new ResponseEntity<>(new Message("Data Integrity Violation: "+d.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             e.printStackTrace();
-            invoiceViewResp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+            invoiceViewResp = new ResponseEntity<>(new Message(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
         return invoiceViewResp;
     }
@@ -162,10 +162,10 @@ public class InvoiceController {
         }catch (ApiException apiException) {
             invoiceSubmitResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
         } catch (DataIntegrityViolationException d) {
-            invoiceSubmitResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+            invoiceSubmitResp = new ResponseEntity<>(new Message("Data Integrity Violation: "+d.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             e.printStackTrace();
-            invoiceSubmitResp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+            invoiceSubmitResp = new ResponseEntity<>(new Message(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
         return invoiceSubmitResp;
     }
@@ -180,10 +180,10 @@ public class InvoiceController {
         }catch (ApiException apiException) {
             invoiceApproveResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
         } catch (DataIntegrityViolationException d) {
-            invoiceApproveResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+            invoiceApproveResp = new ResponseEntity<>(new Message("Data Integrity Violation: "+d.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             e.printStackTrace();
-            invoiceApproveResp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+            invoiceApproveResp = new ResponseEntity<>(new Message(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
         return invoiceApproveResp;
     }
@@ -198,10 +198,10 @@ public class InvoiceController {
         }catch (ApiException apiException) {
             invoiceApproveResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
         } catch (DataIntegrityViolationException d) {
-            invoiceApproveResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+            invoiceApproveResp = new ResponseEntity<>(new Message("Data Integrity Violation: "+d.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             e.printStackTrace();
-            invoiceApproveResp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+            invoiceApproveResp = new ResponseEntity<>(new Message(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
         return invoiceApproveResp;
     }

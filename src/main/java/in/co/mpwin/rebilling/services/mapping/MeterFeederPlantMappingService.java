@@ -64,12 +64,12 @@ public class MeterFeederPlantMappingService {
 
         try {
 
-            meterFeederPlantMappingBean.setMainMeterNo(new ValidatorService().removeSpaceFromString(meterFeederPlantMappingBean.getMainMeterNo()));
-            meterFeederPlantMappingBean.setCheckMeterNo(new ValidatorService().removeSpaceFromString(meterFeederPlantMappingBean.getCheckMeterNo()));
-            meterFeederPlantMappingBean.setStandbyMeterNo(new ValidatorService().removeSpaceFromString(meterFeederPlantMappingBean.getStandbyMeterNo()));
-            meterFeederPlantMappingBean.setFeederCode(new ValidatorService().removeSpaceFromString(meterFeederPlantMappingBean.getFeederCode()));
-            meterFeederPlantMappingBean.setPlantCode(new ValidatorService().removeSpaceFromString(meterFeederPlantMappingBean.getPlantCode()));
-            meterFeederPlantMappingBean.setDeveloperId(new ValidatorService().removeSpaceFromString(meterFeederPlantMappingBean.getDeveloperId()));
+//            meterFeederPlantMappingBean.setMainMeterNo(new ValidatorService().removeSpaceFromString(meterFeederPlantMappingBean.getMainMeterNo()));
+//            meterFeederPlantMappingBean.setCheckMeterNo(new ValidatorService().removeSpaceFromString(meterFeederPlantMappingBean.getCheckMeterNo()));
+//            meterFeederPlantMappingBean.setStandbyMeterNo(new ValidatorService().removeSpaceFromString(meterFeederPlantMappingBean.getStandbyMeterNo()));
+//            meterFeederPlantMappingBean.setFeederCode(new ValidatorService().removeSpaceFromString(meterFeederPlantMappingBean.getFeederCode()));
+//            meterFeederPlantMappingBean.setPlantCode(new ValidatorService().removeSpaceFromString(meterFeederPlantMappingBean.getPlantCode()));
+//            meterFeederPlantMappingBean.setDeveloperId(new ValidatorService().removeSpaceFromString(meterFeederPlantMappingBean.getDeveloperId()));
 
             //check for existence of mapping if already exist with same mapping then throw api exception
             MeterFeederPlantMappingBean temp = meterFeederPlantMappingRepo.findByMainMeterNoCheckMeterNoStandbyMeterNoAndDeveloperId(meterFeederPlantMappingBean.getMainMeterNo(),meterFeederPlantMappingBean.getCheckMeterNo(),
@@ -134,7 +134,14 @@ public class MeterFeederPlantMappingService {
         List<MeterFeederPlantMappingBean> allMappingList;
         try {
             allMappingList=(List<MeterFeederPlantMappingBean>) meterFeederPlantMappingRepo.findByStatus(status);
-        } catch (Exception e) {
+        }  catch(ApiException apiException) {
+            throw apiException;
+        } catch(DataIntegrityViolationException d) {
+            throw d;
+        } catch (NullPointerException ex)
+        {
+            throw ex;
+        } catch(Exception e) {
             throw e;
         }
         return allMappingList;
@@ -145,7 +152,14 @@ public class MeterFeederPlantMappingService {
         MeterFeederPlantMappingBean mappingBean =null ;
         try{
             mappingBean= meterFeederPlantMappingRepo.findByIdAndStatus(id,status);
-        }catch (Exception e){
+        } catch(ApiException apiException) {
+            throw apiException;
+        } catch(DataIntegrityViolationException d) {
+            throw d;
+        } catch (NullPointerException ex)
+        {
+            throw ex;
+        } catch(Exception e) {
             throw e;
         }
         return mappingBean;
@@ -155,8 +169,15 @@ public class MeterFeederPlantMappingService {
         List<MeterFeederPlantMappingBean> mappingBean = new ArrayList<>();
         try{
             mappingBean= meterFeederPlantMappingRepo.findByMainMeterNoAndStatus(mmn,status);
-        }catch(Exception e){
-           throw e;
+        } catch(DataIntegrityViolationException d) {
+            throw d;
+        } catch(ApiException apiException) {
+            throw apiException;
+        } catch (NullPointerException ex)
+        {
+            throw ex;
+        } catch(Exception e) {
+            throw e;
         }
         return mappingBean;
 
@@ -166,8 +187,15 @@ public class MeterFeederPlantMappingService {
         List<MeterFeederPlantMappingBean> mappingBean = new ArrayList<>();
         try{
             mappingBean= meterFeederPlantMappingRepo.findByCheckMeterNoAndStatus(mmn,status);
-        }catch (Exception e){
-           throw e;
+        }catch(ApiException apiException) {
+            throw apiException;
+        } catch(DataIntegrityViolationException d) {
+            throw d;
+        } catch (NullPointerException ex)
+        {
+            throw ex;
+        } catch(Exception e) {
+            throw e;
         }
         return mappingBean;
 
@@ -178,7 +206,14 @@ public class MeterFeederPlantMappingService {
         List<MeterFeederPlantMappingBean> mappingBean = new ArrayList<>();
         try{
             mappingBean= meterFeederPlantMappingRepo.findByStandbyMeterNoAndStatus(smn,status);
-        }catch (Exception e){
+        }catch(ApiException apiException) {
+            throw apiException;
+        } catch(DataIntegrityViolationException d) {
+            throw d;
+        } catch (NullPointerException ex)
+        {
+            throw ex;
+        } catch(Exception e) {
             throw e;
         }
         return mappingBean;
@@ -191,11 +226,14 @@ public class MeterFeederPlantMappingService {
             mappingBean= meterFeederPlantMappingRepo.findByAnyMeterNoAndStatus(meterNo,status);
             if (mappingBean==null)
                 throw new ApiException(HttpStatus.BAD_REQUEST,"No active mapping of Plant found for given meter..");
-        }catch (ApiException apiException){
+        }catch(ApiException apiException) {
             throw apiException;
-        }catch (DataIntegrityViolationException d){
+        } catch(DataIntegrityViolationException d) {
             throw d;
-        }catch (Exception e){
+        } catch (NullPointerException ex)
+        {
+            throw ex;
+        } catch(Exception e) {
             throw e;
         }
         return mappingBean;
@@ -205,8 +243,15 @@ public class MeterFeederPlantMappingService {
         List<MeterFeederPlantMappingBean> mappingBean = new ArrayList<>();
         try{
             mappingBean= meterFeederPlantMappingRepo.findByDeveloperIdAndStatus(di,status);
-        }catch (Exception e){
-           throw e;
+        }catch(ApiException apiException) {
+            throw apiException;
+        } catch(DataIntegrityViolationException d) {
+            throw d;
+        } catch (NullPointerException ex)
+        {
+            throw ex;
+        } catch(Exception e) {
+            throw e;
         }
         return mappingBean;
 
@@ -217,8 +262,15 @@ public class MeterFeederPlantMappingService {
         List<MeterFeederPlantMappingBean> mappingBean = new ArrayList<>();
         try{
             mappingBean= meterFeederPlantMappingRepo.findByFeederCodeAndStatus(fcode,status);
-        }catch (Exception e){
-           throw e;
+        }catch(ApiException apiException) {
+            throw apiException;
+        } catch(DataIntegrityViolationException d) {
+            throw d;
+        } catch (NullPointerException ex)
+        {
+            throw ex;
+        } catch(Exception e) {
+            throw e;
         }
         return mappingBean;
     }
@@ -228,8 +280,15 @@ public class MeterFeederPlantMappingService {
         List<MeterFeederPlantMappingBean> mappingBean = new ArrayList<>();
         try{
             mappingBean= meterFeederPlantMappingRepo.findByPlantCodeAndStatus(plantCode,status);
-        }catch (Exception e){
-           throw e;
+        }catch(ApiException apiException) {
+            throw apiException;
+        } catch(DataIntegrityViolationException d) {
+            throw d;
+        } catch (NullPointerException ex)
+        {
+            throw ex;
+        } catch(Exception e) {
+            throw e;
         }
         return mappingBean;
     }
@@ -270,10 +329,14 @@ public class MeterFeederPlantMappingService {
                 plants = meterFeederPlantMappingRepo.findDistinctPlantCodeByDeveloperIdAndStatus(developerId, status);
                 if(plants.size()==0)
                     throw new ApiException(HttpStatus.BAD_REQUEST,"Developer "+developerId +" not have any plant mapping");
-            } catch (ApiException apiException){
+            } catch(ApiException apiException) {
                 throw apiException;
-            }
-            catch (Exception e) {
+            } catch(DataIntegrityViolationException d) {
+                throw d;
+            } catch (NullPointerException ex)
+            {
+                throw ex;
+            } catch(Exception e) {
                 throw e;
             }
             return plants;
@@ -288,8 +351,12 @@ public class MeterFeederPlantMappingService {
             } catch (ApiException apiException) {
                 apiException.printStackTrace();
                 System.out.println(apiException.getMessage());
-            }
-            catch (Exception e) {
+            } catch(DataIntegrityViolationException d) {
+                throw d;
+            } catch (NullPointerException ex)
+            {
+                throw ex;
+            } catch(Exception e) {
                 throw e;
             }
             return mappingBean;
@@ -346,13 +413,16 @@ public class MeterFeederPlantMappingService {
                 completeMappingDto.setMachinesOfInvestors(machinesOfInvestors);//set machines on key of investor
                 return completeMappingDto;
 
-            }catch (ApiException apiException){
+            }catch(ApiException apiException) {
                 throw apiException;
-            }catch (DataIntegrityViolationException d){
+            } catch(DataIntegrityViolationException d) {
                 throw d;
-            }catch (Exception e){
+            } catch (NullPointerException ex)
+            {
+                throw ex;
+            } catch(Exception e) {
                 throw e;
-        }
+            }
     }
 
     public List<String> findMappedMeterListByEndDate(LocalDate endDate) {

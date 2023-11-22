@@ -1,9 +1,6 @@
 package in.co.mpwin.rebilling.controller.developermaster;
 
 import in.co.mpwin.rebilling.beans.developermaster.DeveloperMasterBean;
-import in.co.mpwin.rebilling.beans.feedermaster.FeederMasterBean;
-import in.co.mpwin.rebilling.beans.thirdparty.ThirdPartyBean;
-import in.co.mpwin.rebilling.dto.MeterConsumptionDto;
 import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.Message;
 import in.co.mpwin.rebilling.services.developermaster.DeveloperMasterService;
@@ -35,10 +32,9 @@ public class DeveloperMasterController {
             }catch (ApiException apiException) {
                 developerResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
             } catch (DataIntegrityViolationException d) {
-                    developerResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+                    developerResp = new ResponseEntity<>(new Message("Data Integrity Violation:"+d.getMessage()), HttpStatus.BAD_REQUEST);
             } catch (Exception e) {
-                e.printStackTrace();
-                developerResp = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, 200)), HttpStatus.BAD_REQUEST);
+               developerResp = new ResponseEntity<>(new Message("Exception: " + e.getMessage()), HttpStatus.BAD_REQUEST);
             }
         return developerResp;
     }
@@ -53,8 +49,12 @@ public class DeveloperMasterController {
                 developerResp = new ResponseEntity<>(developerMasterBeanList, HttpStatus.OK);
             else if (developerMasterBeanList.isEmpty())
                 developerResp = new ResponseEntity<>(new Message("Developer list is not available."),HttpStatus.BAD_REQUEST);
-        }catch (Exception e){
-            e.printStackTrace();
+        }catch (ApiException apiException) {
+            developerResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException d) {
+            developerResp = new ResponseEntity<>(new Message("Data Integrity Violation:"+d.getMessage()), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            developerResp = new ResponseEntity<>(new Message("Exception: " + e.getMessage()), HttpStatus.BAD_REQUEST);
         }
         return developerResp;
     }
@@ -76,8 +76,12 @@ public class DeveloperMasterController {
             }else {
                 developerInsrtResp = new ResponseEntity<>(new Message("something went wrong"), HttpStatus.BAD_REQUEST);
             }
-        }catch (Exception e){
-            e.printStackTrace();
+        }catch (ApiException apiException) {
+            developerInsrtResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException d) {
+            developerInsrtResp = new ResponseEntity<>(new Message("Data Integrity Violation:"+d.getMessage()), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            developerInsrtResp = new ResponseEntity<>(new Message("Exception: " + e.getMessage()), HttpStatus.BAD_REQUEST);
         }
         return developerInsrtResp;
     }
@@ -95,9 +99,12 @@ public class DeveloperMasterController {
             } else {
                 developerResp = new ResponseEntity<>(new Message("Something went wrong."), HttpStatus.BAD_REQUEST);
             }
-
+        } catch (ApiException apiException) {
+            developerResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+        } catch (DataIntegrityViolationException d) {
+            developerResp = new ResponseEntity<>(new Message("Data Integrity Violation:"+d.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            e.printStackTrace();
+            developerResp = new ResponseEntity<>(new Message("Exception: " + e.getMessage()), HttpStatus.BAD_REQUEST);
         }
         return developerResp;
     }
