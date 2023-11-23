@@ -58,7 +58,7 @@ public class FeederMasterService {
             //check for existence of feeder if already created with same feeder number
             FeederMasterBean temp = feederMasterRepo.findByFeederNumberAndStatus(feederMasterBean.getFeederNumber(),"active");
             if(temp!=null) {
-                return null;
+                throw new ApiException(HttpStatus.BAD_REQUEST,temp.getFeederNumber() + " is already exist.");
             }
             //Set the Audit control parameters, Globally
             new AuditControlServices().setInitialAuditControlParameters(feederMasterBean);
@@ -68,7 +68,7 @@ public class FeederMasterService {
             fmb = feederMasterRepo.save(feederMasterBean);
         }catch (Exception e) {
             e.printStackTrace();
-            return null;
+            throw e;
         }
         return fmb;
     }
