@@ -5,6 +5,8 @@ import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.Message;
 import in.co.mpwin.rebilling.services.readingservice.MeterReadingService;
 import in.co.mpwin.rebilling.services.readingservice.MeterReadingPunchingService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 public class MeterReadingPunchingController {
 
 
+    private static final Logger logger = LoggerFactory.getLogger(MeterReadingPunchingController.class);
+
     @Autowired
     MeterReadingService meterReadingService;
 
@@ -27,28 +31,31 @@ public class MeterReadingPunchingController {
 
     @RequestMapping(method = RequestMethod.POST, value = "")
     public ResponseEntity<?> saveReading(@RequestBody MeterReadingBean meterReadingBean) {
+        final String methodName = "saveReading() : ";
+        logger.info(methodName + "called. with request body of meterReadingBean: {}",meterReadingBean.toString());
         ResponseEntity res = null;
         try {
             MeterReadingBean mrb = meterReadingPunchingService.saveMeterReading(meterReadingBean);
-            if(mrb!=null)
+            if(mrb!=null) {
                 res = new ResponseEntity<>(new Message("Reading saved successfully."), HttpStatus.OK);
-            if(mrb==null)
-                res = new ResponseEntity<>(new Message("Reading not saved due to some error."),HttpStatus.BAD_REQUEST);
+                logger.info(methodName + "return. success response : {}",res.getBody());
+            }
+            if(mrb==null) {
+                res = new ResponseEntity<>(new Message("Reading not saved due to some error."), HttpStatus.BAD_REQUEST);
+                logger.info(methodName + "return.fail response message : {}",res.getBody());
+            }
         }catch (ApiException apiException){
             res = new ResponseEntity<>(apiException.getMessage(),apiException.getHttpStatus());
-        }catch (DataIntegrityViolationException d)
-        {
-            Throwable rootCause = d.getRootCause();
-            String msg=rootCause.getMessage().substring(0,rootCause.getMessage().indexOf("Detail:"));
-           res = new ResponseEntity<>(new Message(msg),HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch(NullPointerException ex)
-        {
-            String msg=ex.getMessage().substring(0,ex.getMessage().indexOf("Detail:"));
-            res = new ResponseEntity<>(new Message(msg),HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        catch (Exception e){
-            e.printStackTrace();
-            res = new ResponseEntity<>(new Message("something went wrong or some exception occurred "),HttpStatus.INTERNAL_SERVER_ERROR);
+            logger.error(methodName+" API Exception occurred: {}", apiException.getMessage());
+        }catch (DataIntegrityViolationException d) {
+            res = new ResponseEntity<>(new Message("DataIntegrityViolationException occured :"+ d.getMessage()),HttpStatus.BAD_REQUEST);
+            logger.error(methodName+"Data Integrity Violation Exception occurred: {}", d.getMessage());
+        } catch(NullPointerException ex) {
+            res = new ResponseEntity<>(new Message(ex.getMessage()),HttpStatus.BAD_REQUEST);
+            logger.error(methodName+" NullPointerException occurred: {}", ex.getMessage());
+        } catch (Exception ex){
+            res = new ResponseEntity<>(new Message("some exception occurred: "+ex.getMessage()),HttpStatus.BAD_REQUEST);
+            logger.error(methodName+" Exception occurred: {}", ex.getMessage(),ex);
         }
         return res;
     }

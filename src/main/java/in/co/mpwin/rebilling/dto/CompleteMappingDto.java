@@ -19,14 +19,15 @@ import java.util.Map;
 public class CompleteMappingDto {
 
     private String meterNumber;
-    private String mainMeterNumber;
-    private String checkMeterNumber;
-    private String standbyMeterNumber;
+    private MeterMasterBean mainMeterNumberBean;
+    private MeterMasterBean checkMeterNumberBean;
+    private MeterMasterBean standbyMeterNumberBean;
     //private MeterMasterBean meterMasterBean;
     private FeederMasterBean feederMasterBean;
     private DeveloperMasterBean developerMasterBean;
     private PlantMasterBean plantMasterBean;
-    private List<InvestorMasterBean> investorMasterBeanList;
-    private List<Map<String,List<MachineMasterBean>>> machinesOfInvestors;
+    private List<InvestorMachineMappingDto> investorMachineMappingDtoList;
+    //private List<InvestorMasterBean> investorMasterBeanList;
+    //private List<Map<String,List<MachineMasterBean>>> machinesOfInvestors;
 
 }

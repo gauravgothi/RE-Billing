@@ -15,7 +15,7 @@ import java.util.TimeZone;
 @EnableTransactionManagement
 public class RebillingApplication {
 
-	//private static final Logger logger = LoggerFactory.getLogger(RebillingApplication.class);
+	private static final Logger logger = LoggerFactory.getLogger(RebillingApplication.class);
 	@Bean
 	public ModelMapper modelMapper()	{
 		return new ModelMapper();
@@ -26,7 +26,7 @@ public class RebillingApplication {
 		//TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 		SpringApplication.run(RebillingApplication.class, args);
 
-		//logger.info("Project REBilling have been started");
+		logger.info("Project REBilling have been started");
 	}
 
 }
