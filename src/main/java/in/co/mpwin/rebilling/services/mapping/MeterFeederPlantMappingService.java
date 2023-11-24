@@ -10,6 +10,7 @@ import in.co.mpwin.rebilling.beans.metermaster.MeterMasterBean;
 import in.co.mpwin.rebilling.beans.plantmaster.PlantMasterBean;
 import in.co.mpwin.rebilling.beans.thirdparty.DeveloperPlantDto;
 import in.co.mpwin.rebilling.dto.CompleteMappingDto;
+import in.co.mpwin.rebilling.dto.InvestorMachineMappingDto;
 import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.AuditControlServices;
 import in.co.mpwin.rebilling.miscellanious.DateMethods;
@@ -374,9 +375,12 @@ public class MeterFeederPlantMappingService {
                         throw new ApiException(HttpStatus.BAD_REQUEST,"No active mapping of Plant found for given meter..");
                     //Set meters of that plant which is selected meter
                     completeMappingDto.setMeterNumber(meterNumber);
-                    completeMappingDto.setMainMeterNumber(mfp1.getMainMeterNo());
-                    completeMappingDto.setCheckMeterNumber(mfp1.getCheckMeterNo());
-                    completeMappingDto.setStandbyMeterNumber(mfp1.getStandbyMeterNo());
+                    completeMappingDto.setMainMeterNumberBean(meterMasterRepo.findByMeterNumberAndStatus(mfp1.getMainMeterNo(),"active"));
+                    completeMappingDto.setCheckMeterNumberBean(meterMasterRepo.findByMeterNumberAndStatus(mfp1.getCheckMeterNo(),"active"));
+                    if (mfp1.getStandbyMeterNo().equalsIgnoreCase("na"))
+                        completeMappingDto.setStandbyMeterNumberBean(null);
+                    else
+                        completeMappingDto.setStandbyMeterNumberBean(meterMasterRepo.findByMeterNumberAndStatus(mfp1.getStandbyMeterNo(),"active"));
                     //Set Feeder of meter which is selected ultimately it is plant's feeder
                     FeederMasterBean feederMasterBean = feederMasterService.getFeederByFeederNumber(mfp1.getFeederCode(),"active");
                     completeMappingDto.setFeederMasterBean(feederMasterBean);
@@ -386,8 +390,9 @@ public class MeterFeederPlantMappingService {
                     completeMappingDto.setDeveloperMasterBean(developerMasterBean);
                     completeMappingDto.setPlantMasterBean(plantMasterBean);
                     //Set Investor list of plant
-                    List<InvestorMasterBean> investorMasterBeanList = new ArrayList<>();
-                    List<Map<String,List<MachineMasterBean>>> machinesOfInvestors = new ArrayList<>();
+                    //List<InvestorMasterBean> investorMasterBeanList = new ArrayList<>();
+                    //List<Map<String,List<MachineMasterBean>>> machinesOfInvestors = new ArrayList<>();
+
                     //Fetch Distinct Investor list from InvestorMachine Mapping belongs by Meter Feeder Mapping id
                     List<InvestorMachineMappingBean> investorMachineMappingBeans = investorMachineMappingService.getMappingByMFPId(mfp1.getId(), "active");
                     if (investorMachineMappingBeans.size() == 0)
@@ -395,22 +400,30 @@ public class MeterFeederPlantMappingService {
                     //get distinct investor codes
                     List<String> investorCodes = investorMachineMappingBeans.stream().map(InvestorMachineMappingBean::getInvestorCode)
                         .distinct().collect(Collectors.toList());
+                    //make empty investor machine mapping dto list
+                    List<InvestorMachineMappingDto> investorMachineMappingDtoList = new ArrayList<>();
                     for (String investorCode:investorCodes){
-                            Map<String,List<MachineMasterBean>> machinesOfAnInvestor = new HashMap<>();
+                            InvestorMachineMappingDto investorMachineMappingDto = new InvestorMachineMappingDto();
                             InvestorMasterBean investorMasterBean =
                                     investorMasterService.getInvestorByInvestorCode(investorCode,"active");
                             //add investor master bean wrt investor code
-                            investorMasterBeanList.add(investorMasterBean);
+                            investorMachineMappingDto.setInvestorMasterBean(investorMasterBean);
+                            //investorMasterBeanList.add(investorMasterBean);
                             //Get machine codes by investor code
                             List<String> machineCodes = investorMachineMappingService.getMappingByInvestorCode(investorCode, "active").
                                 stream().map(InvestorMachineMappingBean::getMachineCode).collect(Collectors.toList());
                             // after getting machine codes of an investor then take machine master list
                             List<MachineMasterBean> machineMasterBeanList = machineMasterService.getAllMachineByMachineCodeList(machineCodes, "active");
-                            machinesOfAnInvestor.put(investorCode,machineMasterBeanList);
-                                machinesOfInvestors.add(machinesOfAnInvestor);
+                            investorMachineMappingDto.setMachineMasterBeanList(machineMasterBeanList);
+                            //machinesOfAnInvestor.put(investorCode,machineMasterBeanList);
+                                //machinesOfInvestors.add(machinesOfAnInvestor);
+
+                            investorMachineMappingDtoList.add(investorMachineMappingDto);
                     }
-                completeMappingDto.setInvestorMasterBeanList(investorMasterBeanList);//set investor list
-                completeMappingDto.setMachinesOfInvestors(machinesOfInvestors);//set machines on key of investor
+                //completeMappingDto.setInvestorMasterBeanList(investorMasterBeanList);//set investor list
+                //completeMappingDto.setMachinesOfInvestors(machinesOfInvestors);//set machines on key of investor
+
+                completeMappingDto.setInvestorMachineMappingDtoList(investorMachineMappingDtoList);//set investors and machines of investor in dto list
                 return completeMappingDto;
 
             }catch(ApiException apiException) {

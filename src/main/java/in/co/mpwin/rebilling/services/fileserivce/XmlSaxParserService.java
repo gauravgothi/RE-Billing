@@ -6,12 +6,14 @@ import in.co.mpwin.rebilling.miscellanious.DateMethods;
 import org.springframework.stereotype.Service;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -22,7 +24,7 @@ import java.util.stream.Collectors;
 @Service
 public class XmlSaxParserService {
 
-    public XmlParserBean parseXml(String xmlData) throws ParserConfigurationException, SAXException {
+    public XmlParserBean parseXml(String xmlData) throws ParserConfigurationException, SAXException, IOException {
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SAXParser saxParser = factory.newSAXParser();
 
@@ -261,8 +263,14 @@ public class XmlSaxParserService {
 
         try{
                 saxParser.parse(inputStream, handler);
+            }catch(SAXParseException e) {
+                throw e;
+            }catch(SAXException e) {
+                throw e;
+            }catch(IOException e) {
+                throw e;
             } catch(Exception e) {
-                e.printStackTrace();
+                throw e;
             }
 
         return parsedData;

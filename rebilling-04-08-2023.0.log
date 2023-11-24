@@ -1,0 +1,76 @@
+[2023-08-04T15:44:10Z] [org.hibernate.validator.internal.util.Version] [background-preinit] [21] [INFO ] HV000001: Hibernate Validator 8.0.0.Final
+[2023-08-04T15:44:10Z] [org.springframework.boot.StartupInfoLogger] [restartedMain] [51] [INFO ] Starting RebillingApplication using Java 17.0.6 with PID 16528 (C:\Users\HP\IdeaProjects\RE-Billing\target\classes started by HP in C:\Users\HP\IdeaProjects\RE-Billing)
+[2023-08-04T15:44:10Z] [org.springframework.boot.SpringApplication] [restartedMain] [634] [INFO ] No active profile set, falling back to 1 default profile: "default"
+[2023-08-04T15:44:10Z] [org.springframework.boot.logging.DeferredLog] [restartedMain] [250] [INFO ] Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+[2023-08-04T15:44:10Z] [org.springframework.boot.logging.DeferredLog] [restartedMain] [250] [INFO ] For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+[2023-08-04T15:44:14Z] [org.springframework.data.repository.config.RepositoryConfigurationDelegate] [restartedMain] [138] [INFO ] Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+[2023-08-04T15:44:14Z] [org.springframework.data.repository.config.RepositoryConfigurationDelegate] [restartedMain] [208] [INFO ] Finished Spring Data repository scanning in 250 ms. Found 14 JPA repository interfaces.
+[2023-08-04T15:44:16Z] [org.springframework.boot.web.embedded.tomcat.TomcatWebServer] [restartedMain] [108] [INFO ] Tomcat initialized with port(s): 8081 (http)
+[2023-08-04T15:44:16Z] [org.apache.juli.logging.DirectJDKLog] [restartedMain] [173] [INFO ] Initializing ProtocolHandler ["http-nio-8081"]
+[2023-08-04T15:44:16Z] [org.apache.juli.logging.DirectJDKLog] [restartedMain] [173] [INFO ] Starting service [Tomcat]
+[2023-08-04T15:44:16Z] [org.apache.juli.logging.DirectJDKLog] [restartedMain] [173] [INFO ] Starting Servlet engine: [Apache Tomcat/10.1.10]
+[2023-08-04T15:44:16Z] [org.apache.juli.logging.DirectJDKLog] [restartedMain] [173] [INFO ] Initializing Spring embedded WebApplicationContext
+[2023-08-04T15:44:16Z] [org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext] [restartedMain] [291] [INFO ] Root WebApplicationContext: initialization completed in 5983 ms
+[2023-08-04T15:44:17Z] [org.hibernate.jpa.internal.util.LogHelper] [restartedMain] [31] [INFO ] HHH000204: Processing PersistenceUnitInfo [name: default]
+[2023-08-04T15:44:17Z] [org.hibernate.Version] [restartedMain] [44] [INFO ] HHH000412: Hibernate ORM core version 6.2.5.Final
+[2023-08-04T15:44:17Z] [org.hibernate.cfg.Environment] [restartedMain] [191] [INFO ] HHH000406: Using bytecode reflection optimizer
+[2023-08-04T15:44:17Z] [org.hibernate.bytecode.internal.BytecodeProviderInitiator] [restartedMain] [53] [INFO ] HHH000021: Bytecode provider name : bytebuddy
+[2023-08-04T15:44:18Z] [org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo] [restartedMain] [87] [INFO ] No LoadTimeWeaver setup: ignoring JPA class transformer
+[2023-08-04T15:44:18Z] [com.zaxxer.hikari.HikariDataSource] [restartedMain] [110] [INFO ] HikariPool-1 - Starting...
+[2023-08-04T15:44:30Z] [com.zaxxer.hikari.pool.HikariPool] [restartedMain] [565] [INFO ] HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@3232cc0a
+[2023-08-04T15:44:30Z] [com.zaxxer.hikari.HikariDataSource] [restartedMain] [123] [INFO ] HikariPool-1 - Start completed.
+[2023-08-04T15:44:31Z] [org.hibernate.bytecode.internal.BytecodeProviderInitiator] [restartedMain] [53] [INFO ] HHH000021: Bytecode provider name : bytebuddy
+[2023-08-04T15:44:33Z] [org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator] [restartedMain] [51] [INFO ] HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+[2023-08-04T15:44:34Z] [org.springframework.orm.jpa.AbstractEntityManagerFactoryBean] [restartedMain] [437] [INFO ] Initialized JPA EntityManagerFactory for persistence unit 'default'
+[2023-08-04T15:44:35Z] [org.springframework.data.jpa.repository.query.QueryEnhancerFactory] [restartedMain] [47] [INFO ] Hibernate is in classpath; If applicable, HQL parser will be used.
+[2023-08-04T15:44:35Z] [org.springframework.boot.autoconfigure.orm.jpa.JpaBaseConfiguration$JpaWebConfiguration] [restartedMain] [231] [WARN ] spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+[2023-08-04T15:44:36Z] [org.springframework.security.web.DefaultSecurityFilterChain] [restartedMain] [54] [INFO ] Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@7e4bab98, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@7ef079d, org.springframework.security.web.context.SecurityContextHolderFilter@5525c6fa, org.springframework.security.web.header.HeaderWriterFilter@7747ac07, org.springframework.security.web.authentication.logout.LogoutFilter@d547bd2, in.co.mpwin.rebilling.jwt.security.JwtAuthenticationFilter@18812697, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@40469aaf, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@1242d386, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@15c929cf, org.springframework.security.web.session.SessionManagementFilter@ef66a53, org.springframework.security.web.access.ExceptionTranslationFilter@5f179300, org.springframework.security.web.access.intercept.AuthorizationFilter@3ea8eeb2]
+[2023-08-04T15:44:36Z] [org.springframework.boot.devtools.autoconfigure.OptionalLiveReloadServer] [restartedMain] [62] [WARN ] Unable to start LiveReload server
+[2023-08-04T15:44:36Z] [org.apache.juli.logging.DirectJDKLog] [restartedMain] [173] [INFO ] Starting ProtocolHandler ["http-nio-8081"]
+[2023-08-04T15:44:36Z] [org.springframework.boot.web.embedded.tomcat.TomcatWebServer] [restartedMain] [220] [INFO ] Tomcat started on port(s): 8081 (http) with context path '/rebilling'
+[2023-08-04T15:44:37Z] [org.springframework.boot.StartupInfoLogger] [restartedMain] [57] [INFO ] Started RebillingApplication in 27.822 seconds (process running for 30.094)
+[2023-08-04T15:44:37Z] [in.co.mpwin.rebilling.RebillingApplication] [restartedMain] [23] [INFO ] Project REBilling have been started
+[2023-08-04T15:44:45Z] [org.apache.juli.logging.DirectJDKLog] [http-nio-8081-exec-1] [173] [INFO ] Initializing Spring DispatcherServlet 'dispatcherServlet'
+[2023-08-04T15:44:45Z] [org.springframework.web.servlet.FrameworkServlet] [http-nio-8081-exec-1] [532] [INFO ] Initializing Servlet 'dispatcherServlet'
+[2023-08-04T15:44:45Z] [org.springframework.web.servlet.FrameworkServlet] [http-nio-8081-exec-1] [554] [INFO ] Completed initialization in 1 ms
+[2023-08-04T15:45:55Z] [org.springframework.orm.jpa.AbstractEntityManagerFactoryBean] [SpringApplicationShutdownHook] [650] [INFO ] Closing JPA EntityManagerFactory for persistence unit 'default'
+[2023-08-04T15:45:55Z] [com.zaxxer.hikari.HikariDataSource] [SpringApplicationShutdownHook] [350] [INFO ] HikariPool-1 - Shutdown initiated...
+[2023-08-04T15:46:03Z] [com.zaxxer.hikari.HikariDataSource] [SpringApplicationShutdownHook] [352] [INFO ] HikariPool-1 - Shutdown completed.
+[2023-08-04 T 15:46:08 Z] [org.hibernate.validator.internal.util.Version] [background-preinit] [21] [INFO ] HV000001: Hibernate Validator 8.0.0.Final
+[2023-08-04 T 15:46:08 Z] [org.springframework.boot.StartupInfoLogger] [restartedMain] [51] [INFO ] Starting RebillingApplication using Java 17.0.6 with PID 20424 (C:\Users\HP\IdeaProjects\RE-Billing\target\classes started by HP in C:\Users\HP\IdeaProjects\RE-Billing)
+[2023-08-04 T 15:46:08 Z] [org.springframework.boot.SpringApplication] [restartedMain] [634] [INFO ] No active profile set, falling back to 1 default profile: "default"
+[2023-08-04 T 15:46:08 Z] [org.springframework.boot.logging.DeferredLog] [restartedMain] [250] [INFO ] Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+[2023-08-04 T 15:46:08 Z] [org.springframework.boot.logging.DeferredLog] [restartedMain] [250] [INFO ] For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+[2023-08-04 T 15:46:10 Z] [org.springframework.data.repository.config.RepositoryConfigurationDelegate] [restartedMain] [138] [INFO ] Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+[2023-08-04 T 15:46:11 Z] [org.springframework.data.repository.config.RepositoryConfigurationDelegate] [restartedMain] [208] [INFO ] Finished Spring Data repository scanning in 230 ms. Found 14 JPA repository interfaces.
+[2023-08-04 T 15:46:12 Z] [org.springframework.boot.web.embedded.tomcat.TomcatWebServer] [restartedMain] [108] [INFO ] Tomcat initialized with port(s): 8081 (http)
+[2023-08-04 T 15:46:12 Z] [org.apache.juli.logging.DirectJDKLog] [restartedMain] [173] [INFO ] Initializing ProtocolHandler ["http-nio-8081"]
+[2023-08-04 T 15:46:12 Z] [org.apache.juli.logging.DirectJDKLog] [restartedMain] [173] [INFO ] Starting service [Tomcat]
+[2023-08-04 T 15:46:12 Z] [org.apache.juli.logging.DirectJDKLog] [restartedMain] [173] [INFO ] Starting Servlet engine: [Apache Tomcat/10.1.10]
+[2023-08-04 T 15:46:13 Z] [org.apache.juli.logging.DirectJDKLog] [restartedMain] [173] [INFO ] Initializing Spring embedded WebApplicationContext
+[2023-08-04 T 15:46:13 Z] [org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext] [restartedMain] [291] [INFO ] Root WebApplicationContext: initialization completed in 4024 ms
+[2023-08-04 T 15:46:13 Z] [org.hibernate.jpa.internal.util.LogHelper] [restartedMain] [31] [INFO ] HHH000204: Processing PersistenceUnitInfo [name: default]
+[2023-08-04 T 15:46:13 Z] [org.hibernate.Version] [restartedMain] [44] [INFO ] HHH000412: Hibernate ORM core version 6.2.5.Final
+[2023-08-04 T 15:46:13 Z] [org.hibernate.cfg.Environment] [restartedMain] [191] [INFO ] HHH000406: Using bytecode reflection optimizer
+[2023-08-04 T 15:46:13 Z] [org.hibernate.bytecode.internal.BytecodeProviderInitiator] [restartedMain] [53] [INFO ] HHH000021: Bytecode provider name : bytebuddy
+[2023-08-04 T 15:46:14 Z] [org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo] [restartedMain] [87] [INFO ] No LoadTimeWeaver setup: ignoring JPA class transformer
+[2023-08-04 T 15:46:14 Z] [com.zaxxer.hikari.HikariDataSource] [restartedMain] [110] [INFO ] HikariPool-1 - Starting...
+[2023-08-04 T 15:46:26 Z] [com.zaxxer.hikari.pool.HikariPool] [restartedMain] [565] [INFO ] HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@5c7d10bd
+[2023-08-04 T 15:46:26 Z] [com.zaxxer.hikari.HikariDataSource] [restartedMain] [123] [INFO ] HikariPool-1 - Start completed.
+[2023-08-04 T 15:46:27 Z] [org.hibernate.bytecode.internal.BytecodeProviderInitiator] [restartedMain] [53] [INFO ] HHH000021: Bytecode provider name : bytebuddy
+[2023-08-04 T 15:46:29 Z] [org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator] [restartedMain] [51] [INFO ] HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+[2023-08-04 T 15:46:30 Z] [org.springframework.orm.jpa.AbstractEntityManagerFactoryBean] [restartedMain] [437] [INFO ] Initialized JPA EntityManagerFactory for persistence unit 'default'
+[2023-08-04 T 15:46:31 Z] [org.springframework.data.jpa.repository.query.QueryEnhancerFactory] [restartedMain] [47] [INFO ] Hibernate is in classpath; If applicable, HQL parser will be used.
+[2023-08-04 T 15:46:32 Z] [org.springframework.boot.autoconfigure.orm.jpa.JpaBaseConfiguration$JpaWebConfiguration] [restartedMain] [231] [WARN ] spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+[2023-08-04 T 15:46:33 Z] [org.springframework.security.web.DefaultSecurityFilterChain] [restartedMain] [54] [INFO ] Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@3efbfcf4, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@51af1146, org.springframework.security.web.context.SecurityContextHolderFilter@1a82b3df, org.springframework.security.web.header.HeaderWriterFilter@3c144c06, org.springframework.security.web.authentication.logout.LogoutFilter@314e7343, in.co.mpwin.rebilling.jwt.security.JwtAuthenticationFilter@7ff6fe5f, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@40421d59, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@459706c5, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@5ab3933a, org.springframework.security.web.session.SessionManagementFilter@57aef692, org.springframework.security.web.access.ExceptionTranslationFilter@dd9f29f, org.springframework.security.web.access.intercept.AuthorizationFilter@5eb631bc]
+[2023-08-04 T 15:46:34 Z] [org.springframework.boot.devtools.autoconfigure.OptionalLiveReloadServer] [restartedMain] [62] [WARN ] Unable to start LiveReload server
+[2023-08-04 T 15:46:34 Z] [org.apache.juli.logging.DirectJDKLog] [restartedMain] [173] [INFO ] Starting ProtocolHandler ["http-nio-8081"]
+[2023-08-04 T 15:46:34 Z] [org.springframework.boot.web.embedded.tomcat.TomcatWebServer] [restartedMain] [220] [INFO ] Tomcat started on port(s): 8081 (http) with context path '/rebilling'
+[2023-08-04 T 15:46:34 Z] [org.springframework.boot.StartupInfoLogger] [restartedMain] [57] [INFO ] Started RebillingApplication in 26.148 seconds (process running for 27.506)
+[2023-08-04 T 15:46:34 Z] [in.co.mpwin.rebilling.RebillingApplication] [restartedMain] [23] [INFO ] Project REBilling have been started
+[2023-08-04 T 15:46:41 Z] [org.apache.juli.logging.DirectJDKLog] [http-nio-8081-exec-1] [173] [INFO ] Initializing Spring DispatcherServlet 'dispatcherServlet'
+[2023-08-04 T 15:46:41 Z] [org.springframework.web.servlet.FrameworkServlet] [http-nio-8081-exec-1] [532] [INFO ] Initializing Servlet 'dispatcherServlet'
+[2023-08-04 T 15:46:41 Z] [org.springframework.web.servlet.FrameworkServlet] [http-nio-8081-exec-1] [554] [INFO ] Completed initialization in 2 ms
+[2023-08-04 T 16:25:53 Z] [org.springframework.orm.jpa.AbstractEntityManagerFactoryBean] [SpringApplicationShutdownHook] [650] [INFO ] Closing JPA EntityManagerFactory for persistence unit 'default'
+[2023-08-04 T 16:25:53 Z] [com.zaxxer.hikari.HikariDataSource] [SpringApplicationShutdownHook] [350] [INFO ] HikariPool-1 - Shutdown initiated...
+[2023-08-04 T 16:25:53 Z] [com.zaxxer.hikari.HikariDataSource] [SpringApplicationShutdownHook] [352] [INFO ] HikariPool-1 - Shutdown completed.

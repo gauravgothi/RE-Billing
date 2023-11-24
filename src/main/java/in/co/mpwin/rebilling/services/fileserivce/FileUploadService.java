@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
@@ -55,7 +56,7 @@ public class FileUploadService {
                 String xmlData = new String(bytes, "UTF-8");
                 XmlParserBean xmlParserBean = xmlSaxParserService.parseXml(xmlData);
 
-                if(xmlParserBean.getDataEntityD1().getG1().equals(null))
+                if((xmlParserBean.getDataEntityD1() == null) || (xmlParserBean.getDataEntityD1().getG1().equals(null)))
                 {
                     resp = new ResponseEntity<>(new Message("XML file is not in correct format"), HttpStatus.BAD_REQUEST);
                 }
@@ -79,6 +80,10 @@ public class FileUploadService {
 
         }catch (ApiException apiException){
             throw apiException;
+        }catch(SAXParseException e) {
+            throw e;
+        }catch(SAXException e) {
+            throw e;
         }catch (IOException ioException)
         {   throw ioException;
         }
