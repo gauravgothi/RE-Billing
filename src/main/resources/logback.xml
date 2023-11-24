@@ -13,7 +13,7 @@
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <fileNamePattern>rebilling-%d{dd-MM-yyyy}.%i.log</fileNamePattern>
-            <maxFileSize>2MB</maxFileSize>
+            <maxFileSize>100MB</maxFileSize>
             <maxHistory>30</maxHistory>
 <!--            <totalSizeCap>10MB</totalSizeCap>-->
 <!--            <cleanHistoryOnStart>true</cleanHistoryOnStart>-->
@@ -31,7 +31,7 @@
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <fileNamePattern>rebilling_error-%d{dd-MM-yyyy}.%i.log</fileNamePattern>
-            <maxFileSize>2MB</maxFileSize>
+            <maxFileSize>200MB</maxFileSize>
             <maxHistory>30</maxHistory>
         </rollingPolicy>
     </appender>
