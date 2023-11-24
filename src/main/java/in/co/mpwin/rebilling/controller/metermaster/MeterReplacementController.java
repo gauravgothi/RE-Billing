@@ -11,6 +11,8 @@ import in.co.mpwin.rebilling.miscellanious.Message;
 import in.co.mpwin.rebilling.services.metermaster.MeterMasterService;
 import in.co.mpwin.rebilling.services.metermaster.MeterReplacementService;
 import in.co.mpwin.rebilling.services.readingservice.MeterReadingService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -27,6 +29,7 @@ import java.util.List;
 @RequestMapping("/meter/replace")
 @CrossOrigin(origins="*")
 public class MeterReplacementController {
+    private static final Logger logger = LoggerFactory.getLogger(MeterReplacementController.class);
     @Autowired
     MeterReplacementService meterReplacementService;
 
@@ -37,75 +40,97 @@ public class MeterReplacementController {
 
     @RequestMapping(method=RequestMethod.GET, value ="/last/read/meternumber/{meternumber}")
     public ResponseEntity<?> GetLastReadingByMeterNo(@PathVariable("meternumber") String meterNo) {
-
+        final String methodName = "GetLastReadingByMeterNo() : ";
+        logger.info(methodName + "called with parameters meterno={}",meterNo);
+        ResponseEntity resp = null;
         try {
-         MeterReadingBean res =   meterReadingService.GetLastReadingByMeterNoAndStatus(meterNo,"active");
-         if(res==null)
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message("Last reading not available for meter no. "+meterNo));
-         else
-             return ResponseEntity.status(HttpStatus.OK).body(res);
-            }catch (DataIntegrityViolationException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage().substring(0, e.getMessage().indexOf("Detail")));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message(e.getMessage().substring(0, e.getMessage().indexOf("Detail"))));
-        }
+             MeterReadingBean res =   meterReadingService.GetLastReadingByMeterNoAndStatus(meterNo,"active");
+             if(res==null)
+                resp = ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message("Last reading not available for meter no. "+meterNo));
+             else
+             resp =  ResponseEntity.status(HttpStatus.OK).body(res);
+
+            logger.info(methodName + "return with MeterReadingBean : {} ",res);
+            }catch(ApiException apiException) {
+            resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+            logger.error(methodName+" API Exception occurred: {}", apiException.getMessage());
+            } catch(DataIntegrityViolationException e) {
+                resp = new ResponseEntity<>(new Message("Data Integrity Violation Exception occurred : "+e.getMessage()),HttpStatus.BAD_REQUEST);
+                logger.error(methodName+"Data Integrity Violation Exception occurred: {}",e.getMessage());
+            } catch(Exception e) {
+                resp = new ResponseEntity<>(new Message("Exception occurred : " +e.getMessage()),HttpStatus.BAD_REQUEST);
+                logger.error(methodName+" Exception occurred: {}",e.getMessage(),e);
+            }
+        return resp;
 
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "")
     public ResponseEntity<?> meterReplacement(@RequestBody MeterReplacementRequest meterReplacementRequest) {
+        final String methodName = "meterReplacement() : ";
+        logger.info(methodName + "called with parameters meterReplacementRequest={}",meterReplacementRequest);
+        ResponseEntity resp = null;
         try {
-            Boolean resp = meterReplacementService.replaceMeterMethod(meterReplacementRequest.getOldMeterBean(), meterReplacementRequest.getNewMeterBean());
-            if(resp)
-            return ResponseEntity.status(HttpStatus.OK).body(new Message("Meter replacement done."));
+            Boolean result = meterReplacementService.replaceMeterMethod(meterReplacementRequest.getOldMeterBean(), meterReplacementRequest.getNewMeterBean());
+            if(result)
+            resp = ResponseEntity.status(HttpStatus.OK).body(new Message("Meter replacement done."));
             else
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message("Something went wrong."));
-        } catch (ApiException apiException) {
-            return ResponseEntity.status(apiException.getHttpStatus()).body(new Message(apiException.getMessage()));
-        } catch (DataIntegrityViolationException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message(e.getMessage().substring(0, e.getMessage().indexOf("Detail"))));
-        } catch (NullPointerException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message(e.getMessage().substring(0, e.getMessage().indexOf("Detail"))));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message(e.getMessage().substring(0, e.getMessage().indexOf("Detail"))));
-        }
+            resp = ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message("Something went wrong."));
+            logger.info(methodName + "return with result : {} ",result);
+
+            } catch(ApiException apiException) {
+                resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+                logger.error(methodName+" API Exception occurred: {}", apiException.getMessage());
+            } catch(DataIntegrityViolationException e) {
+                resp = new ResponseEntity<>(new Message("Data Integrity Violation Exception occurred : "+e.getMessage()),HttpStatus.BAD_REQUEST);
+                logger.error(methodName+"Data Integrity Violation Exception occurred: {}",e.getMessage());
+            } catch(Exception e) {
+                resp = new ResponseEntity<>(new Message("Exception occurred : " +e.getMessage()),HttpStatus.BAD_REQUEST);
+                logger.error(methodName+" Exception occurred: {}",e.getMessage(),e);
+            }
+        return resp;
     }
     @RequestMapping(method= RequestMethod.GET,value="/category/{category}/status/{status}/mapped/{mapped}")
     public ResponseEntity<MeterMasterBean> getMeterDetailsByCategory(@PathVariable("category") String category,
                                                                      @PathVariable("status") String status, @PathVariable("mapped") String mapped) {
+        final String methodName = "getMeterDetailsByCategory() : ";
+        logger.info(methodName + "called with parameters category={}, mapped={}, status={} ",category,mapped,status);
         ResponseEntity meterDtlResp = null;
         try {
-
-            List<MeterMasterBean> meterMasterBean = new ArrayList<>();
-            meterMasterBean = meterMasterService.getMeterDetailsByCategory(category,status,mapped);
-            if(!meterMasterBean.isEmpty())
-            {
-                meterDtlResp = new ResponseEntity<>(meterMasterBean, HttpStatus.OK);
-            }
-            else if(meterMasterBean.size()==0)
-            {
-                meterDtlResp=new ResponseEntity<>(new Message("Meter Details not present for meter category "+category),HttpStatus.BAD_REQUEST);
-            }
-            else
-            {
-                meterDtlResp=new ResponseEntity<>(new Message("something went wrong"),HttpStatus.BAD_REQUEST);
-            }
-        } catch (DataIntegrityViolationException d)
-        {
-            Throwable rootCause = d.getRootCause();
-            String msg=rootCause.getMessage().substring(0,rootCause.getMessage().indexOf("Detail:"));
-            meterDtlResp = new ResponseEntity<>(new Message(msg),HttpStatus.BAD_REQUEST);
-        } catch (Exception e)
-        {
-            meterDtlResp = new ResponseEntity<>(new Message("exception occurred : "+e.getMessage().substring(0, e.getMessage().indexOf("Detail"))),HttpStatus.BAD_REQUEST);
-
-        }
+                List<MeterMasterBean> meterMasterBean = new ArrayList<>();
+                meterMasterBean = meterMasterService.getMeterDetailsByCategory(category,status,mapped);
+                if(!meterMasterBean.isEmpty())
+                {
+                    meterDtlResp = new ResponseEntity<>(meterMasterBean, HttpStatus.OK);
+                }
+                else if(meterMasterBean.size()==0)
+                {
+                    meterDtlResp=new ResponseEntity<>(new Message("Meter Details not present for meter category "+category),HttpStatus.BAD_REQUEST);
+                }
+                else
+                {
+                    meterDtlResp=new ResponseEntity<>(new Message("something went wrong"),HttpStatus.BAD_REQUEST);
+                }
+                logger.info(methodName + "return with MeterMasterBean list of size : {} ",meterMasterBean.size());
+                } catch(ApiException apiException) {
+                meterDtlResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+                    logger.error(methodName+" API Exception occurred: {}", apiException.getMessage());
+                } catch(DataIntegrityViolationException e) {
+                meterDtlResp = new ResponseEntity<>(new Message("Data Integrity Violation Exception occurred : "+e.getMessage()),HttpStatus.BAD_REQUEST);
+                    logger.error(methodName+"Data Integrity Violation Exception occurred: {}",e.getMessage());
+                } catch(Exception e) {
+                meterDtlResp = new ResponseEntity<>(new Message("Exception occurred : " +e.getMessage()),HttpStatus.BAD_REQUEST);
+                    logger.error(methodName+" Exception occurred: {}",e.getMessage(),e);
+                }
         return meterDtlResp;
     }
 
     @RequestMapping(method= RequestMethod.GET,value="/list/status/{status}")
     public ResponseEntity<?> getMeterReplacementList(@PathVariable String status)
-    {   ResponseEntity resp= null;
+    {
+        final String methodName = "getMeterReplacementList() : ";
+        logger.info(methodName + "called with parameters status={} ",status);
+        ResponseEntity resp= null;
         try {
         List<MeterReplacementBean> replacementList = meterReplacementService.getMeterReplacementList(status);
             if(!replacementList.isEmpty())
@@ -121,96 +146,115 @@ public class MeterReplacementController {
                 resp=new ResponseEntity<>(new Message("something went wrong"),HttpStatus.BAD_REQUEST);
             }
 
-            }  catch (DataIntegrityViolationException d)
-        {
-            Throwable rootCause = d.getRootCause();
-            String msg=rootCause.getMessage().substring(0,rootCause.getMessage().indexOf("Detail:"));
-            resp = new ResponseEntity<>(new Message(msg),HttpStatus.BAD_REQUEST);
-        } catch (Exception e)
-        {
-            resp= new ResponseEntity<>(new Message("exception occurred: "+e.getMessage().substring(0, e.getMessage().indexOf("Detail"))),HttpStatus.BAD_REQUEST);
+            logger.info(methodName + "return with MeterReplacementBean list of size : {} ",replacementList.size());
 
-        }
+            } catch(ApiException apiException) {
+                resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+                logger.error(methodName+" API Exception occurred: {}", apiException.getMessage());
+            } catch(DataIntegrityViolationException e) {
+                resp = new ResponseEntity<>(new Message("Data Integrity Violation Exception occurred : "+e.getMessage()),HttpStatus.BAD_REQUEST);
+                logger.error(methodName+"Data Integrity Violation Exception occurred: {}",e.getMessage());
+            } catch(Exception e) {
+                resp = new ResponseEntity<>(new Message("Exception occurred : " +e.getMessage()),HttpStatus.BAD_REQUEST);
+                logger.error(methodName+" Exception occurred: {}",e.getMessage(),e);
+            }
         return  resp;
     }
 
     @RequestMapping(method=RequestMethod.GET, value ="/meterNo/{meterNo}/month/{month}")
     public ResponseEntity<?> GetLastReadingByMeterNoAndMonth(@PathVariable("meterNo") String meterNo, @PathVariable("month") String month) {
-
+        final String methodName = "GetLastReadingByMeterNoAndMonth() : ";
+        logger.info(methodName + "called with parameters meterNo={}, month={} ",meterNo,month);
+        ResponseEntity resp= null;
         try {    //
             Date readingPunchDate = new DateMethods().getCurrentAndPreviousDate(month).get(1);
-            MeterReadingBean res = meterReadingService.GetLastReadingByMeterNoAndStatus(meterNo,readingPunchDate);
-            if(res==null)
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message("You can not punch reading. because SR reading is not available for meter no. "+meterNo));
+            MeterReadingBean lastReadBean = meterReadingService.GetLastReadingByMeterNoAndStatus(meterNo,readingPunchDate);
+            if(lastReadBean==null)
+                resp = ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message("You can not punch reading. because SR reading is not available for meter no. "+meterNo));
             else
-                return ResponseEntity.status(HttpStatus.OK).body(res);
-        } catch (ApiException apiException) {
-            return ResponseEntity.status(apiException.getHttpStatus()).body(new Message(apiException.getMessage()));
-        } catch (DataIntegrityViolationException ex) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message(ex.getMessage()));
-        }catch (ParseException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message("Date parse error : Month should be in MMM-yyyy."));
-        }
-        catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message(ex.getMessage().substring(0, ex.getMessage().indexOf("Detail"))));
-        }
+                resp = ResponseEntity.status(HttpStatus.OK).body(lastReadBean);
+            logger.info(methodName + "return with  last meter reading bean : {} ",lastReadBean);
+            } catch(ApiException apiException) {
+                resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+                logger.error(methodName+" API Exception occurred: {}", apiException.getMessage());
+            } catch(DataIntegrityViolationException e) {
+                resp = new ResponseEntity<>(new Message("Data Integrity Violation Exception occurred : "+e.getMessage()),HttpStatus.BAD_REQUEST);
+                logger.error(methodName+"Data Integrity Violation Exception occurred: {}",e.getMessage());
+            } catch(Exception e) {
+                resp = new ResponseEntity<>(new Message("Exception occurred : " +e.getMessage()),HttpStatus.BAD_REQUEST);
+                logger.error(methodName+" Exception occurred: {}",e.getMessage(),e);
+            }
+        return resp;
 
     }
     @RequestMapping(method=RequestMethod.GET, value ="/old/meters")
     public ResponseEntity<?> GetInstalledMeterListForReplacement()  {
-        ResponseEntity response =null;
+        final String methodName = "GetInstalledMeterListForReplacement() : ";
+        logger.info(methodName + "called with parameters empty ");
+
+        ResponseEntity resp =null;
 
         try {
             List<MeterMasterBean> mappedMeterList = meterReplacementService.getMappedMeterBeansByMfpMappingBean();
-            response = new ResponseEntity<>(mappedMeterList, HttpStatus.OK);
-        } catch (ApiException apiException) {
-            response = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
-        } catch (DataIntegrityViolationException d) {
-
-            response = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            e.printStackTrace();
-            response = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+            resp = new ResponseEntity<>(mappedMeterList, HttpStatus.OK);
+            logger.info(methodName + "return with MeterMasterBean list of size : {} ",mappedMeterList.size());
+        } catch(ApiException apiException) {
+            resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+            logger.error(methodName+" API Exception occurred: {}", apiException.getMessage());
+        } catch(DataIntegrityViolationException e) {
+            resp = new ResponseEntity<>(new Message("Data Integrity Violation Exception occurred : "+e.getMessage()),HttpStatus.BAD_REQUEST);
+            logger.error(methodName+"Data Integrity Violation Exception occurred: {}",e.getMessage());
+        } catch(Exception e) {
+            resp = new ResponseEntity<>(new Message("Exception occurred : " +e.getMessage()),HttpStatus.BAD_REQUEST);
+            logger.error(methodName+" Exception occurred: {}",e.getMessage(),e);
         }
-        return response;
+        return resp;
 
     }
 
     @RequestMapping(method=RequestMethod.GET, value ="/new/meters")
     public ResponseEntity<?> GetNewMeterListForReplacement()  {
-        ResponseEntity response =null;
+        final String methodName = "GetNewMeterListForReplacement() : ";
+        logger.info(methodName + "called with parameters empty ");
+        ResponseEntity resp =null;
         try {
             List<MeterMasterBean> unMappedMeterList = meterMasterService.getMeterByStatusAndIsMappped("active","no");
-            response = new ResponseEntity<>(unMappedMeterList, HttpStatus.OK);
-        } catch (ApiException apiException) {
-            response = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
-        } catch (DataIntegrityViolationException d) {
-            response = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            e.printStackTrace();
-            response = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
-        }
-        return response;
+            resp = new ResponseEntity<>(unMappedMeterList, HttpStatus.OK);
+            logger.info(methodName + "return with un mapped MeterMasterBean list of size : {} ",unMappedMeterList.size());
+            } catch(ApiException apiException) {
+                resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+                logger.error(methodName+" API Exception occurred: {}", apiException.getMessage());
+            } catch(DataIntegrityViolationException e) {
+                resp = new ResponseEntity<>(new Message("Data Integrity Violation Exception occurred : "+e.getMessage()),HttpStatus.BAD_REQUEST);
+                logger.error(methodName+"Data Integrity Violation Exception occurred: {}",e.getMessage());
+            } catch(Exception e) {
+                resp = new ResponseEntity<>(new Message("Exception occurred : " +e.getMessage()),HttpStatus.BAD_REQUEST);
+                logger.error(methodName+" Exception occurred: {}",e.getMessage(),e);
+            }
+        return resp;
     }
 
 
     @RequestMapping(method=RequestMethod.GET, value ="/old/meternumber/{meternumber}")
     public ResponseEntity<?> GetOldMeterForReplacement(@PathVariable("meternumber") String meternumber)  {
-        ResponseEntity response =null;
-
+        final String methodName = "GetOldMeterForReplacement() : ";
+        logger.info(methodName + "called with parameters meter number ={} ",meternumber);
+        ResponseEntity resp =null;
         try {
             MeterMasterBean mappedMeter = meterReplacementService.getMappedMeterBeanForReplacement(meternumber);
-            response = new ResponseEntity<>(mappedMeter, HttpStatus.OK);
-        } catch (ApiException apiException) {
-            response = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
-        } catch (DataIntegrityViolationException d) {
-
-            response = new ResponseEntity<>(new Message("Data Integrity Violation : "+d.getMessage().substring(0, d.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            e.printStackTrace();
-            response = new ResponseEntity<>(new Message("Exception: " + e.getMessage().substring(0, e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
-        }
-        return response;
+            resp = new ResponseEntity<>(mappedMeter, HttpStatus.OK);
+            logger.info(methodName + "return with mapped MeterMasterBean : {} ",mappedMeter);
+            } catch(ApiException apiException) {
+                resp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+                logger.error(methodName+" API Exception occurred: {}", apiException.getMessage());
+            } catch(DataIntegrityViolationException e) {
+                resp = new ResponseEntity<>(new Message("Data Integrity Violation Exception occurred : "+e.getMessage()),HttpStatus.BAD_REQUEST);
+                logger.error(methodName+"Data Integrity Violation Exception occurred: {}",e.getMessage());
+            } catch(Exception e) {
+                resp = new ResponseEntity<>(new Message("Exception occurred : " +e.getMessage()),HttpStatus.BAD_REQUEST);
+                logger.error(methodName+" Exception occurred: {}",e.getMessage(),e);
+            }
+        return resp;
 
     }
 
