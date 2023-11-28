@@ -347,11 +347,10 @@ public class MeterFeederPlantMappingService {
             List<MeterFeederPlantMappingBean> mappingBean = new ArrayList<>();
             try {
                 mappingBean = meterFeederPlantMappingRepo.findAllByDeveloperIdAndStatusOrderByEndDateAsc(di, status);
-                if (mappingBean.size() == 0)
-                    throw new ApiException(HttpStatus.BAD_REQUEST,"Developer "+ di+" is not mapped to any plant..");
+                //if (mappingBean.size() == 0)
+                    //throw new ApiException(HttpStatus.BAD_REQUEST,"Developer "+ di+" is not mapped to any plant..");
             } catch (ApiException apiException) {
-                apiException.printStackTrace();
-                System.out.println(apiException.getMessage());
+                throw apiException;
             } catch(DataIntegrityViolationException d) {
                 throw d;
             } catch (NullPointerException ex)

@@ -6,4 +6,6 @@ public class ConstantField {
     public static final String wheelingChargePercent = "5.91";
 
     public static String uploadedPathOfReading="C:/REBilling/Upload/File/";//change drive f/d/c
+
+    public static String logFilePath = "C:/REBilling/rebilling_log/rebilling";
 }

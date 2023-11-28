@@ -13,6 +13,7 @@ import org.modelmapper.internal.bytebuddy.utility.RandomString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,12 +37,24 @@ public class UserController {
     @PostMapping("/create")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> createUser(@Valid @RequestBody UserDto userDto)    {
-
+        ResponseEntity resp;
         final String methodName = "createUser() : ";
         logger.info(methodName + "called. with request body of userDto: {}",userDto);
-        UserResponse userResponse = userService.createUser(userDto);
-        logger.info(methodName + "return. success response with message : {}",userResponse.getMessage());
-        return new ResponseEntity<>(userResponse.getMessage(),userResponse.getStatusCode());
+        try {
+            UserResponse userResponse = userService.createUser(userDto);
+            resp = new ResponseEntity<>(userResponse.getMessage(),userResponse.getStatusCode());
+            logger.info(methodName + "return. success response with message : {}",userResponse.getMessage());
+        }catch (ApiException ex) {
+            resp = new ResponseEntity<>(new Message(ex.getMessage()),HttpStatus.BAD_REQUEST);
+            logger.error(methodName+" API Exception occurred: {}", ex.getMessage());
+        } catch (DataIntegrityViolationException e) {
+            resp = new ResponseEntity<>(new Message(e.getMessage()),HttpStatus.BAD_REQUEST);
+            logger.error(methodName+"DataIntegrityViolationException Exception occurred: {}", e.getMessage());
+        } catch (Exception exception){
+            resp = new ResponseEntity<>(new Message("Something went wrong"),HttpStatus.BAD_REQUEST);
+            logger.error(methodName+" Exception occurred: {}", exception.getMessage(),exception);
+        }
+        return resp;
 
     }
 
@@ -61,9 +74,21 @@ public class UserController {
 
         final String methodName = "updateUserDetails() : ";
         logger.info(methodName + "called. with parameters updated userDto : {}",userDto);
-        UserResponse userResponse = userService.updateUserDetails(userDto);
-        logger.info(methodName + "return. success response with message : {}",userResponse.getMessage());
-        return new ResponseEntity<>(userResponse.getMessage(),userResponse.getStatusCode());
+        try {
+            UserResponse userResponse = userService.updateUserDetails(userDto);
+            logger.info(methodName + "return. success response with message : {}",userResponse.getMessage());
+            return new ResponseEntity<>(userResponse.getMessage(),userResponse.getStatusCode());
+        }catch (ApiException ex) {
+            logger.error(methodName+" API Exception occurred: {}", ex.getMessage());
+            return new ResponseEntity<>(new Message(ex.getMessage()),HttpStatus.BAD_REQUEST);
+        } catch (DataIntegrityViolationException e) {
+            logger.error(methodName+"DataIntegrityViolationException Exception occurred: {}", e.getMessage());
+            return new ResponseEntity<>(new Message(e.getMessage()),HttpStatus.BAD_REQUEST);
+        } catch (Exception exception){
+            logger.error(methodName+" Exception occurred: {}", exception.getMessage(),exception);
+            return new ResponseEntity<>(new Message("Something went wrong"),HttpStatus.BAD_REQUEST);
+        }
+
     }
 
     @PutMapping("/active-inactive")
@@ -72,9 +97,21 @@ public class UserController {
 
         final String methodName = "deactivateUser() : ";
         logger.info(methodName + "called. with parameters updated userDto : {}",userDto);
-        UserResponse userResponse = userService.updateUserDetails(userDto);
-        logger.info(methodName + "return. success response with message : {}",userResponse.getMessage());
-        return new ResponseEntity<>(userResponse.getMessage(),userResponse.getStatusCode());
+        try {
+            UserResponse userResponse = userService.updateUserDetails(userDto);
+            logger.info(methodName + "return. success response with message : {}",userResponse.getMessage());
+            return new ResponseEntity<>(userResponse.getMessage(),userResponse.getStatusCode());
+        }catch (ApiException ex) {
+            logger.error(methodName+" API Exception occurred: {}", ex.getMessage());
+            return new ResponseEntity<>(new Message(ex.getMessage()),HttpStatus.BAD_REQUEST);
+        } catch (DataIntegrityViolationException e) {
+            logger.error(methodName+"DataIntegrityViolationException Exception occurred: {}", e.getMessage());
+            return new ResponseEntity<>(new Message(e.getMessage()),HttpStatus.BAD_REQUEST);
+        } catch (Exception exception){
+            logger.error(methodName+" Exception occurred: {}", exception.getMessage(),exception);
+            return new ResponseEntity<>(new Message("Something went wrong"),HttpStatus.BAD_REQUEST);
+        }
+
     }
 
     @GetMapping("/forgot_password")
@@ -162,6 +199,29 @@ public class UserController {
                 logger.error(methodName+" Exception occurred: {}", e.getMessage(),e);
                 return new ResponseEntity<>(new Message("Something went wrong"),HttpStatus.BAD_REQUEST);
             }
+    }
+
+    @PostMapping("/change_password")
+    public ResponseEntity<?> changePassword(@RequestParam("old-password") String oldPassword,@RequestParam("new-password")String newPassword) {
+        final String methodName = "changePassword() : ";
+        logger.info(methodName + "called. with parameters old-password and new-password");
+        ResponseEntity passChangeResp;
+        try {
+                userService.changePassword(oldPassword,newPassword);
+
+                logger.info(methodName + "return. success of password change");
+                passChangeResp = new ResponseEntity<>(new Message("You have successfully changed your password."), HttpStatus.OK);
+            }catch (ApiException ex) {
+            passChangeResp = new ResponseEntity<>(new Message(ex.getMessage()),HttpStatus.BAD_REQUEST);
+            logger.error(methodName+" API Exception occurred: {}", ex.getMessage());
+            } catch (DataIntegrityViolationException e) {
+            passChangeResp = new ResponseEntity<>(new Message("database integrity error"),HttpStatus.BAD_REQUEST);
+            logger.error(methodName+"DataIntegrityViolationException Exception occurred: {}", e.getMessage());
+            } catch (Exception exception){
+            passChangeResp = new ResponseEntity<>(new Message("common exception occurred"),HttpStatus.BAD_REQUEST);
+            logger.error(methodName+" Exception occurred: {}", exception.getMessage(),exception);
+        }
+        return passChangeResp;
     }
 
 }

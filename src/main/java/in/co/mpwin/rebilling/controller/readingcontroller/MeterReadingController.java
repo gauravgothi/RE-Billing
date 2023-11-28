@@ -4,6 +4,7 @@ import in.co.mpwin.rebilling.beans.readingbean.MeterReadingBean;
 import in.co.mpwin.rebilling.dto.BifurcateConsumptionDto;
 import in.co.mpwin.rebilling.dto.MeterConsumptionDto;
 import in.co.mpwin.rebilling.jwt.exception.ApiException;
+import in.co.mpwin.rebilling.miscellanious.DateMethods;
 import in.co.mpwin.rebilling.miscellanious.Message;
 import in.co.mpwin.rebilling.services.readingservice.MeterReadingPunchingService;
 import in.co.mpwin.rebilling.services.readingservice.MeterReadingService;
@@ -17,10 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/meter_reading")
@@ -197,6 +195,7 @@ public class MeterReadingController {
         try {
             //set the meter reading source to web punched if service not called through fileuploadservice
             meterReadingBean.setReadSource("web");
+
             MeterReadingBean bean = meterReadingService.createMeterReading(meterReadingBean);
 
             if (bean!=null)
@@ -294,7 +293,7 @@ public class MeterReadingController {
             meterConsumptionResp = new ResponseEntity<>(meterConsumptionDto,HttpStatus.OK);
             logger.info(methodName + "return. meterConsumptionDto : {}",meterConsumptionDto.toString());
         }catch (ApiException apiException){
-            meterConsumptionResp = new ResponseEntity<>(new Message(apiException.getMessage()),apiException.getHttpStatus());
+            meterConsumptionResp = new ResponseEntity<>(new Message("Arithmetic Exception" + apiException.getMessage()),apiException.getHttpStatus());
             logger.error(methodName+" API Exception occurred: {}", apiException.getMessage());
         }
         catch (Exception e){

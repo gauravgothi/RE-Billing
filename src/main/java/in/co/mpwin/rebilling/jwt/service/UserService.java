@@ -25,4 +25,5 @@ public interface UserService {
 
     void sendEmailForResetPassword(String recipientEmail, String link) throws MessagingException, UnsupportedEncodingException;
 
+    void changePassword(String oldPassword, String newPassword);
 }

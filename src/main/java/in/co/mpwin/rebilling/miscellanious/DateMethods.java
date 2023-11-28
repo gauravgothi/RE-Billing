@@ -69,4 +69,15 @@ public class DateMethods {
         return monthList;
     }
 
+    public Date zeroTime(Date date,int hourOfDay,int minute,int second,int ms )
+    {
+        GregorianCalendar gc = new GregorianCalendar();
+        gc.setTime( date );
+        gc.set( Calendar.HOUR_OF_DAY, hourOfDay );
+        gc.set( Calendar.MINUTE, minute );
+        gc.set( Calendar.SECOND, second );
+        gc.set( Calendar.MILLISECOND, ms );
+        return gc.getTime();
+    }
+
 }

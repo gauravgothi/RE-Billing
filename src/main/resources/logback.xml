@@ -12,8 +12,8 @@
             <pattern>[%d{yyyy-MM-dd 'T' HH:mm:ss 'Z'}] [%C] [%t] [%L] [%-5p] %m%n</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>rebilling-%d{dd-MM-yyyy}.%i.log</fileNamePattern>
-            <maxFileSize>100MB</maxFileSize>
+            <fileNamePattern>C:/REBilling/rebilling_log/rebilling-%d{dd-MM-yyyy}.%i.log</fileNamePattern>
+            <maxFileSize>500MB</maxFileSize>
             <maxHistory>30</maxHistory>
 <!--            <totalSizeCap>10MB</totalSizeCap>-->
 <!--            <cleanHistoryOnStart>true</cleanHistoryOnStart>-->
@@ -30,7 +30,7 @@
             <pattern>[%d{yyyy-MM-dd 'T' HH:mm:ss 'Z'}] [%C] [%t] [%L] [%-5p] %m%n</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>rebilling_error-%d{dd-MM-yyyy}.%i.log</fileNamePattern>
+            <fileNamePattern>C:/REBilling/rebilling_log/rebilling_error-%d{dd-MM-yyyy}.%i.log</fileNamePattern>
             <maxFileSize>200MB</maxFileSize>
             <maxHistory>30</maxHistory>
         </rollingPolicy>
