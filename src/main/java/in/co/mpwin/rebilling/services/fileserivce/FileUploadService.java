@@ -5,7 +5,10 @@ import in.co.mpwin.rebilling.beans.readingbean.MeterReadingBean;
 import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.Message;
 import in.co.mpwin.rebilling.miscellanious.UploadPath;
+import in.co.mpwin.rebilling.services.feedermaster.FeederMasterService;
 import in.co.mpwin.rebilling.services.readingservice.MeterReadingService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -28,6 +31,8 @@ import java.text.ParseException;
 @Service
 public class FileUploadService {
 
+    private static final Logger logger = LoggerFactory.getLogger(FileUploadService.class);
+
     @Autowired
     XmlSaxParserService xmlSaxParserService;
     @Autowired
@@ -37,9 +42,9 @@ public class FileUploadService {
     @Autowired
     XmlParserBean xmlParserBean;*/
     public ResponseEntity<?> handleFileUpload(MultipartFile xmlFile ) throws IOException, ParserConfigurationException, ParseException, SAXException {
-
+        final String methodName = "handleFileUpload() : ";
+        logger.info(methodName + "called with parameters xmlFile={}",xmlFile.getOriginalFilename());
         ResponseEntity resp = null;
-
         String fileName = xmlFile.getOriginalFilename();
         String uploadedPath = UploadPath.createUploadedPath();
         try {
@@ -78,22 +83,28 @@ public class FileUploadService {
             }
 
 
-        }catch (ApiException apiException){
-            throw apiException;
-        }catch(SAXParseException e) {
-            throw e;
-        }catch(SAXException e) {
-            throw e;
-        }catch (IOException ioException)
-        {   throw ioException;
-        }
-        catch (DataIntegrityViolationException d)
-        {
-            throw d;
-        }
-        catch (Exception e) {
-            throw e;
-        }
-        return resp;
+            }catch (ApiException apiException){
+                logger.error(methodName+" throw apiException");
+                throw apiException;
+            }catch (DataIntegrityViolationException d){
+                logger.error(methodName+" throw DataIntegrityViolationException");
+                throw d;
+            }
+            catch(SAXParseException e) {
+                logger.error(methodName+" throw SAXParseException");
+                throw e;
+            }catch(SAXException e) {
+                logger.error(methodName+" throw SAXException");
+                throw e;
+            }catch (IOException ioException)
+            {   logger.error(methodName+" throw IOException");
+                throw ioException;
+            }
+            catch (Exception e) {
+                logger.error(methodName+" throw Exception");
+                throw e;
+            }
+            logger.info(methodName + " return with message : {}",resp.getBody());
+            return resp;
     }
 }
