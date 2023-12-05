@@ -6,6 +6,9 @@ import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.DateMethods;
 import in.co.mpwin.rebilling.repositories.readingrepo.MeterReadingRepo;
 import in.co.mpwin.rebilling.services.metermaster.MeterMasterService;
+import in.co.mpwin.rebilling.services.thirdparty.ThirdPartyService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -19,7 +22,7 @@ import java.util.Date;
 @Service
 public class MeterReadingPunchingService {
 
-
+    private static final Logger logger = LoggerFactory.getLogger(MeterReadingPunchingService.class);
     @Autowired
     MeterReadingService meterReadingService;
 
@@ -31,6 +34,8 @@ public class MeterReadingPunchingService {
 
     public MeterReadingBean saveMeterReading(MeterReadingBean meterReadingBean)
     {
+        final String methodName = "saveMeterReading() : ";
+        logger.info(methodName + "called with parameters meterReadingBean={}",meterReadingBean);
 
         try {
             MeterReadingBean previousReadingBean = meterReadingRepo.findJustBefore(meterReadingBean.getMeterNo(),meterReadingBean.getReadingDate());
@@ -44,26 +49,30 @@ public class MeterReadingPunchingService {
             //if previous reading is not exist for meter than take SR reading(specially new plant installation)
             if(previousReadingBean==null)
                 meterReadingBean.setReadingType("SR");
-
-            return meterReadingService.createMeterReading(meterReadingBean);
-            }catch(ApiException apiException)
-            {
-            throw apiException;
-            }
-            catch (DataIntegrityViolationException ex)
-            {
-            throw ex;
+            MeterReadingBean savedReadBean = meterReadingService.createMeterReading(meterReadingBean);
+            logger.info(methodName + " return with saved MeterReadingBean : {}",savedReadBean);
+            return savedReadBean;
             }catch(NullPointerException ex)
             {
+            logger.error(methodName+" throw NullPointerException");
             throw ex;
-            }catch(Exception ex)
-            {
-            throw ex;
+            }catch (ApiException apiException){
+            logger.error(methodName+" throw apiException");
+            throw apiException;
+            }catch (DataIntegrityViolationException d){
+                logger.error(methodName+" throw DataIntegrityViolationException");
+                throw d;
+            } catch (Exception e) {
+                logger.error(methodName+" throw Exception");
+                throw e;
             }
+
     }
 
     void validateMeterReading(MeterReadingBean meterReadingBean,MeterReadingBean previousReadingBean)
     {
+        final String methodName = " validateMeterReading : ";
+        logger.info(methodName + "called with parameters meterReadingBean={}, previousReadingBean={}",meterReadingBean,previousReadingBean);
        if(meterReadingBean==null)
            throw new ApiException(HttpStatus.BAD_REQUEST,"meter reading bean is null");
        //validation on assessment, adjustment and MD value to avoid negative value
@@ -104,10 +113,12 @@ public class MeterReadingPunchingService {
             throw new ApiException(HttpStatus.BAD_REQUEST,"import Tod3 is less than previous reading");
         if(meterReadingBean.getITod4().compareTo(previousReadingBean.getITod4())<0)
             throw new ApiException(HttpStatus.BAD_REQUEST,"import Tod4 is less than previous reading");*/
-
+        logger.info(methodName + " return with void.");
     }
 
     public MeterReadingBean saveSRMeterReading(MeterReadingBean meterReadingBean) {
+        final String methodName = " saveSRMeterReading : ";
+        logger.info(methodName + "called with parameters meterReadingBean={}",meterReadingBean);
         try {
             MeterMasterBean mmb = null;
             mmb = meterMasterService.getMeterDetailsByMeterNo(meterReadingBean.getMeterNo(), "active");
@@ -125,20 +136,28 @@ public class MeterReadingPunchingService {
             meterReadingBean.setMf(BigDecimal.valueOf(0));
             MeterReadingBean lastReading = meterReadingRepo.findLastReadByMeterNoAndStatus(meterReadingBean.getMeterNo(),"active");
 
-            if(lastReading!=null && (lastReading.getReadingType().compareTo("FR")==0)&&(meterReadingBean.getReadingDate().compareTo(lastReading.getReadingDate())>=0))
+            if(lastReading!=null && (lastReading.getReadingType().compareTo("FR")==0)&&(meterReadingBean.getReadingDate().compareTo(lastReading.getReadingDate())>=0)) {
+                logger.info(methodName + " return.");
                 return meterReadingService.createMeterReading(meterReadingBean);
-            else if(lastReading==null)
+            }
+            else if(lastReading==null) {
+                logger.info(methodName + " return.");
                 return meterReadingService.createMeterReading(meterReadingBean);
+            }
             else
             throw new ApiException(HttpStatus.BAD_REQUEST, "Last reading of this meter is not FR or last reading date is greater than SR reading date.");
-           } catch (ParseException e) {
+             } catch (ParseException e) {
+              logger.error(methodName+" throw ParseException ");
               throw new RuntimeException(e);
-           }catch (ApiException apiException) {
+            }catch (ApiException apiException){
+                logger.error(methodName+" throw apiException");
                 throw apiException;
-           } catch (DataIntegrityViolationException d) {
+            }catch (DataIntegrityViolationException d){
+                logger.error(methodName+" throw DataIntegrityViolationException");
                 throw d;
-           } catch (Exception e) {
+            } catch (Exception e) {
+                logger.error(methodName+" throw Exception");
                 throw e;
-           }
+            }
     }
 }

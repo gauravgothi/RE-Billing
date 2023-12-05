@@ -7,6 +7,8 @@ import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.repositories.readingrepo.FivePercentRepo;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -19,13 +21,15 @@ import java.util.stream.Collectors;
 
 @Service
 public class FivePercentService {
-
+    private static final Logger logger = LoggerFactory.getLogger(FivePercentService.class);
     @Autowired(required = false) private in.co.mpwin.rebilling.beans.readingbean.FivePercentBean fivePercentBean;
     @Autowired private FivePercentRepo fivePercentRepo;
 
     @Autowired private MeterReadingService meterReadingService;
 
     public void insertFivePercentReport(List<FivePercentBean> fivePercentBeans){
+        final String methodName = "insertFivePercentReport() : ";
+        logger.info(methodName + " called with parameters fivePercentBeans={}",fivePercentBeans);
         try {   //First convert the FivePercentBean to FivePercentBean using modelmapper
                 for(FivePercentBean bean : fivePercentBeans) {
                     if (bean.getResult().equals("pass") || bean.getResult().equals("fail")) {

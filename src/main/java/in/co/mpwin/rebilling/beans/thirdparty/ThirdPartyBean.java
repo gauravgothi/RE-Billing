@@ -114,6 +114,8 @@ public class ThirdPartyBean implements BeanInterface  {
 
     @Column(name="adjustment_unit_percent") //@Digits(integer = 5,fraction = 2)
     private BigDecimal adjustmentUnitPercent;
+    @Column(name="third_party_commission_date")@NotNull @JsonFormat(pattern = "yyyy-MM-dd",timezone = "IST")
+    private Date thirdPartyCommissionDate ;
 
     @Column(name="userid")
     private String userid;

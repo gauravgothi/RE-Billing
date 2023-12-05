@@ -24,6 +24,8 @@ import in.co.mpwin.rebilling.services.investormaster.InvestorMasterService;
 import in.co.mpwin.rebilling.services.machinemaster.MachineMasterService;
 import in.co.mpwin.rebilling.services.metermaster.MeterMasterService;
 import in.co.mpwin.rebilling.services.plantmaster.PlantMasterService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -48,7 +50,7 @@ import static com.fasterxml.jackson.databind.type.LogicalType.Map;
 
 @Service
 public class MeterFeederPlantMappingService {
-
+    private static final Logger logger = LoggerFactory.getLogger(MeterFeederPlantMappingService.class);
     @Autowired private MeterFeederPlantMappingRepo meterFeederPlantMappingRepo;
     @Autowired private DeveloperMasterService developerMasterService;
     @Autowired private PlantMasterService plantMasterService;
@@ -62,7 +64,8 @@ public class MeterFeederPlantMappingService {
 
     @Transactional
     public MeterFeederPlantMappingBean createNewMapping(MeterFeederPlantMappingBean meterFeederPlantMappingBean) throws ParseException {
-
+        final String methodName = "getInvestorCodeListByPpwaNo() : ";
+        logger.info(methodName + "called with parameters meterFeederPlantMappingBean={}",meterFeederPlantMappingBean);
         try {
 
 //            meterFeederPlantMappingBean.setMainMeterNo(new ValidatorService().removeSpaceFromString(meterFeederPlantMappingBean.getMainMeterNo()));
@@ -117,185 +120,234 @@ public class MeterFeederPlantMappingService {
                        meterMasterRepo.save(checkMeterBean);
                    }
                }
+            logger.info(methodName + " return with mfp mapping : {}",mfpm);
             return mfpm;
-        }catch(ApiException apiException) {
-            throw apiException;
-        } catch(DataIntegrityViolationException d) {
-            throw d;
-        } catch (NullPointerException ex)
-        {
-            throw ex;
-        } catch(Exception e) {
-            throw e;
-        }
+            }catch (ApiException apiException){
+                logger.error(methodName+" throw apiException");
+                throw apiException;
+            }catch (DataIntegrityViolationException d){
+                logger.error(methodName+" throw DataIntegrityViolationException");
+                throw d;
+            }catch (Exception e) {
+                logger.error(methodName+" throw Exception");
+                throw e;
+            }
     }
 
     public List<MeterFeederPlantMappingBean> getAllMapping(String status) {
-
+        final String methodName = "getAllMapping() : ";
+        logger.info(methodName + "called with parameters status={}",status);
         List<MeterFeederPlantMappingBean> allMappingList;
         try {
             allMappingList=(List<MeterFeederPlantMappingBean>) meterFeederPlantMappingRepo.findByStatus(status);
-        }  catch(ApiException apiException) {
+        } catch (ApiException apiException){
+            logger.error(methodName+" throw apiException");
             throw apiException;
-        } catch(DataIntegrityViolationException d) {
+        }catch (DataIntegrityViolationException d){
+            logger.error(methodName+" throw DataIntegrityViolationException");
             throw d;
-        } catch (NullPointerException ex)
-        {
+        } catch (NullPointerException ex){
+            logger.error(methodName+" throw NullPointerException");
             throw ex;
-        } catch(Exception e) {
+        }
+        catch (Exception e) {
+            logger.error(methodName+" throw Exception");
             throw e;
         }
+        logger.info(methodName + " return with MeterFeederPlantMappingBean of size : {}",allMappingList.size());
         return allMappingList;
     }
 
     public MeterFeederPlantMappingBean getMappingById(Long id, String status) {
-
+        final String methodName = "getMappingById() : ";
+        logger.info(methodName + "called with parameters id={}, status={}",id,status);
         MeterFeederPlantMappingBean mappingBean =null ;
         try{
             mappingBean= meterFeederPlantMappingRepo.findByIdAndStatus(id,status);
-        } catch(ApiException apiException) {
+        } catch (ApiException apiException){
+            logger.error(methodName+" throw apiException");
             throw apiException;
-        } catch(DataIntegrityViolationException d) {
+        }catch (DataIntegrityViolationException d){
+            logger.error(methodName+" throw DataIntegrityViolationException");
             throw d;
-        } catch (NullPointerException ex)
-        {
+        } catch (NullPointerException ex){
+            logger.error(methodName+" throw NullPointerException");
             throw ex;
-        } catch(Exception e) {
+        } catch (Exception e) {
+            logger.error(methodName+" throw Exception");
             throw e;
         }
+        logger.info(methodName + " return with MeterFeederPlantMappingBean : {}",mappingBean);
         return mappingBean;
     }
 
-    public List<MeterFeederPlantMappingBean> getMappingByMainMeterNo(String mmn, String status) {
-        List<MeterFeederPlantMappingBean> mappingBean = new ArrayList<>();
+    public List<MeterFeederPlantMappingBean> getMappingByMainMeterNo(String mainMeterNo, String status) {
+        final String methodName = "getMappingByMainMeterNo() : ";
+        logger.info(methodName + "called with parameters main_meter_no={}, status={}",mainMeterNo,status);
+        List<MeterFeederPlantMappingBean> mappingBeans;
         try{
-            mappingBean= meterFeederPlantMappingRepo.findByMainMeterNoAndStatus(mmn,status);
-        } catch(DataIntegrityViolationException d) {
-            throw d;
-        } catch(ApiException apiException) {
+            mappingBeans= meterFeederPlantMappingRepo.findByMainMeterNoAndStatus(mainMeterNo,status);
+        }catch(ApiException apiException){
+            logger.error(methodName+" throw apiException");
             throw apiException;
-        } catch (NullPointerException ex)
-        {
+        }catch(DataIntegrityViolationException d){
+            logger.error(methodName+" throw DataIntegrityViolationException");
+            throw d;
+        }catch(NullPointerException ex){
+            logger.error(methodName+" throw NullPointerException");
             throw ex;
-        } catch(Exception e) {
+        }catch(Exception e) {
+            logger.error(methodName+" throw Exception");
             throw e;
         }
-        return mappingBean;
-
+        logger.info(methodName + " return with MeterFeederPlantMappingBean list of size: {}",mappingBeans.size());
+        return mappingBeans;
     }
 
-    public List<MeterFeederPlantMappingBean> getMappingByCheckMeterNo(String mmn, String status) {
-        List<MeterFeederPlantMappingBean> mappingBean = new ArrayList<>();
+    public List<MeterFeederPlantMappingBean> getMappingByCheckMeterNo(String checkMeterNo, String status) {
+        final String methodName = "getMappingByCheckMeterNo() : ";
+        logger.info(methodName + "called with parameters checkMeterNo={}, status={}",checkMeterNo,status);
+        List<MeterFeederPlantMappingBean> mappingBeans ;
         try{
-            mappingBean= meterFeederPlantMappingRepo.findByCheckMeterNoAndStatus(mmn,status);
-        }catch(ApiException apiException) {
+            mappingBeans= meterFeederPlantMappingRepo.findByCheckMeterNoAndStatus(checkMeterNo,status);
+        }catch(ApiException apiException){
+            logger.error(methodName+" throw apiException");
             throw apiException;
-        } catch(DataIntegrityViolationException d) {
+        }catch(DataIntegrityViolationException d){
+            logger.error(methodName+" throw DataIntegrityViolationException");
             throw d;
-        } catch (NullPointerException ex)
-        {
+        }catch(NullPointerException ex){
+            logger.error(methodName+" throw NullPointerException");
             throw ex;
-        } catch(Exception e) {
+        }catch(Exception e) {
+            logger.error(methodName+" throw Exception");
             throw e;
         }
-        return mappingBean;
-
+        logger.info(methodName + " return with MeterFeederPlantMappingBean list of size: {}",mappingBeans.size());
+        return mappingBeans;
     }
 
-    public List<MeterFeederPlantMappingBean> getMappingByStandbyMeterNo(String smn, String status) {
-
-        List<MeterFeederPlantMappingBean> mappingBean = new ArrayList<>();
+    public List<MeterFeederPlantMappingBean> getMappingByStandbyMeterNo(String standbyMeterNo, String status) {
+        final String methodName = "getMappingByStandbyMeterNo() : ";
+        logger.info(methodName + "called with parameters standbyMeterNo={}, status={}",standbyMeterNo,status);
+        List<MeterFeederPlantMappingBean> mappingBeans = new ArrayList<>();
         try{
-            mappingBean= meterFeederPlantMappingRepo.findByStandbyMeterNoAndStatus(smn,status);
-        }catch(ApiException apiException) {
+            mappingBeans= meterFeederPlantMappingRepo.findByStandbyMeterNoAndStatus(standbyMeterNo,status);
+        }catch(ApiException apiException){
+            logger.error(methodName+" throw apiException");
             throw apiException;
-        } catch(DataIntegrityViolationException d) {
+        }catch(DataIntegrityViolationException d){
+            logger.error(methodName+" throw DataIntegrityViolationException");
             throw d;
-        } catch (NullPointerException ex)
-        {
+        }catch(NullPointerException ex){
+            logger.error(methodName+" throw NullPointerException");
             throw ex;
-        } catch(Exception e) {
+        }catch(Exception e) {
+            logger.error(methodName+" throw Exception");
             throw e;
         }
-        return mappingBean;
+        logger.info(methodName + " return with MeterFeederPlantMappingBean list of size: {}",mappingBeans.size());
+        return mappingBeans;
     }
 
     public MeterFeederPlantMappingBean getByAnyMeterNoAndStatus(String meterNo, String status) {
-
+        final String methodName = "getByAnyMeterNoAndStatus() : ";
+        logger.info(methodName + "called with parameters meterNo={}, status={}",meterNo,status);
         MeterFeederPlantMappingBean mappingBean=null;
         try{
             mappingBean= meterFeederPlantMappingRepo.findByAnyMeterNoAndStatus(meterNo,status);
             if (mappingBean==null)
                 throw new ApiException(HttpStatus.BAD_REQUEST,"No active mapping of Plant found for given meter..");
-        }catch(ApiException apiException) {
+        }catch(ApiException apiException){
+            logger.error(methodName+" throw apiException");
             throw apiException;
-        } catch(DataIntegrityViolationException d) {
+        }catch(DataIntegrityViolationException d){
+            logger.error(methodName+" throw DataIntegrityViolationException");
             throw d;
-        } catch (NullPointerException ex)
-        {
+        }catch(NullPointerException ex){
+            logger.error(methodName+" throw NullPointerException");
             throw ex;
-        } catch(Exception e) {
+        }catch(Exception e) {
+            logger.error(methodName+" throw Exception");
             throw e;
         }
+        logger.info(methodName + " return with MeterFeederPlantMappingBean:{}",mappingBean);
         return mappingBean;
     }
 
-    public List<MeterFeederPlantMappingBean> getMappingByDeveloperId(String di, String status) {
-        List<MeterFeederPlantMappingBean> mappingBean = new ArrayList<>();
+    public List<MeterFeederPlantMappingBean> getMappingByDeveloperId(String developerId, String status) {
+        final String methodName = "getMappingByDeveloperId() : ";
+        logger.info(methodName + "called with parameters developerId={}, status={}",developerId,status);
+        List<MeterFeederPlantMappingBean> mappingBeans ;
         try{
-            mappingBean= meterFeederPlantMappingRepo.findByDeveloperIdAndStatus(di,status);
-        }catch(ApiException apiException) {
+            mappingBeans= meterFeederPlantMappingRepo.findByDeveloperIdAndStatus(developerId,status);
+        }catch(ApiException apiException){
+            logger.error(methodName+" throw apiException");
             throw apiException;
-        } catch(DataIntegrityViolationException d) {
+        }catch(DataIntegrityViolationException d){
+            logger.error(methodName+" throw DataIntegrityViolationException");
             throw d;
-        } catch (NullPointerException ex)
-        {
+        }catch(NullPointerException ex){
+            logger.error(methodName+" throw NullPointerException");
             throw ex;
-        } catch(Exception e) {
+        }catch(Exception e) {
+            logger.error(methodName+" throw Exception");
             throw e;
         }
-        return mappingBean;
+        logger.info(methodName + " return with MeterFeederPlantMappingBean list of size: {}",mappingBeans.size());
+        return mappingBeans;
 
     }
 
     public List<MeterFeederPlantMappingBean> getMappingByFeederCode(String fcode, String status) {
-
-        List<MeterFeederPlantMappingBean> mappingBean = new ArrayList<>();
+        final String methodName = "getMappingByFeederCode() : ";
+        logger.info(methodName + "called with parameters fcode={}, status={}",fcode,status);
+        List<MeterFeederPlantMappingBean> mappingBeans ;
         try{
-            mappingBean= meterFeederPlantMappingRepo.findByFeederCodeAndStatus(fcode,status);
-        }catch(ApiException apiException) {
+            mappingBeans= meterFeederPlantMappingRepo.findByFeederCodeAndStatus(fcode,status);
+        }catch(ApiException apiException){
+            logger.error(methodName+" throw apiException");
             throw apiException;
-        } catch(DataIntegrityViolationException d) {
+        }catch(DataIntegrityViolationException d){
+            logger.error(methodName+" throw DataIntegrityViolationException");
             throw d;
-        } catch (NullPointerException ex)
-        {
+        }catch(NullPointerException ex){
+            logger.error(methodName+" throw NullPointerException");
             throw ex;
-        } catch(Exception e) {
+        }catch(Exception e) {
+            logger.error(methodName+" throw Exception");
             throw e;
         }
-        return mappingBean;
+        logger.info(methodName + " return with MeterFeederPlantMappingBean list of size: {}",mappingBeans.size());
+        return mappingBeans;
     }
 
     public List<MeterFeederPlantMappingBean> getMappingByPlantCode(String plantCode, String status) {
-
-        List<MeterFeederPlantMappingBean> mappingBean = new ArrayList<>();
+        final String methodName = "getMappingByPlantCode() : ";
+        logger.info(methodName + "called with parameters plantCode={}, status={}",plantCode,status);
+        List<MeterFeederPlantMappingBean> mappingBeans;
         try{
-            mappingBean= meterFeederPlantMappingRepo.findByPlantCodeAndStatus(plantCode,status);
-        }catch(ApiException apiException) {
+            mappingBeans= meterFeederPlantMappingRepo.findByPlantCodeAndStatus(plantCode,status);
+        }catch(ApiException apiException){
+            logger.error(methodName+" throw apiException");
             throw apiException;
-        } catch(DataIntegrityViolationException d) {
+        }catch(DataIntegrityViolationException d){
+            logger.error(methodName+" throw DataIntegrityViolationException");
             throw d;
-        } catch (NullPointerException ex)
-        {
+        }catch(NullPointerException ex){
+            logger.error(methodName+" throw NullPointerException");
             throw ex;
-        } catch(Exception e) {
+        }catch(Exception e) {
+            logger.error(methodName+" throw Exception");
             throw e;
         }
-        return mappingBean;
+        logger.info(methodName + " return with MeterFeederPlantMappingBean list of size: {}",mappingBeans.size());
+        return mappingBeans;
     }
 
     public MeterFeederPlantMappingBean getLastMFPMappingByMeterNo(String meterNumber, String category, String status) {
-
+        final String methodName = "getLastMFPMappingByMeterNo() : ";
+        logger.info(methodName + "called with parameters meterNumber={},category={}, status={}",meterNumber,category,status);
         MeterFeederPlantMappingBean mfpMapping = null;
         switch(category)
         {
@@ -312,60 +364,82 @@ public class MeterFeederPlantMappingService {
             default:
                 break;
         }
+     logger.info(methodName + " return with MeterFeederPlantMappingBean: {}",mfpMapping);
      return mfpMapping;
     }
 
     public void updateMFPMapping(Long id, Date replaceDate) {
+        final String methodName = "updateMFPMapping() : ";
+        logger.info(methodName + "called with parameters id={},replaceDate={}",id,replaceDate);
         meterFeederPlantMappingRepo.updateMappingEndDatebyId(id,replaceDate);
+        logger.info(methodName + " return ");
+
     }
 
     public MeterFeederPlantMappingBean updateMFPMapping(MeterFeederPlantMappingBean newMFPMapping) {
-           return meterFeederPlantMappingRepo.save(newMFPMapping);
+        final String methodName = "updateMFPMapping() : ";
+        logger.info(methodName + "called with parameters newMFPMapping={}",newMFPMapping);
+        return meterFeederPlantMappingRepo.save(newMFPMapping);
     }
 
 
         public List<String> getDistinctPlantCodeByDeveloperId (String developerId, String status){
-            List<String> plants = new ArrayList<>();
+            final String methodName = "getDistinctPlantCodeByDeveloperId() : ";
+            logger.info(methodName + "called with parameters developerId={}, status={}",developerId,status);
+            List<String> plants;
             try {
                 plants = meterFeederPlantMappingRepo.findDistinctPlantCodeByDeveloperIdAndStatus(developerId, status);
                 if(plants.size()==0)
                     throw new ApiException(HttpStatus.BAD_REQUEST,"Developer "+developerId +" not have any plant mapping");
-            } catch(ApiException apiException) {
+            } catch(ApiException apiException){
+                logger.error(methodName+" throw apiException");
                 throw apiException;
-            } catch(DataIntegrityViolationException d) {
+            }catch(DataIntegrityViolationException d){
+                logger.error(methodName+" throw DataIntegrityViolationException");
                 throw d;
-            } catch (NullPointerException ex)
-            {
+            }catch(NullPointerException ex){
+                logger.error(methodName+" throw NullPointerException");
                 throw ex;
-            } catch(Exception e) {
+            }catch(Exception e) {
+                logger.error(methodName+" throw Exception");
                 throw e;
             }
+            logger.info(methodName + " return with plant code list of size: {}",plants.size());
             return plants;
         }
 
-        public List<MeterFeederPlantMappingBean> getMappingByDeveloperIdOrderByEndDate (String di, String status){
-            List<MeterFeederPlantMappingBean> mappingBean = new ArrayList<>();
+        public List<MeterFeederPlantMappingBean> getMappingByDeveloperIdOrderByEndDate (String developerId, String status){
+            final String methodName = "getMappingByDeveloperIdOrderByEndDate() : ";
+            logger.info(methodName + "called with parameters developerId={}, status={}",developerId,status);
+            List<MeterFeederPlantMappingBean> mappingBeans;
             try {
-                mappingBean = meterFeederPlantMappingRepo.findAllByDeveloperIdAndStatusOrderByEndDateAsc(di, status);
-                //if (mappingBean.size() == 0)
-                    //throw new ApiException(HttpStatus.BAD_REQUEST,"Developer "+ di+" is not mapped to any plant..");
-            } catch (ApiException apiException) {
+
+                mappingBeans = meterFeederPlantMappingRepo.findAllByDeveloperIdAndStatusOrderByEndDateAsc(developerId, status);
+                if (mappingBeans.size() == 0)
+                    throw new ApiException(HttpStatus.BAD_REQUEST,"Developer "+developerId+" is not mapped to any plant..");
+            }  catch(ApiException apiException){
+                logger.error(methodName+" throw apiException");
                 throw apiException;
-            } catch(DataIntegrityViolationException d) {
+            }catch(DataIntegrityViolationException d){
+                logger.error(methodName+" throw DataIntegrityViolationException");
                 throw d;
-            } catch (NullPointerException ex)
-            {
+            }catch(NullPointerException ex){
+                logger.error(methodName+" throw NullPointerException");
                 throw ex;
-            } catch(Exception e) {
+            }catch(Exception e) {
+                logger.error(methodName+" throw Exception");
                 throw e;
             }
-            return mappingBean;
+            logger.info(methodName + " return with MeterFeederPlantMappingBean list of size: {}",mappingBeans.size());
+            return mappingBeans;
 
 
         }
 
 
         public CompleteMappingDto getCompleteMappingByMeterNumber(String meterNumber) {
+            final String methodName = "getCompleteMappingByMeterNumber() : ";
+            logger.info(methodName + "called with parameters meterNumber={}",meterNumber);
             CompleteMappingDto completeMappingDto = new CompleteMappingDto();
             try {
                     MeterFeederPlantMappingBean mfp1= meterFeederPlantMappingRepo
@@ -423,39 +497,54 @@ public class MeterFeederPlantMappingService {
                 //completeMappingDto.setMachinesOfInvestors(machinesOfInvestors);//set machines on key of investor
 
                 completeMappingDto.setInvestorMachineMappingDtoList(investorMachineMappingDtoList);//set investors and machines of investor in dto list
+                logger.info(methodName + " return with completeMappingDto : {}",completeMappingDto);
                 return completeMappingDto;
 
-            }catch(ApiException apiException) {
+            }catch(ApiException apiException){
+                logger.error(methodName+" throw apiException");
                 throw apiException;
-            } catch(DataIntegrityViolationException d) {
+            }catch(DataIntegrityViolationException d){
+                logger.error(methodName+" throw DataIntegrityViolationException");
                 throw d;
-            } catch (NullPointerException ex)
-            {
+            }catch(NullPointerException ex){
+                logger.error(methodName+" throw NullPointerException");
                 throw ex;
-            } catch(Exception e) {
+            }catch(Exception e) {
+                logger.error(methodName+" throw Exception");
                 throw e;
             }
+
     }
 
     public List<String> findMappedMeterListByEndDate(LocalDate endDate) {
+        final String methodName = "findMappedMeterListByEndDate() : ";
+        logger.info(methodName + "called with parameters endDate={}",endDate);
         List<MeterFeederPlantMappingBean> mfpMapping =  meterFeederPlantMappingRepo.findMappedMeterListByEndDate(endDate,"active");
-        if(mfpMapping.isEmpty())
+        if(mfpMapping.isEmpty()) {
+            logger.info(methodName + " return with null ");
             return null;
+        }
         List<String> meterList =new ArrayList<>();
         for(MeterFeederPlantMappingBean row : mfpMapping)
         {
             meterList.add(row.getMainMeterNo());
             meterList.add(row.getCheckMeterNo());
         }
+        logger.info(methodName + " return with MeterFeederPlantMappingBean list of size={}",meterList);
         return meterList;
     }
 
 
     public MeterFeederPlantMappingBean getMfpMappingByDeveloperAndPlantAndEndDate(String developerID, String plantCode, LocalDate endDate) {
-
+        final String methodName = "getMfpMappingByDeveloperAndPlantAndEndDate() : ";
+        logger.info(methodName + "called with parameters developerID={}, plantCode={}, endDate={}",developerID,plantCode,endDate);
         MeterFeederPlantMappingBean mfpBean = meterFeederPlantMappingRepo.findByDeveloperIdAndPlantIdAndEndDateAndStatus(developerID,plantCode,endDate,"active");
-        if(mfpBean==null)
-            throw new ApiException(HttpStatus.BAD_REQUEST,"mfp mapping not found for developer id "+developerID+" and plant code "+plantCode);
+        if(mfpBean==null) {
+            String msg = "mfp mapping not found for developer id " + developerID + " and plant code " + plantCode;
+            logger.info(methodName + " return with message : {}",msg);
+            throw new ApiException(HttpStatus.BAD_REQUEST, "mfp mapping not found for developer id " + developerID + " and plant code " + plantCode);
+        }
+        logger.info(methodName + " return with MeterFeederPlantMappingBean={}",mfpBean);
         return mfpBean;
     }
 }

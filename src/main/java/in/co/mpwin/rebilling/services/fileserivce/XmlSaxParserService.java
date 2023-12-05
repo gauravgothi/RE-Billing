@@ -3,6 +3,9 @@ package in.co.mpwin.rebilling.services.fileserivce;
 import in.co.mpwin.rebilling.beans.readingbean.MeterReadingBean;
 import in.co.mpwin.rebilling.beans.xmlfilebean.*;
 import in.co.mpwin.rebilling.miscellanious.DateMethods;
+import in.co.mpwin.rebilling.services.feedermaster.FeederMasterService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -24,7 +27,10 @@ import java.util.stream.Collectors;
 @Service
 public class XmlSaxParserService {
 
+    private static final Logger logger = LoggerFactory.getLogger(XmlSaxParserService.class);
     public XmlParserBean parseXml(String xmlData) throws ParserConfigurationException, SAXException, IOException {
+        final String methodName = "parseXml() : ";
+        logger.info(methodName + "called with parameters xmlData={}",xmlData);
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SAXParser saxParser = factory.newSAXParser();
 
@@ -264,19 +270,26 @@ public class XmlSaxParserService {
         try{
                 saxParser.parse(inputStream, handler);
             }catch(SAXParseException e) {
+            logger.error(methodName+" throw SAXParseException");
                 throw e;
             }catch(SAXException e) {
+            logger.error(methodName+" throw SAXException");
                 throw e;
             }catch(IOException e) {
+            logger.error(methodName+" throw IOException");
                 throw e;
             } catch(Exception e) {
+            logger.error(methodName+" throw Exception");
                 throw e;
             }
 
+        logger.info(methodName + " return with XmlParserBean parsedData");
         return parsedData;
     }
 
         public MeterReadingBean convertXmlParserBeanToMeterReadingBean (XmlParserBean xmlParserBean) throws ParseException {
+            final String methodName = "convertXmlParserBeanToMeterReadingBean() : ";
+            logger.info(methodName + "called with parameters xmlParserBean={}", xmlParserBean);
             MeterReadingBean meterReadingBean = new MeterReadingBean();
             try {
                 meterReadingBean.setMeterNo(xmlParserBean.getDataEntityD1().getG1());//1
@@ -372,9 +385,10 @@ public class XmlSaxParserService {
                 meterReadingBean.setStatus("active");//38
                 meterReadingBean.setRemark("NA");//39
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error(methodName+" throw Exception");
                 throw e;
             }
+            logger.info(methodName + " return with meterReadingBean : {}", meterReadingBean);
             return meterReadingBean;
         }
 }
