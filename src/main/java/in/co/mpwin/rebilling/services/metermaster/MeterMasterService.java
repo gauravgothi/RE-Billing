@@ -9,6 +9,8 @@ import in.co.mpwin.rebilling.miscellanious.TokenInfo;
 import in.co.mpwin.rebilling.repositories.metermaster.MeterMasterRepo;
 import in.co.mpwin.rebilling.services.developermaster.DeveloperMasterService;
 import in.co.mpwin.rebilling.services.mapping.MeterFeederPlantMappingService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -25,6 +27,7 @@ import java.util.stream.Stream;
 
 @Service
 public class MeterMasterService {
+    private static final Logger logger = LoggerFactory.getLogger(MeterMasterService.class);
     @Autowired private MeterMasterDao  meterMasterDao;
 
     @Autowired private MeterFeederPlantMappingService mfpService;
@@ -33,26 +36,42 @@ public class MeterMasterService {
     @Autowired private MeterMasterRepo meterMasterRepo;
 
     public MeterMasterBean getMeterDetailsByMeterNo(String meterno, String status) {
+        final String methodName = "getMeterDetailsByMeterNo() : ";
+        logger.info(methodName + "called with parameters meterno={}, status={}",meterno,status);
         MeterMasterBean meterMasterBean = new MeterMasterBean();
         try {
             meterMasterBean = meterMasterDao.getMeterDetailsByMeterNo(meterno,status);
+        }catch (ApiException apiException){
+            logger.error(methodName+" throw apiException");
+            throw apiException;
+        }catch (DataIntegrityViolationException d){
+            logger.error(methodName+" throw DataIntegrityViolationException");
+            throw d;
+        } catch (Exception e) {
+            logger.error(methodName+" throw Exception");
+            throw e;
         }
-        catch (Exception e) {
-            System.out.print(e);
-            e.printStackTrace();
-        }
+        logger.info(methodName + " return with  MeterMasterBean : {}", meterMasterBean);
         return meterMasterBean;
     }
 
     public ArrayList<MeterMasterBean> getAllMeterByStatus(String status) {
+        final String methodName = "getAllMeterByStatus() : ";
+        logger.info(methodName + "called with parameters status={}",status);
         ArrayList<MeterMasterBean> meterList = new ArrayList<MeterMasterBean>();
         try {
             meterList = meterMasterDao.getAllMeterByStatus(status);
+        }catch (ApiException apiException){
+            logger.error(methodName+" throw apiException");
+            throw apiException;
+        }catch (DataIntegrityViolationException d){
+            logger.error(methodName+" throw DataIntegrityViolationException");
+            throw d;
+        } catch (Exception e) {
+            logger.error(methodName+" throw Exception");
+            throw e;
         }
-        catch (Exception e) {
-            System.out.print(e);
-            e.printStackTrace();
-        }
+        logger.info(methodName + " return with  MeterMasterBean list of size : {}", meterList.size());
         return meterList;
     }
 
@@ -112,38 +131,72 @@ public class MeterMasterService {
 
 
     public MeterMasterBean createMeterMaster(MeterMasterBean meterMasterBean) {
+        final String methodName = "createMeterMaster() : ";
+        logger.info(methodName + "called with parameters meterMasterBean={}",meterMasterBean);
         //int result = -1;
         MeterMasterBean mmb = new MeterMasterBean();
         try {
                 mmb = meterMasterDao.createMeterMaster(meterMasterBean);
         }catch (ApiException apiException){
+            logger.error(methodName+" throw apiException");
             throw apiException;
         }catch (DataIntegrityViolationException d){
+            logger.error(methodName+" throw DataIntegrityViolationException");
             throw d;
-        }catch (Exception e){
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error(methodName+" throw Exception");
             throw e;
         }
+        logger.info(methodName + " return with  MeterMasterBean : {}", mmb);
         return mmb;
     }
 
     public  MeterMasterBean updateMeterStatusAndMappingByMeterNo(String meterNumber, String status, String isMapped) {
-       MeterMasterBean meterBean = meterMasterRepo.findByMeterNumberAndStatus(meterNumber,status);
-       meterBean.setIsMapped(isMapped);
-       meterBean.setUpdatedBy(new TokenInfo().getCurrentUsername());
-       meterBean.setUpdatedOn(new DateMethods().getServerTime());
-       return meterMasterRepo.save(meterBean);
+        final String methodName = "updateMeterStatusAndMappingByMeterNo() : ";
+        logger.info(methodName + "called with parameters meterNumber={}, status={}, isMapped={} ",meterNumber,status,isMapped);
+       try {
+           MeterMasterBean meterBean = meterMasterRepo.findByMeterNumberAndStatus(meterNumber, status);
+           meterBean.setIsMapped(isMapped);
+           meterBean.setUpdatedBy(new TokenInfo().getCurrentUsername());
+           meterBean.setUpdatedOn(new DateMethods().getServerTime());
+           MeterMasterBean updatedMeterBean = meterMasterRepo.save(meterBean);
+           logger.info(methodName + " return with  Updated MeterMasterBean : {}", updatedMeterBean);
+           return updatedMeterBean;
+       }catch (ApiException apiException){
+           logger.error(methodName+" throw apiException");
+           throw apiException;
+       }catch (DataIntegrityViolationException d){
+           logger.error(methodName+" throw DataIntegrityViolationException");
+           throw d;
+       } catch (Exception e) {
+           logger.error(methodName+" throw Exception");
+           throw e;
+       }
+
     }
 
     public List<MeterMasterBean> getMeterDetailsByCategory(String category, String status, String isMapped) {
+        final String methodName = "getMeterDetailsByCategory() : ";
+        logger.info(methodName + "called with parameters category={}, status={}, isMapped={} ",category,status,isMapped);
         try {
-            return meterMasterRepo.findByCategoryAndStatusAndIsMapped(category, status, isMapped);
-        } catch (DataIntegrityViolationException ex) {
-            throw ex;
+            List<MeterMasterBean> listMeters = meterMasterRepo.findByCategoryAndStatusAndIsMapped(category, status, isMapped);
+            logger.info(methodName + " return with  MeterMasterBean list of size : {}", listMeters.size());
+            return listMeters;
+        }catch (ApiException apiException){
+        logger.error(methodName+" throw apiException");
+        throw apiException;
+        }catch (DataIntegrityViolationException d){
+            logger.error(methodName+" throw DataIntegrityViolationException");
+            throw d;
+        } catch (Exception e) {
+            logger.error(methodName+" throw Exception");
+            throw e;
         }
     }
 
     public List<Map<String,String>> getMetersByUser(){
+        final String methodName = "getMetersByUser() : ";
+        logger.info(methodName + "called with parameters empty ");
         List<Map<String,String>> meterList = new ArrayList<>();
         try {
                 String roleName = new TokenInfo().getCurrentUserRole();
@@ -161,18 +214,24 @@ public class MeterMasterService {
                     m.put("meterNo",meter);
                     m.put("meterCategory",meterCategory);
                     meterList.add(m);
-            }
-                return meterList;
-        }catch (ApiException apiException){
-            throw apiException;
-        }catch (DataIntegrityViolationException d){
-            throw d;
-        }catch (Exception e){
-            throw e;
-        }
+                }
+                logger.info(methodName + " return with  MeterMasterBean list of size : {}", meterList.size());
+                    return meterList;
+                }catch (ApiException apiException){
+                    logger.error(methodName+" throw apiException");
+                    throw apiException;
+                }catch (DataIntegrityViolationException d){
+                    logger.error(methodName+" throw DataIntegrityViolationException");
+                    throw d;
+                } catch (Exception e) {
+                    logger.error(methodName+" throw Exception");
+                    throw e;
+                }
     }
 
     public List<Map<String,String>> getMeters(){
+        final String methodName = "getMeters() : ";
+        logger.info(methodName + "called with parameters empty ");
         List<Map<String,String>> meterList = new ArrayList<>();
         try {
 
@@ -183,33 +242,48 @@ public class MeterMasterService {
                 m.put("meterCategory", bean.getCategory());
                 meterList.add(m);
             }
+            logger.info(methodName + " return with  MeterMasterBean list of size : {}", meterList.size());
             return meterList;
-        }catch (ApiException apiException){
-            throw apiException;
-        }catch (DataIntegrityViolationException d){
-            throw d;
-        }catch (Exception e){
-            throw e;
-        }
+            }catch (ApiException apiException){
+                logger.error(methodName+" throw apiException");
+                throw apiException;
+            }catch (DataIntegrityViolationException d){
+                logger.error(methodName+" throw DataIntegrityViolationException");
+                throw d;
+            } catch (Exception e) {
+                logger.error(methodName+" throw Exception");
+                throw e;
+            }
     }
 
     public List<MeterMasterBean> getMeterByStatusAndIsMappped(String status, String mapped) {
+        final String methodName = "getMeterByStatusAndIsMappped() : ";
+        logger.info(methodName + "called with parameters status={}, mapped={} ",status,mapped);
         try{
-        List<MeterMasterBean> unmappedMeters =  meterMasterRepo.findByStatusAndIsMappedOrderById(status,mapped);
-        if (unmappedMeters.isEmpty())
-            throw new ApiException(HttpStatus.BAD_REQUEST,"new meter list are not found in meter master.");
-        return unmappedMeters;
-        } catch (ApiException apiException) {
-            throw apiException;
-        } catch (DataIntegrityViolationException d) {
-            throw d;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        List<MeterMasterBean> ismappedMeters =  meterMasterRepo.findByStatusAndIsMappedOrderById(status,mapped);
+            if (ismappedMeters.isEmpty())
+            {
+                throw new ApiException(HttpStatus.BAD_REQUEST, "new meter list are not found in meter master.");
+            }
+                logger.info(methodName + " return with  MeterMasterBean list of size : {}", ismappedMeters.size());
+                return ismappedMeters;
+            }catch (ApiException apiException){
+                logger.error(methodName+" throw apiException");
+                throw apiException;
+            }catch (DataIntegrityViolationException d){
+                logger.error(methodName+" throw DataIntegrityViolationException");
+                throw d;
+            } catch (Exception e) {
+                logger.error(methodName+" throw Exception");
+                throw e;
+            }
     }
 
     public List<MeterMasterBean> getUnmappedMeterBeans(String status, String isMapped, String category) {
-        return meterMasterRepo.findByStatusAndIsMappedAndCategory(status,isMapped,category);
-
+        final String methodName = "getUnmappedMeterBeans() : ";
+        logger.info(methodName + "called with parameters status={}, isMapped={}, category={} ",status,isMapped,category);
+        List<MeterMasterBean> unmappedMeters = meterMasterRepo.findByStatusAndIsMappedAndCategory(status,isMapped,category);
+        logger.info(methodName + " return with  MeterMasterBean list of size : {}", unmappedMeters.size());
+        return unmappedMeters;
     }
 }

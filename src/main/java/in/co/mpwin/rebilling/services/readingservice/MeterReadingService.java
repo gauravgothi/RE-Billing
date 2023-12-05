@@ -2,7 +2,6 @@ package in.co.mpwin.rebilling.services.readingservice;
 
 import in.co.mpwin.rebilling.beans.metermaster.MeterMasterBean;
 import in.co.mpwin.rebilling.beans.readingbean.MeterReadingBean;
-import in.co.mpwin.rebilling.dto.BifurcateConsumptionDto;
 import in.co.mpwin.rebilling.dto.MeterConsumptionDto;
 import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.AuditControlServices;
@@ -12,6 +11,8 @@ import in.co.mpwin.rebilling.repositories.metermaster.MeterMasterRepo;
 import in.co.mpwin.rebilling.repositories.readingrepo.MeterReadingRepo;
 import in.co.mpwin.rebilling.services.metermaster.MeterMasterService;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -19,23 +20,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.YearMonth;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class MeterReadingService {
+    private static final Logger logger = LoggerFactory.getLogger(MeterReadingService.class);
     @Autowired
     private MeterReadingRepo meterReadingRepo;
     @Autowired @Lazy
@@ -49,37 +41,73 @@ public class MeterReadingService {
     MeterMasterRepo meterMasterRepo;
 
     public List<MeterReadingBean> getAllReadingByStatus(String status) {
+        final String methodName = "getAllReadingByStatus() : ";
+        logger.info(methodName + " called with parameters status={}",status);
         List<MeterReadingBean> meterReadingBeanList = new ArrayList<>();
         try {
             meterReadingBeanList = meterReadingRepo.findAllByStatus(status);
-        } catch (Exception exception) {
-            exception.printStackTrace();
+        } catch(NullPointerException ex)
+        {
+            logger.error(methodName+" throw NullPointerException");
+            throw ex;
+        }catch (ApiException apiException){
+            logger.error(methodName+" throw apiException");
+            throw apiException;
+        }catch (DataIntegrityViolationException d){
+            logger.error(methodName+" throw DataIntegrityViolationException");
+            throw d;
+        } catch (Exception e) {
+            logger.error(methodName+" throw Exception");
+            throw e;
         }
+        logger.info(methodName + " return with MeterReadingBean list of size : {}",meterReadingBeanList.size());
         return meterReadingBeanList;
     }
 
     public List<MeterReadingBean> getAllReadingByMonthAndStatus(String month, String status) {
+        final String methodName = "getAllReadingByMonthAndStatus() : ";
+        logger.info(methodName + " called with parameters month={}, status={}",month,status);
         List<MeterReadingBean> meterReadingBeanList = new ArrayList<>();
         try {
             meterReadingBeanList = meterReadingRepo.findAllByReadingDateAndStatus(month, status);
-        } catch (Exception exception) {
-            exception.printStackTrace();
+        } catch (ApiException apiException){
+            logger.error(methodName+" throw apiException");
+            throw apiException;
+        }catch (DataIntegrityViolationException d){
+            logger.error(methodName+" throw DataIntegrityViolationException");
+            throw d;
+        } catch (Exception e) {
+            logger.error(methodName+" throw Exception");
+            throw e;
         }
+        logger.info(methodName + " return with MeterReadingBean list of size : {}",meterReadingBeanList.size());
         return meterReadingBeanList;
     }
 
     public List<MeterReadingBean> getAllReadingByMonthAndMeterNoAndStatus(String month, String meterNo, String status) {
+        final String methodName = "getAllReadingByMonthAndMeterNoAndStatus() : ";
+        logger.info(methodName + " called with parameters month={},meterNo={}, status={}",month,meterNo, status);
         List<MeterReadingBean> meterReadingBeanList = new ArrayList<>();
         try {
             meterReadingBeanList = meterReadingRepo.findAllByReadingDateMonthAndMeterNoAndStatus(month, meterNo, status);
-        } catch (Exception exception) {
-            exception.printStackTrace();
+        }catch(ApiException apiException){
+            logger.error(methodName+" throw apiException");
+            throw apiException;
+        }catch (DataIntegrityViolationException d){
+            logger.error(methodName+" throw DataIntegrityViolationException");
+            throw d;
+        } catch (Exception e) {
+            logger.error(methodName+" throw Exception");
+            throw e;
         }
+        logger.info(methodName + " return with MeterReadingBean list of size : {}",meterReadingBeanList.size());
         return meterReadingBeanList;
     }
 
     @Transactional
     public MeterReadingBean createMeterReading(MeterReadingBean passMRB) {
+        final String methodName = "createMeterReading() : ";
+        logger.info(methodName + " called with parameters passMRB={}",passMRB);
         MeterReadingBean meterReadingBean = new MeterReadingBean();
         try {
             //check for meter exist, active and mapped with respect to meter master
@@ -106,38 +134,63 @@ public class MeterReadingService {
 
                 meterReadingBean = meterReadingRepo.save(passMRB);
             }
-        } catch (ApiException apiException) {
+        } catch(ApiException apiException){
+            logger.error(methodName+" throw apiException");
             throw apiException;
-        } catch (DataIntegrityViolationException d) {
+        }catch (DataIntegrityViolationException d){
+            logger.error(methodName+" throw DataIntegrityViolationException");
             throw d;
         } catch (Exception e) {
+            logger.error(methodName+" throw Exception");
             throw e;
-            // Handle the exception or log the error as needed
         }
+        logger.info(methodName + " return with MeterReadingBean : {}",meterReadingBean);
         return meterReadingBean;
     }
 
     public List<MeterReadingBean> getAllReadingByCurrentStateAndStatus(String currentState, String status) {
+        final String methodName = "getAllReadingByCurrentStateAndStatus() : ";
+        logger.info(methodName + " called with parameters currentState={}, status={}",currentState,status);
         List<MeterReadingBean> meterReadingBeanList = new ArrayList<>();
         try {
             meterReadingBeanList = meterReadingRepo.findAllByCurrentStateAndStatus(currentState, status);
-        } catch (Exception exception) {
-            exception.printStackTrace();
+        } catch(ApiException apiException){
+            logger.error(methodName+" throw apiException");
+            throw apiException;
+        }catch (DataIntegrityViolationException d){
+            logger.error(methodName+" throw DataIntegrityViolationException");
+            throw d;
+        } catch (Exception e) {
+            logger.error(methodName+" throw Exception");
+            throw e;
         }
+        logger.info(methodName + " return with MeterReadingBean list of size : {}",meterReadingBeanList.size());
         return meterReadingBeanList;
     }
 
     public List<MeterReadingBean> getAllReadingByCurrentStateAndMeterNoAndStatus(String currentState, String meterNo, String status) {
+        final String methodName = "getAllReadingByCurrentStateAndMeterNoAndStatus() : ";
+        logger.info(methodName + " called with parameters currentState={},meterNo={}, status={}",currentState,meterNo,status);
         List<MeterReadingBean> meterReadingBeanList = new ArrayList<>();
         try {
             meterReadingBeanList = meterReadingRepo.findAllByCurrentStateAndMeterNoAndStatus(currentState, meterNo, status);
-        } catch (Exception exception) {
-            exception.printStackTrace();
+        }catch(ApiException apiException){
+            logger.error(methodName+" throw apiException");
+            throw apiException;
+        }catch (DataIntegrityViolationException d){
+            logger.error(methodName+" throw DataIntegrityViolationException");
+            throw d;
+        }catch (Exception e) {
+            logger.error(methodName+" throw Exception");
+            throw e;
         }
+        logger.info(methodName + " return with MeterReadingBean list of size : {}",meterReadingBeanList.size());
         return meterReadingBeanList;
     }
 
     public List<MeterReadingBean> updateCurrentState(String currentState,String updateState, String month, String meterNo, String status) {
+        final String methodName = "updateCurrentState() : ";
+        logger.info(methodName + " called with parameters currentState={},updateState={}, month={}, meterNo={}, status={}",currentState,updateState,month,meterNo,status);
         List<MeterReadingBean> meterReadingBeanList = new ArrayList<>();
         try {
                 String username = new TokenInfo().getCurrentUsername();
@@ -149,112 +202,179 @@ public class MeterReadingService {
                                                         read.setUpdatedOn(updateTime);
                                                      });
                 beansWithStateInitialRead = (List<MeterReadingBean>) meterReadingRepo.saveAll(beansWithStateInitialRead);
+            logger.info(methodName + " return with MeterReadingBean:{}",beansWithStateInitialRead);
                 return beansWithStateInitialRead;
-        } catch (Exception exception) {
-           throw  exception;
+        } catch(ApiException apiException){
+            logger.error(methodName+" throw apiException");
+            throw apiException;
+        }catch (DataIntegrityViolationException d){
+            logger.error(methodName+" throw DataIntegrityViolationException");
+            throw d;
+        }catch (Exception e) {
+            logger.error(methodName+" throw Exception");
+            throw e;
         }
+
     }
 
     public MeterReadingBean updateEndDate(Date endDate, String month, String meterNo, String status) {
+        final String methodName = "updateEndDate() : ";
+        logger.info(methodName + " called with parameters endDate={}, month={}, meterNo={}, status={}",endDate,month,meterNo,status);
         MeterReadingBean meterReadingBean = new MeterReadingBean();
         try {
             if (!meterReadingRepo.findAllByReadingDateMonthAndMeterNoAndStatus(month, meterNo, status).isEmpty())
                 meterReadingBean = meterReadingRepo.updateEndDate(endDate, month, meterNo, status);
-        } catch (Exception exception) {
-            exception.printStackTrace();
+        } catch(ApiException apiException){
+            logger.error(methodName+" throw apiException");
+            throw apiException;
+        }catch (DataIntegrityViolationException d){
+            logger.error(methodName+" throw DataIntegrityViolationException");
+            throw d;
+        }catch (Exception e) {
+            logger.error(methodName+" throw Exception");
+            throw e;
         }
+        logger.info(methodName + " return with MeterReadingBean:{}",meterReadingBean);
         return meterReadingBean;
     }
 
     public MeterReadingBean getReadingByMeterNoAndReadingDateAndStatus(String meterNo, Date readingDate, String status) {
+        final String methodName = "getReadingByMeterNoAndReadingDateAndStatus() : ";
+        logger.info(methodName + " called with parameters meterNo={}, readingDate={}, status={}",meterNo,readingDate,status);
         MeterReadingBean meterReadingBean = new MeterReadingBean();
         try {
             meterReadingBean = meterReadingRepo.findByMeterNoAndReadingDateAndStatus(meterNo, readingDate, status);
-        } catch (NullPointerException exception) {
-            return null;
-        } catch (Exception exception) {
-            return null;
+        }catch(ApiException apiException){
+            logger.error(methodName+" throw apiException");
+            throw apiException;
+        }catch (DataIntegrityViolationException d){
+            logger.error(methodName+" throw DataIntegrityViolationException");
+            throw d;
+        }catch (Exception e) {
+            logger.error(methodName+" throw Exception");
+            throw e;
         }
+        logger.info(methodName + " return with MeterReadingBean:{}",meterReadingBean);
         return meterReadingBean;
     }
 
     public MeterReadingBean GetLastReadingByMeterNoAndStatus(String oldMeterNumber, String str) {
-        return meterReadingRepo.findLastReadByMeterNoAndStatus(oldMeterNumber, str);
+        final String methodName = "GetLastReadingByMeterNoAndStatus() : ";
+        logger.info(methodName + " called with parameters oldMeterNumber={}, str={}",oldMeterNumber,str);
+        MeterReadingBean meterReadingBean= meterReadingRepo.findLastReadByMeterNoAndStatus(oldMeterNumber, str);
+        logger.info(methodName + " return with MeterReadingBean:{}",meterReadingBean);
+        return meterReadingBean;
     }
 
 
     public List<MeterReadingBean> getAmrAcceptedReadings(String monthYear) {
+        final String methodName = "getAmrAcceptedReadings() : ";
+        logger.info(methodName + " called with parameters monthYear={}",monthYear);
         try {
-               return meterReadingRepo.findAcceptOrForceAcceptReadingsByAmr(monthYear)
+            List<MeterReadingBean> list = meterReadingRepo.findAcceptOrForceAcceptReadingsByAmr(monthYear)
                     .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST,"Reading is not present for month" + monthYear));
-        }catch (ApiException apiException){
+            logger.info(methodName + " return with MeterReadingBean list of size:{}",list.size());
+            return list;
+        }catch(ApiException apiException){
+            logger.error(methodName+" throw apiException");
             throw apiException;
-        }catch (Exception exception){
-            throw exception;
+        }catch (DataIntegrityViolationException d){
+            logger.error(methodName+" throw DataIntegrityViolationException");
+            throw d;
+        }catch (Exception e) {
+            logger.error(methodName+" throw Exception");
+            throw e;
         }
     }
 
     public List<MeterReadingBean> getHtAcceptedReadings(String monthYear) {
+        final String methodName = "getHtAcceptedReadings() : ";
+        logger.info(methodName + " called with parameters monthYear={}",monthYear);
         try {   //Get Meter List Belongs to developer only then find reading status HT_ACCEPT of those meters only
                 List<Map<String,String>> meterListOfDeveloper = meterMasterService.getMetersByUser();
                 List<String> meterList = meterListOfDeveloper.stream().map(m -> m.get("meterNo")).collect(Collectors.toList());
-                return meterReadingRepo.findHtAcceptedReadings(meterList,monthYear)
+            List<MeterReadingBean> list= meterReadingRepo.findHtAcceptedReadings(meterList,monthYear)
                         .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST,"Reading is not present for month" + monthYear));
-        }catch (ApiException apiException){
+            logger.info(methodName + " return with MeterReadingBean list of size:{}",list.size());
+            return list;
+        }catch(ApiException apiException){
+            logger.error(methodName+" throw apiException");
             throw apiException;
-        }catch (Exception exception){
-            throw exception;
+        }catch (DataIntegrityViolationException d){
+            logger.error(methodName+" throw DataIntegrityViolationException");
+            throw d;
+        }catch (Exception e) {
+            logger.error(methodName+" throw Exception");
+            throw e;
         }
     }
 
     @Transactional
     public void htUserAccept(List<MeterReadingBean> meterReadingBeanList) {
+        final String methodName = "htUserAccept() : ";
+        logger.info(methodName + " called with parameters meterReadingBeanList={}",meterReadingBeanList);
         try {
                 if(meterReadingBeanList.size()==0) throw new ApiException(HttpStatus.BAD_REQUEST,"Select atleast one..");
 
                 String username = new TokenInfo().getCurrentUsername();
                 Timestamp updateTime = new DateMethods().getServerTime();
-                // here we dont need to check existing current state because view reading have only amr_accept or force_accept or dev_reject
+                // here we don't need to check existing current state because view reading have only amr_accept or force_accept or dev_reject
                 meterReadingBeanList.forEach(read -> {  read.setCurrentState("ht_accept");
                                                         read.setUpdatedBy(username);
                                                         read.setUpdatedOn(updateTime);
                                                     });
                 meterReadingRepo.saveAll(meterReadingBeanList);
-        }catch (ApiException apiException){
+                logger.info(methodName+" return with void");
+        }catch(ApiException apiException){
+            logger.error(methodName+" throw apiException");
             throw apiException;
-        }catch (Exception exception){
-            throw exception;
+        }catch (DataIntegrityViolationException d){
+            logger.error(methodName+" throw DataIntegrityViolationException");
+            throw d;
+        }catch (Exception e) {
+            logger.error(methodName+" throw Exception");
+            throw e;
         }
     }
 
     @Transactional
     public void developerUserAccept(List<MeterReadingBean> meterReadingBeanList) {
+        final String methodName = "developerUserAccept() : ";
+        logger.info(methodName + " called with parameters meterReadingBeanList={}",meterReadingBeanList);
         try {
             if(meterReadingBeanList.size()==0) throw new ApiException(HttpStatus.BAD_REQUEST,"Select atleast one..");
 
             String username = new TokenInfo().getCurrentUsername();
             Timestamp updateTime = new DateMethods().getServerTime();
-            // here we dont need to check existing current state because view reading have only ht_accept
+            // here we don't need to check existing current state because view reading have only ht_accept
             meterReadingBeanList.forEach(read -> {  read.setCurrentState("dev_accept");
                 read.setUpdatedBy(username);
                 read.setUpdatedOn(updateTime);
             });
             meterReadingRepo.saveAll(meterReadingBeanList);
-        }catch (ApiException apiException){
+            logger.info(methodName+" return with void");
+        }catch(ApiException apiException){
+            logger.error(methodName+" throw apiException");
             throw apiException;
-        }catch (Exception exception){
-            throw exception;
+        }catch (DataIntegrityViolationException d){
+            logger.error(methodName+" throw DataIntegrityViolationException");
+            throw d;
+        }catch (Exception e) {
+            logger.error(methodName+" throw Exception");
+            throw e;
         }
     }
 
     @Transactional
     public void developerUserReject(List<MeterReadingBean> meterReadingBeanList) {
+        final String methodName = "developerUserReject() : ";
+        logger.info(methodName + " called with parameters meterReadingBeanList={}",meterReadingBeanList);
         try {
             if(meterReadingBeanList.size()==0) throw new ApiException(HttpStatus.BAD_REQUEST,"Select atleast one..");
 
             String username = new TokenInfo().getCurrentUsername();
             Timestamp updateTime = new DateMethods().getServerTime();
-            // here we dont need to check existing current state because view reading have only ht_accept
+            // here we don't need to check existing current state because view reading have only ht_accept
             meterReadingBeanList.forEach(read -> {  read.setCurrentState("dev_reject");
                 read.setUpdatedBy(username);
                 read.setUpdatedOn(updateTime);
@@ -268,14 +388,22 @@ public class MeterReadingService {
                 String monthYear = new DateMethods().getMonthYear(read.getReadingDate());
                 fivePercentService.discardFivePercent(read.getMeterNo(), monthYear,"inactive_" +updateTime);
             });
-        }catch (ApiException apiException){
+            logger.info(methodName+" return with void");
+        }catch(ApiException apiException){
+            logger.error(methodName+" throw apiException");
             throw apiException;
-        }catch (Exception exception){
-            throw exception;
+        }catch (DataIntegrityViolationException d){
+            logger.error(methodName+" throw DataIntegrityViolationException");
+            throw d;
+        }catch (Exception e) {
+            logger.error(methodName+" throw Exception");
+            throw e;
         }
     }
 
     public List<Map<String,String>> getMeterListByCurrentStateIn(List<String> currentStateList) {
+        final String methodName = "getMeterListByCurrentStateIn() : ";
+        logger.info(methodName + " called with parameters currentStateList={}",currentStateList);
         try {
                 List<Map<String,String>> meterList = new ArrayList<>();
                 List<String> meters = meterReadingRepo.findAllDistinctMeterNoByCurrentStateInAndStatus(currentStateList,"active");
@@ -287,17 +415,26 @@ public class MeterReadingService {
                         m.put("meterCategory",meterCategory);
                         meterList.add(m);
                 }
-
+                logger.info(methodName + " return with MeterReadingBean list of size:{}",meterList.size());
                 return meterList;
-        }catch (ApiException apiException){
+
+
+        }catch(ApiException apiException){
+            logger.error(methodName+" throw apiException");
             throw apiException;
-        }catch (Exception exception){
-            throw exception;
+        }catch (DataIntegrityViolationException d){
+            logger.error(methodName+" throw DataIntegrityViolationException");
+            throw d;
+        }catch (Exception e) {
+            logger.error(methodName+" throw Exception");
+            throw e;
         }
     }
 
     @Transactional
     public MeterConsumptionDto getMeterConsumptionByMonth(String meterNo, String monthYear) throws ParseException {
+        final String methodName = " getMeterConsumptionByMonth() : ";
+        logger.info(methodName + " called with parameters meterNo={}, monthYear={}",meterNo,monthYear);
         MeterConsumptionDto meterConsumptionDto = new MeterConsumptionDto();
         try {
                 List<String> currentStates = List.of("ht_accept","dev_accept");
@@ -318,32 +455,49 @@ public class MeterReadingService {
                     meterConsumptionDto.setMonthYear(monthYear);
 
             }
-        }catch (ApiException apiException){
+        }catch(ApiException apiException){
+            logger.error(methodName+" throw apiException");
             throw apiException;
-        }catch (Exception exception){
-            throw exception;
+        }catch (DataIntegrityViolationException d){
+            logger.error(methodName+" throw DataIntegrityViolationException");
+            throw d;
+        }catch (Exception e) {
+            logger.error(methodName+" throw Exception");
+            throw e;
         }
+        logger.info(methodName + " return with meterConsumptionDto:{}",meterConsumptionDto);
         return meterConsumptionDto;
     }
     public MeterReadingBean GetLastReadingByMeterNoAndStatus(String meterNo, Date date) {
+        final String methodName = "GetLastReadingByMeterNoAndStatus() : ";
+        logger.info(methodName + " called with parameters meterNo={}, date={}",meterNo,date);
        // first we check reading on punching date, if reading exist on punching date then throw api exception.
         MeterReadingBean currentReadingBean = meterReadingRepo.findByMeterNoAndReadingDateWithoutTimeAndAndStatus(meterNo,date,"active");
         if(currentReadingBean!=null)
             throw new ApiException(HttpStatus.BAD_REQUEST,"Reading("+currentReadingBean.getEActiveEnergy()+") of meter no. for this month on date "+currentReadingBean.getReadingDate()+" is already present.");
-        return meterReadingRepo.findJustBefore(meterNo,date);
+
+        MeterReadingBean meterReadingBean= meterReadingRepo.findJustBefore(meterNo,date);
+        logger.info(methodName + " return with meterReadingBean:{}",meterReadingBean);
+        return meterReadingBean;
     }
 
 
     public List<MeterReadingBean> getAllReadingByMeterNo(String meterNo) {
+        final String methodName = "getAllReadingByMeterNo() : ";
+        logger.info(methodName + " called with parameters meterNo={}",meterNo);
         try {
             List<MeterReadingBean> meterReadingBeanList = meterReadingRepo.findAllByMeterNoAndStatusOrderByReadingDateDesc(meterNo,"active");
             if(meterReadingBeanList.size()==0) throw new ApiException(HttpStatus.BAD_REQUEST,"No reading found");
+            logger.info(methodName + " return with  meterReadingBeanList of size:{}", meterReadingBeanList.size());
             return meterReadingBeanList;
-        }catch (ApiException apiException){
+        }catch(ApiException apiException){
+            logger.error(methodName+" throw apiException");
             throw apiException;
         }catch (DataIntegrityViolationException d){
+            logger.error(methodName+" throw DataIntegrityViolationException");
             throw d;
-        }catch (Exception e){
+        }catch (Exception e) {
+            logger.error(methodName+" throw Exception");
             throw e;
         }
     }

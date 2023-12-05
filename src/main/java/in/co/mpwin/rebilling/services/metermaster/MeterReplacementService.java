@@ -14,6 +14,8 @@ import in.co.mpwin.rebilling.repositories.metermaster.MeterMasterRepo;
 import in.co.mpwin.rebilling.repositories.metermaster.MeterReplacementRepo;
 import in.co.mpwin.rebilling.services.mapping.MeterFeederPlantMappingService;
 import in.co.mpwin.rebilling.services.readingservice.MeterReadingService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -29,6 +31,7 @@ import java.util.List;
 
 @Service
 public class MeterReplacementService {
+    private static final Logger logger = LoggerFactory.getLogger(MeterReplacementService.class);
     @Autowired
     MeterReplacementRepo meterReplacementRepo;
     @Autowired
@@ -47,74 +50,105 @@ public class MeterReplacementService {
 
     @Transactional
     public Boolean updateMFPMapping(MeterFeederPlantMappingBean oldMFPMapping, MeterFeederPlantMappingBean newMFPMapping, String newMeterNo, String category, Date replaceDate) {
-        try {
-        switch (category) {
-            case "MAIN":
-                newMFPMapping.setMainMeterNo(newMeterNo);
-                newMFPMapping.setCheckMeterNo(oldMFPMapping.getCheckMeterNo());
-                newMFPMapping.setStandbyMeterNo(oldMFPMapping.getStandbyMeterNo());
-                break;
-            case "CHECK":
-                newMFPMapping.setCheckMeterNo(newMeterNo);
-                newMFPMapping.setMainMeterNo(oldMFPMapping.getMainMeterNo());
-                newMFPMapping.setStandbyMeterNo(oldMFPMapping.getStandbyMeterNo());
-                break;
-            case "STANDBY":
-                newMFPMapping.setStandbyMeterNo(newMeterNo);
-                newMFPMapping.setMainMeterNo(oldMFPMapping.getMainMeterNo());
-                newMFPMapping.setCheckMeterNo(oldMFPMapping.getCheckMeterNo());
-                break;
-            default:
-                break;
-        }
+        final String methodName = "updateMFPMapping() : ";
+        logger.info(methodName + "called with parameters oldMFPMapping={}, newMFPMapping={}, newMeterNo={},",oldMFPMapping,newMFPMapping,newMeterNo);
+            try {
+                switch (category) {
+                    case "MAIN":
+                        newMFPMapping.setMainMeterNo(newMeterNo);
+                        newMFPMapping.setCheckMeterNo(oldMFPMapping.getCheckMeterNo());
+                        newMFPMapping.setStandbyMeterNo(oldMFPMapping.getStandbyMeterNo());
+                        break;
+                    case "CHECK":
+                        newMFPMapping.setCheckMeterNo(newMeterNo);
+                        newMFPMapping.setMainMeterNo(oldMFPMapping.getMainMeterNo());
+                        newMFPMapping.setStandbyMeterNo(oldMFPMapping.getStandbyMeterNo());
+                        break;
+                    case "STANDBY":
+                        newMFPMapping.setStandbyMeterNo(newMeterNo);
+                        newMFPMapping.setMainMeterNo(oldMFPMapping.getMainMeterNo());
+                        newMFPMapping.setCheckMeterNo(oldMFPMapping.getCheckMeterNo());
+                        break;
+                    default:
+                        break;
+                }
 
-        Timestamp replacementDate = new DateMethods().getServerTime();
+                Timestamp replacementDate = new DateMethods().getServerTime();
 
-        newMFPMapping.setCreatedOn(new DateMethods().getServerTime());
-        newMFPMapping.setUpdatedOn(new DateMethods().getServerTime());
-        newMFPMapping.setCreatedBy(new TokenInfo().getCurrentUsername());
-        newMFPMapping.setUpdatedBy(new TokenInfo().getCurrentUsername());
-        newMFPMapping.setEndDate(oldMFPMapping.getEndDate());
-        newMFPMapping.setDeveloperId(oldMFPMapping.getDeveloperId());
-        newMFPMapping.setPlantCode(oldMFPMapping.getPlantCode());
-        newMFPMapping.setFeederCode(oldMFPMapping.getFeederCode());
-        newMFPMapping.setStatus("active");
+                newMFPMapping.setCreatedOn(new DateMethods().getServerTime());
+                newMFPMapping.setUpdatedOn(new DateMethods().getServerTime());
+                newMFPMapping.setCreatedBy(new TokenInfo().getCurrentUsername());
+                newMFPMapping.setUpdatedBy(new TokenInfo().getCurrentUsername());
+                newMFPMapping.setEndDate(oldMFPMapping.getEndDate());
+                newMFPMapping.setDeveloperId(oldMFPMapping.getDeveloperId());
+                newMFPMapping.setPlantCode(oldMFPMapping.getPlantCode());
+                newMFPMapping.setFeederCode(oldMFPMapping.getFeederCode());
+                newMFPMapping.setStatus("active");
 
-        // update old mfp mapping end date
-        oldMFPMapping.setEndDate(new DateMethods().getServerTime());
-        oldMFPMapping.setUpdatedOn(replacementDate);
-        oldMFPMapping.setUpdatedBy(new TokenInfo().getCurrentUsername());
+                // update old mfp mapping end date
+                oldMFPMapping.setEndDate(new DateMethods().getServerTime());
+                oldMFPMapping.setUpdatedOn(replacementDate);
+                oldMFPMapping.setUpdatedBy(new TokenInfo().getCurrentUsername());
 
 
-            MeterFeederPlantMappingBean resp1 =   meterFeederPlantMappingRepo.save(newMFPMapping);
-            MeterFeederPlantMappingBean resp2 =    meterFeederPlantMappingRepo.save(oldMFPMapping);
-            if (newMFPMapping != null)
-                return true;
-            else
-                return false;
-
-            }catch (DataIntegrityViolationException ex) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "unable to update MFP mapping status due to exception" + ex.getMessage().substring(0,250));
-        }catch (NullPointerException ex){
-            throw ex;
-        }
+                MeterFeederPlantMappingBean resp1 =   meterFeederPlantMappingRepo.save(newMFPMapping);
+                MeterFeederPlantMappingBean resp2 =    meterFeederPlantMappingRepo.save(oldMFPMapping);
+                if (resp1 != null &&  resp2!=null) {
+                    logger.info(methodName + " return with result = true ");
+                    return true;
+                }else{
+                    logger.info(methodName + " return with result = false ");
+                    return false;
+                }
+                }catch (ApiException apiException){
+                logger.error(methodName+" throw apiException");
+                throw apiException;
+                }catch (DataIntegrityViolationException d){
+                    logger.error(methodName+" throw DataIntegrityViolationException");
+                    throw new ApiException(HttpStatus.BAD_REQUEST, "unable to update MFP mapping status due to exception" + d.getLocalizedMessage());
+                }catch (NullPointerException ex){
+                logger.error(methodName+" throw NullPointerException");
+                    throw ex;
+                } catch (Exception e) {
+                    logger.error(methodName+" throw Exception");
+                    throw e;
+                }
 
     }
 
     @Transactional
     private Boolean updateMeterStatusAndMappingByMeterNo(String meterNumber, String status, String isMapped) {
+        final String methodName = "updateMeterStatusAndMappingByMeterNo() : ";
+        logger.info(methodName + "called with parameters meterNumber={}, status={}, isMapped={},",meterNumber,status,isMapped);
         try {
            MeterMasterBean result =meterMasterService.updateMeterStatusAndMappingByMeterNo(meterNumber, status, isMapped);
            if(result!=null)
+               {
+               logger.info(methodName + " return with result = true ");
                return true;
-        } catch (DataIntegrityViolationException ex) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "unable to update meter status due to exception" + ex.getMessage().substring(0,250));
+               }
+        }catch (ApiException apiException){
+            logger.error(methodName+" throw apiException");
+            throw apiException;
+        }catch (DataIntegrityViolationException d){
+            logger.error(methodName+" throw DataIntegrityViolationException");
+            throw new ApiException(HttpStatus.BAD_REQUEST, "unable to update meter status due to exception" + d.getLocalizedMessage());
+        }catch (NullPointerException ex){
+            logger.error(methodName+" throw NullPointerException");
+            throw ex;
+        } catch (Exception e) {
+            logger.error(methodName+" throw Exception");
+            throw e;
         }
+
+        logger.info(methodName + " return with result = false ");
         return false;
     }
 
     @Transactional
     private Boolean meterReplacementTable(String oldMeterNumber, String newMeterNumber, Date replaceDate, MeterFeederPlantMappingBean oldMFPMapping) {
+        final String methodName = "meterReplacementTable() : ";
+        logger.info(methodName + "called with parameters oldMeterNumber={}, newMeterNumber={}, replaceDate={}, oldMFPMapping={}",oldMeterNumber,newMeterNumber,replaceDate,oldMFPMapping);
         MeterReplacementBean meterReplacementBean = new MeterReplacementBean();
         meterReplacementBean.setOldMeterNumber(oldMeterNumber);
         meterReplacementBean.setNewMeterNumber(newMeterNumber);
@@ -127,16 +161,32 @@ public class MeterReplacementService {
         try {
             MeterReplacementBean resp = meterReplacementRepo.save(meterReplacementBean);
             if (resp != null)
+            {
+                logger.info(methodName + " return with result = true ");
                 return true;
-        } catch (DataIntegrityViolationException ex) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "unable to save meter replacement history. " + ex.getMessage());
+            }
+        }catch (ApiException apiException){
+            logger.error(methodName+" throw apiException");
+            throw apiException;
+        }catch (DataIntegrityViolationException d){
+            logger.error(methodName+" throw DataIntegrityViolationException");
+            throw new ApiException(HttpStatus.BAD_REQUEST, "unable to save meter replacement history" + d.getLocalizedMessage());
+        }catch (NullPointerException ex){
+            logger.error(methodName+" throw NullPointerException");
+            throw ex;
+        } catch (Exception e) {
+            logger.error(methodName+" throw Exception");
+            throw e;
         }
+        logger.info(methodName + " return with result = false ");
         return false;
     }
    // table used for meter replacement are : 1. ecell.re_meter_feeder_plant_mapping for end old mapping by end date and create new mapping
    //2. ecell.re_meter_master for update old meter mapped=repalced
     @Transactional
     public Boolean replaceMeterMethod(MeterReadingBean oldMeterBean, MeterReadingBean newMeterBean) {
+        final String methodName = "replaceMeterMethod() : ";
+        logger.info(methodName + "called with parameters oldMeterBean={}, newMeterBean={}",oldMeterBean,newMeterBean);
         try {
         MeterMasterBean oldMeter = meterMasterService.getMeterDetailsByMeterNo(oldMeterBean.getMeterNo(), "active");
         MeterMasterBean newMeter = meterMasterService.getMeterDetailsByMeterNo(newMeterBean.getMeterNo(), "active");
@@ -177,24 +227,33 @@ public class MeterReplacementService {
             // change old meter mapped status from yes to replaced.
             oldMeterUnmapped = updateMeterStatusAndMappingByMeterNo(oldMeterBean.getMeterNo(), "active", "replaced");
            // if meter replacement task successfully done than return true else return false.
-            if (mfpMapped && oldMeterUnmapped && newMeterMapped && meterReplacementHistory && readingSRFR)
+            if (mfpMapped && oldMeterUnmapped && newMeterMapped && meterReplacementHistory && readingSRFR) {
+                logger.info(methodName + " return with result = true ");
                 return true;
-            else
+            }
+            else{
+                logger.info(methodName + " return with result = false ");
                 return false;
-        }catch (ApiException apiException){
-            throw apiException;
-        }  catch (DataIntegrityViolationException d) {
-            throw d;
-        } catch (NullPointerException e) {
-            throw e;
-        }catch (Exception e) {
-            throw e;
-        }
+            }
+            }catch (ApiException apiException){
+                logger.error(methodName+" throw apiException");
+                throw apiException;
+            }catch (DataIntegrityViolationException d){
+                logger.error(methodName+" throw DataIntegrityViolationException");
+                throw d;
+            }catch (NullPointerException ex){
+                logger.error(methodName+" throw NullPointerException");
+                throw ex;
+            } catch (Exception e) {
+                logger.error(methodName+" throw Exception");
+                throw e;
+            }
 
     }
     @Transactional
     private Boolean insertReadingForSRFR(MeterReadingBean oldMeterReadingBean, MeterReadingBean newMeterReadingBean) {
-
+        final String methodName = "insertReadingForSRFR() : ";
+        logger.info(methodName + "called with parameters oldMeterReadingBean={}, newMeterReadingBean={}",oldMeterReadingBean,newMeterReadingBean);
         oldMeterReadingBean.setReadingType("FR");
         oldMeterReadingBean.setReadSource("web");
         oldMeterReadingBean.setCurrentState("initial_read");
@@ -220,19 +279,27 @@ public class MeterReplacementService {
 
         MeterReadingBean fr =  meterReadingService.createMeterReading(oldMeterReadingBean);
         MeterReadingBean sr =  meterReadingService.createMeterReading(newMeterReadingBean);
-        if(fr!=null && sr!=null)
+        if(fr!=null && sr!=null){
+            logger.info(methodName + " return with result = true ");
             return true;
-        else
+        }
+        else{
+            logger.info(methodName + " return with result = false ");
             return false;
+        }
     }
 
     public List<MeterReplacementBean> getMeterReplacementList(String status) {
-
-      return meterReplacementRepo.findAllByStatus(status);
-
+        final String methodName = "getMeterReplacementList() : ";
+        logger.info(methodName + "called with parameters status={}",status);
+        List<MeterReplacementBean> replacementBeanList= meterReplacementRepo.findAllByStatus(status);
+        logger.info(methodName + " return with MeterReplacementBean list of size = {}",replacementBeanList.size());
+        return replacementBeanList;
     }
 
     public List<MeterMasterBean> getMappedMeterBeansByMfpMappingBean() {
+        final String methodName = "getMappedMeterBeansByMfpMappingBean() : ";
+        logger.info(methodName + "called with parameters empty");
         LocalDate endDate = LocalDate.now();
         try {
             List<String> mappedMeters = meterFeederPlantMappingService.findMappedMeterListByEndDate(endDate);
@@ -241,17 +308,26 @@ public class MeterReplacementService {
             List<MeterMasterBean> meterList = meterMasterRepo.findByMeterNumberInAndStatusAndIsMapped(mappedMeters, "active", "yes");
             if (meterList.isEmpty())
                 throw new ApiException(HttpStatus.BAD_REQUEST, "mapped meter list are not found in meter master");
+            logger.info(methodName + " return with MeterMasterBean list of size = {}",meterList.size());
             return meterList;
-        } catch (ApiException apiException) {
+        } catch (ApiException apiException){
+            logger.error(methodName+" throw apiException");
             throw apiException;
-        } catch (DataIntegrityViolationException d) {
+        }catch (DataIntegrityViolationException d){
+            logger.error(methodName+" throw DataIntegrityViolationException");
             throw d;
+        }catch (NullPointerException ex){
+            logger.error(methodName+" throw NullPointerException");
+            throw ex;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            logger.error(methodName+" throw Exception");
+            throw e;
         }
     }
 
     public MeterMasterBean getMappedMeterBeanForReplacement(String meterNo) {
+        final String methodName = "getMappedMeterBeanForReplacement() : ";
+        logger.info(methodName + "called with parameters meterNo={}",meterNo);
         LocalDate endDate = LocalDate.now();
         MeterFeederPlantMappingBean meterMfpMapping = null;
         try {
@@ -266,13 +342,20 @@ public class MeterReplacementService {
             meterMfpMapping =   meterFeederPlantMappingRepo.findByStandbyMeterNoAndEndDateAndStatus(oldMeter.getMeterNumber(),endDate,"active");
         if(meterMfpMapping==null)
             throw new ApiException(HttpStatus.BAD_REQUEST, "this meter number is not mapped with feeder, plant and developer in mfp mapping table.");
+        logger.info(methodName + " return with MeterMasterBean = {}",oldMeter);
         return oldMeter;
-        } catch (ApiException apiException) {
+        } catch (ApiException apiException){
+            logger.error(methodName+" throw apiException");
             throw apiException;
-        } catch (DataIntegrityViolationException d) {
+        }catch (DataIntegrityViolationException d){
+            logger.error(methodName+" throw DataIntegrityViolationException");
             throw d;
+        }catch (NullPointerException ex){
+            logger.error(methodName+" throw NullPointerException");
+            throw ex;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            logger.error(methodName+" throw Exception");
+            throw e;
         }
 
     }
