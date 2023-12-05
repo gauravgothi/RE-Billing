@@ -42,11 +42,15 @@ public class PasswordEncoderGenerator {
 //        Date previousReadDate = new SimpleDateFormat("MMM-yyyy").parse("Feb-2023");
 //        System.out.println(previousReadDate);
 //
-//        Calendar calendar = Calendar.getInstance();
-//        calendar.setTime(previousReadDate);
-//        calendar.add(calendar.MONTH,1);
-//        Date currentReadDate = calendar.getTime();
-//                System.out.println(currentReadDate);
+        GregorianCalendar gc = new GregorianCalendar();
+        gc.setTime(new Date());
+        gc.set( Calendar.HOUR_OF_DAY, 0 );
+        gc.set( Calendar.MINUTE, 0 );
+        gc.set( Calendar.SECOND, 0 );
+        gc.set( Calendar.MILLISECOND, 0 );
+        System.out.println(gc.getTime());
+
+        //List<BigDecimal> bigDecimalList = List.of(5,10,15)
 
 //        double d=-.00012;
 //        System.out.println(d+""); //This prints -1.2E-4

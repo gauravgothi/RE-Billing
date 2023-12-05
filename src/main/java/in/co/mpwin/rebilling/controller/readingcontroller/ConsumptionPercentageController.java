@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -46,6 +47,7 @@ public class ConsumptionPercentageController {
         try {
                 Date previousReadDate = new DateMethods().getCurrentAndPreviousDate(month).get(0);
                 Date currentReadDate = new DateMethods().getCurrentAndPreviousDate(month).get(1);
+
 
                 consumptionPercentageDtoList = consumerPercentageService2.calculatePercentageReport2(previousReadDate,currentReadDate);
                 List<FivePercentBean> fivePercentReport =  consumerPercentageService2.consumptionPercentageDto2ToFivePercentageBean(consumptionPercentageDtoList,month);

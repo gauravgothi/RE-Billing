@@ -413,6 +413,7 @@ public class MeterFeederPlantMappingService {
             logger.info(methodName + "called with parameters developerId={}, status={}",developerId,status);
             List<MeterFeederPlantMappingBean> mappingBeans;
             try {
+
                 mappingBeans = meterFeederPlantMappingRepo.findAllByDeveloperIdAndStatusOrderByEndDateAsc(developerId, status);
                 if (mappingBeans.size() == 0)
                     throw new ApiException(HttpStatus.BAD_REQUEST,"Developer "+developerId+" is not mapped to any plant..");

@@ -37,6 +37,8 @@ public class User {
 
     private String remark;
 
+    private boolean enabled;
+
     private String email;
 
     @NotNull

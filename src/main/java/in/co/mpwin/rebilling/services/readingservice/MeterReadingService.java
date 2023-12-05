@@ -110,6 +110,9 @@ public class MeterReadingService {
         logger.info(methodName + " called with parameters passMRB={}",passMRB);
         MeterReadingBean meterReadingBean = new MeterReadingBean();
         try {
+            //set time to zero 00:00:00 fixed on 28.11.2023
+            passMRB.setReadingDate(new DateMethods().zeroTime(passMRB.getReadingDate(),0,0,0,0));
+            passMRB.setEndDate(new DateMethods().zeroTime(passMRB.getEndDate(),0,0,0,0));
             //check for meter exist, active and mapped with respect to meter master
             Long validationCount = meterMasterRepo.countByMeterNumberAndStatusAndIsMapped(passMRB.getMeterNo(),
                     "active", "yes");

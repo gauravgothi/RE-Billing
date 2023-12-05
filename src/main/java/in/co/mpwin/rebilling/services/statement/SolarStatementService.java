@@ -131,12 +131,15 @@ public class SolarStatementService {
                 List<MachineMasterBean> machineMasterBeanList = machineMasterService.getAllMachineByMachineCodeList(machineCodes, "active");
                 BigDecimal investorMachineTotalCapacity = BigDecimal.valueOf(0);
                 //BigDecimal investorMachineActiveRate = BigDecimal.valueOf(0);
-                machineMasterBeanList.stream().forEach(s -> {
-                    new BigDecimal(s.getCapacity()).add(investorMachineTotalCapacity);
-                    //new BigDecimal(s.getActiveRate()).add(investorMachineActiveRate);
-                });
+                Double aDouble = machineMasterBeanList.stream()
+                        .filter(o -> o.getCapacity() != null).mapToDouble(o -> Double.parseDouble(o.getCapacity())).sum();
+//                machineMasterBeanList.stream().forEach(s -> {
+//                    investorMachineTotalCapacity.add(new BigDecimal(s.getCapacity()));
+//                    //new BigDecimal(s.getCapacity()).add(investorMachineTotalCapacity);
+//                    //new BigDecimal(s.getActiveRate()).add(investorMachineActiveRate);
+//                });
 
-                solarStatementBean.setInvestorProjectCapacity(String.valueOf(investorMachineTotalCapacity));
+                solarStatementBean.setInvestorProjectCapacity(String.valueOf(aDouble));
 
                 //call meter consumption report service and get meterconsumptiondto
                 MeterConsumptionDto meterConsumptionDto = meterReadingService.getMeterConsumptionByMonth(meterNo, monthYear);

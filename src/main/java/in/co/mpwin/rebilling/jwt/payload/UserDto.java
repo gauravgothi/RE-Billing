@@ -25,6 +25,8 @@ public class UserDto {
     @Size(min = 7)
     private String password;
 
+    private boolean enabled;
+
     @Column(nullable = false)
     private String role;
 

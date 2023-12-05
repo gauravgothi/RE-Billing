@@ -5,6 +5,7 @@ import in.co.mpwin.rebilling.beans.mapping.MeterFeederPlantMappingBean;
 import in.co.mpwin.rebilling.beans.readingbean.FivePercentBean;
 import in.co.mpwin.rebilling.beans.readingbean.MeterReadingBean;
 import in.co.mpwin.rebilling.dto.*;
+import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.DateMethods;
 import in.co.mpwin.rebilling.repositories.readingrepo.FivePercentRepo;
 import in.co.mpwin.rebilling.services.developermaster.DeveloperMasterService;
@@ -14,6 +15,7 @@ import in.co.mpwin.rebilling.services.metermaster.MeterMasterService;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -40,110 +42,119 @@ public class ConsumerPercentageService2 {
         List<ConsumptionPercentageDto2> dtoList = new ArrayList<>();
         Date futureEndDate = new SimpleDateFormat("dd-MM-yyyy").parse("31-12-2024");
         String monthYear = new DateMethods().getMonthYear(endDate);
-        List<DeveloperMasterBean> developerList = developerMasterService.getAllDeveloperMasterBean("active");
-        for (int k =0;developerList.size()>k;k++){
+        try {
+            List<DeveloperMasterBean> developerList = developerMasterService.getAllDeveloperMasterBean("active");
+            for (int k =0;developerList.size()>k;k++){
 
-            List<MeterFeederPlantMappingBean> mappingBeanList = meterFeederPlantMappingService
-                    .getMappingByDeveloperIdOrderByEndDate(String.valueOf(developerList.get(k).getId()), "active");
-            if(mappingBeanList.size() == 0)
-                continue;
-            // now arrange it plant wise in map <PlantCode,List<MFPBean>>
-            List<Map<String,List<MeterFeederPlantMappingBean>>> plantMFPList = new ArrayList<>();
-            List<String> distinctPlants = meterFeederPlantMappingService.getDistinctPlantCodeByDeveloperId(String.valueOf(developerList.get(k).getId()), "active");
-            for (String plant : distinctPlants){
-                //If calculation is already done for plant then simple continue
-                Boolean isAlreadyExist = fivePercentService.isAlreadyExistRecord(plant,monthYear);
-                if (isAlreadyExist)
+                List<MeterFeederPlantMappingBean> mappingBeanList = meterFeederPlantMappingService
+                        .getMappingByDeveloperIdOrderByEndDate(String.valueOf(developerList.get(k).getId()), "active");
+                if(mappingBeanList.size() == 0)
                     continue;
+                // now arrange it plant wise in map <PlantCode,List<MFPBean>>
+                List<Map<String,List<MeterFeederPlantMappingBean>>> plantMFPList = new ArrayList<>();
+                List<String> distinctPlants = meterFeederPlantMappingService.getDistinctPlantCodeByDeveloperId(String.valueOf(developerList.get(k).getId()), "active");
+                for (String plant : distinctPlants){
+                    //If calculation is already done for plant then simple continue
+                    Boolean isAlreadyExist = fivePercentService.isAlreadyExistRecord(plant,monthYear);
+                    if (isAlreadyExist)
+                        continue;
 
-                //for each plant we have list of mapping, calculate the consumption for each plant
-                Map<String,List<MeterFeederPlantMappingBean>> singlePlantMap = new HashMap<>();
-                singlePlantMap.put(plant,mappingBeanList.stream().filter(bean -> ((bean.getPlantCode().equals(plant)) &&
-                        (((bean.getEndDate().after(startDate)) && (bean.getEndDate().before(endDate))) ||
-                                (bean.getEndDate().compareTo(futureEndDate) == 0))))
-                        .sorted(Comparator.comparing(MeterFeederPlantMappingBean::getEndDate))
-                        .collect(Collectors.toList()));
+                    //for each plant we have list of mapping, calculate the consumption for each plant
+                    Map<String,List<MeterFeederPlantMappingBean>> singlePlantMap = new HashMap<>();
+                    singlePlantMap.put(plant,mappingBeanList.stream().filter(bean -> ((bean.getPlantCode().equals(plant)) &&
+                                    (((bean.getEndDate().after(startDate)) && (bean.getEndDate().before(endDate))) ||
+                                            (bean.getEndDate().compareTo(futureEndDate) == 0))))
+                            .sorted(Comparator.comparing(MeterFeederPlantMappingBean::getEndDate))
+                            .collect(Collectors.toList()));
 
-                plantMFPList.add(singlePlantMap);
-            }
-            //now run loop on map to calculate main meters consumption
-            for(Map<String,List<MeterFeederPlantMappingBean>> plantMFP : plantMFPList){
-                ConsumptionPercentageDto2 consumptionPercentageDto2 = new ConsumptionPercentageDto2();
-                consumptionPercentageDto2.setDeveloperId(String.valueOf(developerList.get(k).getId()));
-                consumptionPercentageDto2.setDeveloperName(developerList.get(k).getDeveloperName());
-                consumptionPercentageDto2.setDeveloperSiteAddress(developerList.get(k).getSiteAddress());
-                consumptionPercentageDto2.setPlantCode(plantMFP.keySet().toArray()[0].toString());
-                consumptionPercentageDto2.setMonthYear(monthYear);
-                
-                List<MainMeterDto> mainMeterDtos = new ArrayList<>();
-                List<CheckMeterDto> checkMeterDtos = new ArrayList<>();
-                List<MeterFeederPlantMappingBean> MFPBeans = plantMFP.values().iterator().next();
+                    plantMFPList.add(singlePlantMap);
+                }
+                //now run loop on map to calculate main meters consumption
+                for(Map<String,List<MeterFeederPlantMappingBean>> plantMFP : plantMFPList){
+                    ConsumptionPercentageDto2 consumptionPercentageDto2 = new ConsumptionPercentageDto2();
+                    consumptionPercentageDto2.setDeveloperId(String.valueOf(developerList.get(k).getId()));
+                    consumptionPercentageDto2.setDeveloperName(developerList.get(k).getDeveloperName());
+                    consumptionPercentageDto2.setDeveloperSiteAddress(developerList.get(k).getSiteAddress());
+                    consumptionPercentageDto2.setPlantCode(plantMFP.keySet().toArray()[0].toString());
+                    consumptionPercentageDto2.setMonthYear(monthYear);
 
-                //IF DEVELOPER HAVE NOT ANY MAPPING THEN SIMPLY CONTINUE THE LOOP
-                if(MFPBeans.size()==0)
-                    continue;
+                    List<MainMeterDto> mainMeterDtos = new ArrayList<>();
+                    List<CheckMeterDto> checkMeterDtos = new ArrayList<>();
+                    List<MeterFeederPlantMappingBean> MFPBeans = plantMFP.values().iterator().next();
+
+                    //IF DEVELOPER HAVE NOT ANY MAPPING THEN SIMPLY CONTINUE THE LOOP
+                    if(MFPBeans.size()==0)
+                        continue;
                     consumptionPercentageDto2.setFeederCode(MFPBeans.get(0).getFeederCode());
                     consumptionPercentageDto2.setFeederName(feederMasterService.getFeederByFeederNumber(
                             MFPBeans.get(0).getFeederCode(), "active").getFeederName());
 
-                //consumptionPercentageDto2.setFeederName();
-                if (MFPBeans.size()>1){
-                    Date mainStartDate = startDate;
-                    Date checkStartDate = startDate;
-                    for (int i = 0 ; i < MFPBeans.size();i++){
-                        if (i+1 == MFPBeans.size()) {
-                            mainMeterDtos.add(calculateMainMeterCons(MFPBeans.get(i).getMainMeterNo(),mainStartDate,endDate));
-                        } else if(!(MFPBeans.get(i).getMainMeterNo().equals(MFPBeans.get(i+1).getMainMeterNo()))){
-                            mainMeterDtos.add(calculateMainMeterCons(MFPBeans.get(i).getMainMeterNo(),mainStartDate,MFPBeans.get(i).getEndDate()));
-                            mainStartDate = MFPBeans.get(i).getEndDate();
-                        } else if (MFPBeans.get(i).getMainMeterNo().equals(MFPBeans.get(i+1).getMainMeterNo())){
-                            continue;
+                    //consumptionPercentageDto2.setFeederName();
+                    if (MFPBeans.size()>1){
+                        Date mainStartDate = startDate;
+                        Date checkStartDate = startDate;
+                        for (int i = 0 ; i < MFPBeans.size();i++){
+                            if (i+1 == MFPBeans.size()) {
+                                mainMeterDtos.add(calculateMainMeterCons(MFPBeans.get(i).getMainMeterNo(),mainStartDate,endDate));
+                            } else if(!(MFPBeans.get(i).getMainMeterNo().equals(MFPBeans.get(i+1).getMainMeterNo()))){
+                                mainMeterDtos.add(calculateMainMeterCons(MFPBeans.get(i).getMainMeterNo(),mainStartDate,MFPBeans.get(i).getEndDate()));
+                                mainStartDate = MFPBeans.get(i).getEndDate();
+                            } else if (MFPBeans.get(i).getMainMeterNo().equals(MFPBeans.get(i+1).getMainMeterNo())){
+                                continue;
+                            }
                         }
-                    }
-                    for (int j = 0 ; j < MFPBeans.size();j++){
-                        if (j+1 == MFPBeans.size()) {
-                            checkMeterDtos.add(calculateCheckMeterCons(MFPBeans.get(j).getCheckMeterNo(),checkStartDate,endDate));
-                        } else if(!(MFPBeans.get(j).getCheckMeterNo().equals(MFPBeans.get(j+1).getCheckMeterNo()))){
-                            checkMeterDtos.add(calculateCheckMeterCons(MFPBeans.get(j).getCheckMeterNo(),checkStartDate,MFPBeans.get(j).getEndDate()));
-                            checkStartDate = MFPBeans.get(j).getEndDate();
-                        } else if (MFPBeans.get(j).getCheckMeterNo().equals(MFPBeans.get(j+1).getCheckMeterNo())){
-                            continue;
+                        for (int j = 0 ; j < MFPBeans.size();j++){
+                            if (j+1 == MFPBeans.size()) {
+                                checkMeterDtos.add(calculateCheckMeterCons(MFPBeans.get(j).getCheckMeterNo(),checkStartDate,endDate));
+                            } else if(!(MFPBeans.get(j).getCheckMeterNo().equals(MFPBeans.get(j+1).getCheckMeterNo()))){
+                                checkMeterDtos.add(calculateCheckMeterCons(MFPBeans.get(j).getCheckMeterNo(),checkStartDate,MFPBeans.get(j).getEndDate()));
+                                checkStartDate = MFPBeans.get(j).getEndDate();
+                            } else if (MFPBeans.get(j).getCheckMeterNo().equals(MFPBeans.get(j+1).getCheckMeterNo())){
+                                continue;
+                            }
                         }
+                    } else if (MFPBeans.size()==1) {
+                        mainMeterDtos.add(calculateMainMeterCons(MFPBeans.get(0).getMainMeterNo(),startDate,endDate));
+                        checkMeterDtos.add(calculateCheckMeterCons(MFPBeans.get(0).getCheckMeterNo(),startDate,endDate));
                     }
-                } else if (MFPBeans.size()==1) {
-                    mainMeterDtos.add(calculateMainMeterCons(MFPBeans.get(0).getMainMeterNo(),startDate,endDate));
-                    checkMeterDtos.add(calculateCheckMeterCons(MFPBeans.get(0).getCheckMeterNo(),startDate,endDate));
+                    consumptionPercentageDto2.setMainMeterDtos(mainMeterDtos);
+                    consumptionPercentageDto2.setCheckMeterDtos(checkMeterDtos);
+                    //calculate percentage(main total consumption - check total consumption *100)
+                    Boolean anyMainMeterReadAbsent = consumptionPercentageDto2.getMainMeterDtos().stream()
+                            .anyMatch(b -> (b.getMainTotalConsumption().compareTo(BigDecimal.valueOf(-1)) == 0));
+                    Boolean anyCheckMeterReadAbsent = consumptionPercentageDto2.getCheckMeterDtos().stream()
+                            .anyMatch(b->(b.getCheckTotalConsumption().compareTo(BigDecimal.valueOf(-1)) == 0));
+                    if (anyMainMeterReadAbsent || anyCheckMeterReadAbsent )    {
+                        consumptionPercentageDto2.setMainGrandTotalConsumption(BigDecimal.valueOf(-1));
+                        consumptionPercentageDto2.setCheckGrandTotalConsumption(BigDecimal.valueOf(-1));
+                        consumptionPercentageDto2.setPercentage(BigDecimal.valueOf(-1));
+                        consumptionPercentageDto2.setResult("withheld");
+                    }else {
+                        BigDecimal totalMainMetersConsumption = consumptionPercentageDto2.getMainMeterDtos().stream()
+                                .map(MainMeterDto::getMainTotalConsumption).reduce(BigDecimal.ZERO,BigDecimal::add);
+                        BigDecimal totalCheckMeterConsumption = consumptionPercentageDto2.getCheckMeterDtos().stream()
+                                .map(CheckMeterDto::getCheckTotalConsumption).reduce(BigDecimal.ZERO,BigDecimal::add);
+                        consumptionPercentageDto2.setMainGrandTotalConsumption(totalMainMetersConsumption);
+                        consumptionPercentageDto2.setCheckGrandTotalConsumption(totalCheckMeterConsumption);
+                        consumptionPercentageDto2.setPercentage(((consumptionPercentageDto2.getMainGrandTotalConsumption()
+                                .subtract(consumptionPercentageDto2.getCheckGrandTotalConsumption()))
+                                .divide(consumptionPercentageDto2.getMainGrandTotalConsumption(), 2, RoundingMode.HALF_DOWN))
+                                .multiply(BigDecimal.valueOf(100)).abs());
+                        consumptionPercentageDto2.setResult((consumptionPercentageDto2.getPercentage().compareTo(BigDecimal.valueOf(0.5)) <= 0) ? "pass" : "fail");
+                        consumptionPercentageDto2.setRemark("calculated");
+                        consumptionPercentageDto2.setMeterSelectedFlag("NA");
+                    }
+                    dtoList.add(consumptionPercentageDto2);
                 }
-                consumptionPercentageDto2.setMainMeterDtos(mainMeterDtos);
-                consumptionPercentageDto2.setCheckMeterDtos(checkMeterDtos);
-                //calculate percentage(main total consumption - check total consumption *100)
-                Boolean anyMainMeterReadAbsent = consumptionPercentageDto2.getMainMeterDtos().stream()
-                        .anyMatch(b -> (b.getMainTotalConsumption().compareTo(BigDecimal.valueOf(-1)) == 0));
-                Boolean anyCheckMeterReadAbsent = consumptionPercentageDto2.getCheckMeterDtos().stream()
-                                .anyMatch(b->(b.getCheckTotalConsumption().compareTo(BigDecimal.valueOf(-1)) == 0));
-                if (anyMainMeterReadAbsent || anyCheckMeterReadAbsent )    {
-                    consumptionPercentageDto2.setMainGrandTotalConsumption(BigDecimal.valueOf(-1));
-                    consumptionPercentageDto2.setCheckGrandTotalConsumption(BigDecimal.valueOf(-1));
-                    consumptionPercentageDto2.setPercentage(BigDecimal.valueOf(-1));
-                    consumptionPercentageDto2.setResult("withheld");
-                }else {
-                    BigDecimal totalMainMetersConsumption = consumptionPercentageDto2.getMainMeterDtos().stream()
-                            .map(MainMeterDto::getMainTotalConsumption).reduce(BigDecimal.ZERO,BigDecimal::add);
-                    BigDecimal totalCheckMeterConsumption = consumptionPercentageDto2.getCheckMeterDtos().stream()
-                            .map(CheckMeterDto::getCheckTotalConsumption).reduce(BigDecimal.ZERO,BigDecimal::add);
-                    consumptionPercentageDto2.setMainGrandTotalConsumption(totalMainMetersConsumption);
-                    consumptionPercentageDto2.setCheckGrandTotalConsumption(totalCheckMeterConsumption);
-                    consumptionPercentageDto2.setPercentage(((consumptionPercentageDto2.getMainGrandTotalConsumption()
-                            .subtract(consumptionPercentageDto2.getCheckGrandTotalConsumption()))
-                            .divide(consumptionPercentageDto2.getMainGrandTotalConsumption(), 2, RoundingMode.HALF_DOWN))
-                            .multiply(BigDecimal.valueOf(100)).abs());
-                    consumptionPercentageDto2.setResult((consumptionPercentageDto2.getPercentage().compareTo(BigDecimal.valueOf(0.5)) <= 0) ? "pass" : "fail");
-                    consumptionPercentageDto2.setRemark("calculated");
-                    consumptionPercentageDto2.setMeterSelectedFlag("NA");
-                }
-                dtoList.add(consumptionPercentageDto2);
-            }
 
+            }
+        }catch (ApiException apiException) {
+            throw apiException;
+        } catch (DataIntegrityViolationException d) {
+            throw d;
+        } catch (Exception e) {
+            throw e;
+            // Handle the exception or log the error as needed
         }
         return dtoList;
     }
