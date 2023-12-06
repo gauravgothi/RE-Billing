@@ -459,7 +459,7 @@ public class MeterReadingService {
 
             }
         }catch(ApiException apiException){
-            logger.error(methodName+" throw apiException");
+            logger.error(methodName +" throw apiException");
             throw apiException;
         }catch (DataIntegrityViolationException d){
             logger.error(methodName+" throw DataIntegrityViolationException");
