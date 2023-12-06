@@ -3,6 +3,7 @@ package in.co.mpwin.rebilling.services.machinemaster;
 import in.co.mpwin.rebilling.beans.machinemaster.MachineMasterBean;
 import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.AuditControlServices;
+import in.co.mpwin.rebilling.miscellanious.ValidatorService;
 import in.co.mpwin.rebilling.repositories.machinemaster.MachineMasterRepo;
 import in.co.mpwin.rebilling.repositories.mapping.InvestorMachineMappingRepo;
 import in.co.mpwin.rebilling.services.locationmaster.LocationMasterService;
@@ -56,9 +57,9 @@ public class MachineMasterService {
             if(temp!=null) {
                 throw new ApiException(HttpStatus.BAD_REQUEST,"Machine with same name is already exist with machine code: "+temp.getMachineCode()+" and machine name: "+temp.getMachineName());
             }
-            //Set the Audit control parameters, Globally
+            //Set the Audit control parameters, Globally and remove space
             new AuditControlServices().setInitialAuditControlParameters(machineMasterBean);
-
+            machineMasterBean.setCapacity(new ValidatorService().removeSpaceFromString(machineMasterBean.getCapacity()));
             //get max machine code and set new code as code +1
             machineMasterBean.setMachineCode("MNC"+String.format("%04d",getMaxMachineCode()+1));
             mmb = machineMasterRepo.save(machineMasterBean);

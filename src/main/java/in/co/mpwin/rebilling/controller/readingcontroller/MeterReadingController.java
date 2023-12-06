@@ -293,7 +293,7 @@ public class MeterReadingController {
             meterConsumptionResp = new ResponseEntity<>(meterConsumptionDto,HttpStatus.OK);
             logger.info(methodName + "return. meterConsumptionDto : {}",meterConsumptionDto.toString());
         }catch (ApiException apiException){
-            meterConsumptionResp = new ResponseEntity<>(new Message("Arithmetic Exception" + apiException.getMessage()),apiException.getHttpStatus());
+            meterConsumptionResp = new ResponseEntity<>(new Message(apiException.getMessage()),apiException.getHttpStatus());
             logger.error(methodName+" API Exception occurred: {}", apiException.getMessage());
         }
         catch (Exception e){

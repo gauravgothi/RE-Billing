@@ -415,8 +415,8 @@ public class MeterFeederPlantMappingService {
             try {
 
                 mappingBeans = meterFeederPlantMappingRepo.findAllByDeveloperIdAndStatusOrderByEndDateAsc(developerId, status);
-                if (mappingBeans.size() == 0)
-                    throw new ApiException(HttpStatus.BAD_REQUEST,"Developer "+developerId+" is not mapped to any plant..");
+                //if (mappingBeans.size() == 0)
+                    //throw new ApiException(HttpStatus.BAD_REQUEST,"Developer "+developerId+" is not mapped to any plant..");
             }  catch(ApiException apiException){
                 logger.error(methodName+" throw apiException");
                 throw apiException;

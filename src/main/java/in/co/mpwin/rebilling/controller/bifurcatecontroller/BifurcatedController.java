@@ -42,7 +42,7 @@ public class BifurcatedController {
             bifurcateResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
             logger.error(methodName+" API Exception occurred: {}", apiException.getMessage());
         } catch (Exception e) {
-            bifurcateResp = new ResponseEntity<>(new Message(e.getMessage().substring(0,e.getMessage().indexOf("Detail"))), HttpStatus.BAD_REQUEST);
+            bifurcateResp = new ResponseEntity<>(new Message(e.getMessage()), HttpStatus.BAD_REQUEST);
             logger.error(methodName+" Exception occurred: {}", e.getMessage(),e);
         }
         return bifurcateResp;

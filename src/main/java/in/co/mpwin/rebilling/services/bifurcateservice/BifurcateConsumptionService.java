@@ -18,6 +18,7 @@ import in.co.mpwin.rebilling.miscellanious.TokenInfo;
 import in.co.mpwin.rebilling.repositories.bifurcaterepo.BifurcateBeanRepo;
 import in.co.mpwin.rebilling.repositories.developermaster.DeveloperMasterRepo;
 import in.co.mpwin.rebilling.repositories.plantmaster.PlantMasterRepo;
+import in.co.mpwin.rebilling.services.developermaster.DeveloperMasterService;
 import in.co.mpwin.rebilling.services.investormaster.InvestorMasterService;
 import in.co.mpwin.rebilling.services.machinemaster.MachineMasterService;
 import in.co.mpwin.rebilling.services.mapping.InvestorMachineMappingService;
@@ -28,6 +29,8 @@ import in.co.mpwin.rebilling.services.readingservice.MeterReadingService;
 import jakarta.persistence.Tuple;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -59,34 +62,48 @@ public class BifurcateConsumptionService {
     private String plantCode;
     private Long mfpBeanId;
 
+    private static final Logger logger = LoggerFactory.getLogger(BifurcateConsumptionService.class);
+
     public BifurcateConsumptionDto getBifurcateDto(MeterConsumptionDto dto) {
         //get current username and developer id and developer name
         //If reading is in valid current state, and not already bifurcated for given meter or plant then perform make bifurcation dto only
+        final String methodName = "getBifurcateDto() : ";
+        logger.info(methodName + "called with parameters MeterConsumptionDto = {}",dto);
         try {
-            if (bifurcateValidation(dto).equals("valid"))
+            if (bifurcateValidation(dto).equals("valid")) {
+                logger.info(methodName + "call the method makeBifurcateDto(dto) ");
                 return makeBifurcateDto(dto);
+            }
             else if(bifurcateValidation(dto).equals("invalid"))
                 throw new ApiException(HttpStatus.BAD_REQUEST,"Validation failed for fetching ");
             else
                 throw new ApiException(HttpStatus.BAD_REQUEST,"Somethimg wrong! contact to IT team ");
         }catch (ApiException apiException){
+            logger.error(methodName+"throw apiException");
             throw apiException;
         }catch (DataIntegrityViolationException d){
+            logger.error(methodName+"throw DataIntegrityViolationException");
             throw d;
         }catch (Exception e){
+            logger.error(methodName+"throw Exception");
             throw e;
         }
     }
     private String bifurcateValidation(MeterConsumptionDto dto){
+        final String methodName = "bifurcateValidation() : ";
+        logger.info(methodName + "called with parameters MeterConsumptionDto = {}",dto);
+
         boolean isReadingCurrentStateValid = false;
         boolean isAlreadyBifurcated = true;
         boolean isAlreadyBifurcatedForSamePlant=true;
 
         List<String> validCurrentState = List.of("dev_accept","circle_reject");
 
+        logger.info(methodName + "getting current reading bean by calling meter reading service..");
         MeterReadingBean currentReadingBean = meterReadingService.getReadingByMeterNoAndReadingDateAndStatus
                 (dto.getMeterNo(),dto.getCurrentReadingDate(),"active");
 
+        logger.info(methodName + "getting previous reading bean by calling meter reading service..");
         MeterReadingBean previousReadingBean =
                 meterReadingService.getReadingByMeterNoAndReadingDateAndStatus
                         (dto.getMeterNo(),dto.getPreviousReadingDate(),"active");
@@ -125,25 +142,35 @@ public class BifurcateConsumptionService {
                 throw new ApiException(HttpStatus.BAD_REQUEST, "Same Plant is already bifurcated by either main or check meter " +
                         "for given reading date " + dto.getCurrentReadingDate());
         }catch (ApiException apiException){
+            logger.error(methodName+"throw apiException");
             throw apiException;
         }catch (DataIntegrityViolationException d){
+            logger.error(methodName+"throw DataIntegrityViolationException");
             throw d;
         }catch (Exception e){
+            logger.error(methodName+"throw Exception");
             throw e;
         }
 
-        if (isReadingCurrentStateValid && !(isAlreadyBifurcated) && !(isAlreadyBifurcatedForSamePlant))
+        if (isReadingCurrentStateValid && !(isAlreadyBifurcated) && !(isAlreadyBifurcatedForSamePlant)) {
+            logger.info(methodName + "method return valid");
             return "valid";
-        else
+        }
+        else {
+            logger.info(methodName + "method return invalid");
             return "invalid";
+        }
     }
 
     private BifurcateConsumptionDto makeBifurcateDto(MeterConsumptionDto meterConsumptionDto){
+        final String methodName = "makeBifurcateDto() : ";
+        logger.info(methodName + "called with parameters MeterConsumptionDto = {}",meterConsumptionDto);
          try {
              BifurcateConsumptionDto bifurcateDto = new BifurcateConsumptionDto();
 
              //get current username and developer id and developer name
              String username = new TokenInfo().getCurrentUsername();
+             logger.info(methodName + "got the current user "+username);
              String developerId = String.valueOf(developerMasterRepo.findIdByDeveloperUsername(username));
              String developerName = developerMasterRepo.findByIdAndStatus(Long.valueOf(developerId), "active").getDeveloperName();
 
@@ -151,6 +178,7 @@ public class BifurcateConsumptionService {
              bifurcateDto.setHDevId(developerId);
              bifurcateDto.setHDevName(developerName);
              bifurcateDto.setHDevPlantcode(plantCode);
+             logger.info(methodName + "getting the plant name and circle name by passing plant code "+plantCode);
              bifurcateDto.setHDevPlantName(plantMasterService.getPlantByPlantCode(bifurcateDto.getHDevPlantcode(), "active").getPlantName());
              bifurcateDto.setHCircleName(plantMasterService.getPlantByPlantCode(bifurcateDto.getHDevPlantcode(), "active")
                      .getLocationMaster().getCircleName());
@@ -168,6 +196,7 @@ public class BifurcateConsumptionService {
                      .subtract(bifurcateDto.getHAdjustment())));
 
              //Fetch Distinct Investor list from InvestorMachine Mapping belongs by Meter Feeder Mapping id
+             logger.info(methodName + "Fetch Distinct Investor list from InvestorMachine Mapping belongs by Meter Feeder Mapping id "+mfpBeanId);
              List<InvestorMachineMappingBean> investorMachineMappingBeans = investorMachineMappingService.getMappingByMFPId(mfpBeanId, "active");
              if (investorMachineMappingBeans.size() == 0)
                  throw new ApiException(HttpStatus.BAD_REQUEST, "Not Any Investor Mapped to this plant..");
@@ -175,6 +204,7 @@ public class BifurcateConsumptionService {
              List<String> investorCodes = investorMachineMappingBeans.stream().map(InvestorMachineMappingBean::getInvestorCode)
                      .distinct().collect(Collectors.toList());
              //make the bifurcation dto of investor on line
+             logger.info(methodName + "make the BifurcateInvestorDto list of investor on line by passing "+investorCodes);
              List<BifurcateInvestorDto> bifurcateInvestorDtoList = getBifurcateInvestorDtoList(investorCodes, bifurcateDto.getHMf());
              bifurcateDto.setBifurcateInvestorDtoList(bifurcateInvestorDtoList);
 
@@ -186,19 +216,27 @@ public class BifurcateConsumptionService {
              bifurcateDto.setFGrandConsumptionKwh(BigDecimal.valueOf(0));
              bifurcateDto.setFUnallocatedConsumptionKwh(BigDecimal.valueOf(0));
 
+             logger.info(methodName + "return BifurcateInvestorDto "+bifurcateDto);
              return bifurcateDto;
          }catch (ApiException apiException){
+             logger.error(methodName+"throw apiException");
              throw apiException;
          }catch (DataIntegrityViolationException d){
+             logger.error(methodName+"throw DataIntegrityViolationException");
              throw d;
          }catch (Exception e){
+             logger.error(methodName+"throw Exception");
              throw e;
          }
     }
 
     private List<BifurcateInvestorDto> getBifurcateInvestorDtoList(List<String> investorCodes,BigDecimal meterMf){
+        final String methodName2 = "getBifurcateInvestorDtoList() : ";
+        logger.info(methodName2 + "called with parameters investorCodes of size = {}",investorCodes.size());
         List<BifurcateInvestorDto> bifurcateInvestorDtoList = new ArrayList<>();
+        logger.info(methodName2 + "loop on each investor and set dto");
         for (String investor : investorCodes){
+            logger.info(methodName2 + investor + "investor on loop iteration");
             BifurcateInvestorDto dto = new BifurcateInvestorDto();
             InvestorMasterBean investorMasterBean = investorMasterService.getInvestorByInvestorCode(investor,"active");
             if(investorMasterBean == null)
@@ -209,17 +247,23 @@ public class BifurcateConsumptionService {
 
 
             //Get machine code by investor code
+            logger.info(methodName2 + "Get machine code by investor code " + investor);
             List<String> machineCodes = investorMachineMappingService.getMappingByInvestorCode(investor,"active").stream()
                     .map(InvestorMachineMappingBean::getMachineCode).collect(Collectors.toList());
             // after getting machine codes of an investor then sum machine capacity
+            logger.info(methodName2 + "sum machine capacity.. ");
             List<MachineMasterBean> machineMasterBeanList = machineMasterService.getAllMachineByMachineCodeList(machineCodes,"active");
             BigDecimal investorMachineTotalCapacity = BigDecimal.valueOf(0);
 
             //BigDecimal investorMachineActiveRate = BigDecimal.valueOf(0);
-            machineMasterBeanList.stream().forEach(s -> {
-                new BigDecimal(s.getCapacity()).add(investorMachineTotalCapacity);
-                //new BigDecimal(s.getActiveRate()).add(investorMachineActiveRate);
-            });
+            for(MachineMasterBean m : machineMasterBeanList){
+                BigDecimal temp = new BigDecimal(m.getCapacity());
+                investorMachineTotalCapacity = investorMachineTotalCapacity.add(temp);
+            }
+//            machineMasterBeanList.stream().forEach(s -> {
+//                new BigDecimal(s.getCapacity()).add(investorMachineTotalCapacity);
+//                //new BigDecimal(s.getActiveRate()).add(investorMachineActiveRate);
+//            });
             //if (investorMachineActiveRate.divide(BigDecimal.valueOf(machineCodes.size())) == machineMasterBean.getActiveRate().)
 
 
@@ -242,14 +286,17 @@ public class BifurcateConsumptionService {
 //                    .add(dto.getLAssessment())
 //                    .subtract(dto.getLAdjustment()));
 
+            logger.info(methodName2 + "bifurcateInvestorDto dto is added to list.. ");
             bifurcateInvestorDtoList.add(dto);
         }
+        logger.info(methodName2 + "return bifurcateInvestorDto list iof size "+bifurcateInvestorDtoList.size());
         return bifurcateInvestorDtoList;
     }
 
     @Transactional
     public BifurcateConsumptionDto saveBifurcateDto(BifurcateConsumptionDto dto) {
-
+        final String methodName = "saveBifurcateDto() : ";
+        logger.info(methodName + "called with parameters BifurcateConsumptionDto = {}",dto);
         try {
                 //First check the validation of Bifurcate Dto provided by front end
                 if ((dto.getHConsumptionKwh().compareTo(BigDecimal.valueOf(0)) == 0) || (dto.getFSumConsumptionKwh().compareTo(BigDecimal.valueOf(0)) == 0))
@@ -268,6 +315,7 @@ public class BifurcateConsumptionService {
                     //if all condition fail then save the bean
                 else {
                     //get the investor bifurcated dtos
+                    logger.info(methodName + "looping BifurcateInvestorDtoList and get the investor bifurcated dtos. ");
                     for (BifurcateInvestorDto bifurcateInvestorDto : dto.getBifurcateInvestorDtoList()){
                         //Setup of type map because destination and source have different property
                         ModelMapper modelMapper = new ModelMapper();
@@ -282,19 +330,23 @@ public class BifurcateConsumptionService {
                         BifurcateBean bean = modelMapper.map(dto,BifurcateBean.class);
                         modelMapper.map(bifurcateInvestorDto,bean);
                         //save audit trails
+                        logger.info(methodName + "set the audit trails then save the bean. ");
                         new AuditControlServices().setInitialAuditControlParameters(bean);
                         bifurcateBeanRepo.save(bean);
 
                     }
             }
         }catch (ApiException apiException){
+            logger.error(methodName+"throw apiException");
             throw apiException;
         }catch (DataIntegrityViolationException d){
+            logger.error(methodName+"throw DataIntegrityViolationException");
             throw d;
         }catch (Exception e){
+            logger.error(methodName+"throw Exception");
             throw e;
         }
-
+        logger.info(methodName + "return the dto of class BifurcateConsumptionDto");
         return dto;
     }
 
@@ -339,7 +391,7 @@ public class BifurcateConsumptionService {
 
             List<BifurcateBean> bifurcateBeanList = bifurcateBeanRepo.findDistinctMeterNumberByDeveloperUsername(username);
             if (bifurcateBeanList.size() == 0)
-                throw new ApiException(HttpStatus.BAD_REQUEST,"Meter Consumption is not bifurcated yet for given month..");
+                throw new ApiException(HttpStatus.BAD_REQUEST,"No Any Meter Bifurcated by user till date..");
             for (BifurcateBean row : bifurcateBeanList){
                 Map<String,String> m = new HashMap<>();
                 m.put("meterNumber", row.gethMeterNumber());
@@ -369,7 +421,7 @@ public class BifurcateConsumptionService {
 
             List<BifurcateBean> bifurcateBeanList = bifurcateBeanRepo.findDistinctMeterNumberByCircleName(username);
             if (bifurcateBeanList.size() == 0)
-                throw new ApiException(HttpStatus.BAD_REQUEST,"Meter Consumption is not bifurcated yet for given month..");
+                throw new ApiException(HttpStatus.BAD_REQUEST,"No Any Meter Bifurcated by user till date..");
             for (BifurcateBean row : bifurcateBeanList){
                 Map<String,String> m = new HashMap<>();
                 m.put("meterNumber", row.gethMeterNumber());
@@ -417,30 +469,44 @@ public class BifurcateConsumptionService {
     }
 
     public BifurcateBean getBifurcateBeanByInvestorCodeAndMonth(String investorCode,String monthYear,String status){
+        final String methodName = "getBifurcateBeanByInvestorCodeAndMonth() : ";
+        logger.info(methodName + "called with parameters investorCode = {}, monthYear = {} and status = {}",investorCode,monthYear,status);
         try {
+            logger.info(methodName + "return BifurcateBean bean ");
             return bifurcateBeanRepo.findByLInvestorCodeAndHmonthAndStatus(investorCode,monthYear,"active");
         }catch (Exception exception){
+            logger.error(methodName+"throw Exception");
             throw exception;
         }
     }
 
     public boolean isExistsInvestorInBifurcateBean(String investorCode,String monthYear,String status) {
+        final String methodName = "isExistsInvestorInBifurcateBean() : ";
+        logger.info(methodName + "called with parameters investorCode = {}, monthYear = {} and status = {}",investorCode,monthYear,status);
         try {
+            logger.info(methodName + "return boolean value ");
             return bifurcateBeanRepo.isExistsInvestorInBifurcateBean(investorCode,monthYear,status);
         }catch (Exception exception){
+            logger.error(methodName+"throw Exception");
             throw exception;
         }
     }
 
     public List<BifurcateBean> getBifurcateBeanByMeterNoAndMonth(String meterNo,String monthYear) {
+        final String methodName = "getBifurcateBeanByMeterNoAndMonth() : ";
+        logger.info(methodName + "called with parameters meterNo = {}, monthYear = {}",meterNo,monthYear);
         try {
+                logger.info(methodName + "return BifurcateBean list ");
                return bifurcateBeanRepo.findAllByHMeterNumberAndHMonthAndStatus(meterNo,monthYear,"active");
         }catch (Exception exception){
+            logger.error(methodName+"throw Exception");
             throw exception;
         }
     }
 
     public void setInactiveBifurcateBean(String investorCode,String monthYear,String status){
+        final String methodName = "setInactiveBifurcateBean() : ";
+        logger.info(methodName + "called with parameters investorCode = {}, monthYear = {} and status ={}",investorCode,monthYear,status);
         //make bifurcation also invalid
         try {
             BifurcateBean bifurcateBean = bifurcateBeanRepo.findByLInvestorCodeAndHmonthAndStatus
@@ -449,8 +515,9 @@ public class BifurcateConsumptionService {
             bifurcateBean.setUpdatedBy(new TokenInfo().getCurrentUsername());
             bifurcateBean.setUpdatedOn(new DateMethods().getServerTime());
             bifurcateBeanRepo.save(bifurcateBean);
+            logger.info(methodName + "mark inactive the bifurcate bean "+bifurcateBean);
         }catch (Exception exception){
-            exception.printStackTrace();
+            logger.error(methodName+"throw Exception");
             throw exception;
         }
     }
@@ -465,13 +532,17 @@ public class BifurcateConsumptionService {
     }
 
     public BifurcateConsumptionDto getAlreadyBifurcatedBeanDto(String meterNo, String monthYear) {
+        final String methodName = "getAlreadyBifurcatedBeanDto() : ";
+        logger.info(methodName + "called with parameters meterNo = {}, monthYear = {}",meterNo,monthYear);
         try {
+                logger.info(methodName + "call the repo and get bifurcateBeanList");
                 List<BifurcateBean> bifurcateBeanList = bifurcateBeanRepo.findAllByHMeterNumberAndHMonthAndStatus
                         (meterNo,monthYear,"active");
                 if (bifurcateBeanList.size() == 0)
                     throw new ApiException(HttpStatus.BAD_REQUEST,meterNo + " meter is not bifurcated for given month");
                 //set the investor bifurcated dtos
                 List<BifurcateInvestorDto> bifurcateInvestorDtoList = new ArrayList<>();
+                logger.info(methodName + "looping on bifurcateBeanList and set the list of BifurcateInvestorDto");
                 for (BifurcateBean bifurcateBean : bifurcateBeanList){
                     BifurcateInvestorDto bifurcateInvestorDto = new BifurcateInvestorDto();
 
@@ -507,13 +578,17 @@ public class BifurcateConsumptionService {
 
                 bifurcateConsumptionDto.setBifurcateInvestorDtoList(bifurcateInvestorDtoList);
 
+                logger.info(methodName + "return the BifurcateInvestorDto = {}",bifurcateConsumptionDto);
                 return bifurcateConsumptionDto;
 
         }catch (ApiException apiException){
+            logger.error(methodName+"throw ApiException");
             throw apiException;
         }catch (DataIntegrityViolationException d){
+            logger.error(methodName+"throw DataIntegrityViolationException");
             throw d;
         }catch (Exception e){
+            logger.error(methodName+"throw Exception");
             throw e;
         }
     }
