@@ -37,4 +37,6 @@ public interface PlantMasterRepo extends CrudRepository<PlantMasterBean,Long> {
     Integer findMaxInvestorCode();
 
     PlantMasterBean findByPlantNameIgnoreCaseAndStatus(String plantName, String active);
+    @Query(value = "select * from ecell.re_plant_master where plant_code not in (:mappedPlantCodes) AND status=:status ORDER BY id ASC ", nativeQuery = true)
+    List<PlantMasterBean> findUnmappedPlants(@Param("mappedPlantCodes") List<String> mappedPlantCodes, @Param("status") String status);
 }

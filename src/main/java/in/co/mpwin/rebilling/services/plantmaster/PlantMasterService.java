@@ -206,6 +206,35 @@ public class PlantMasterService {
         }
     }
 
+    public List<PlantMasterBean> getAllUnMappedPlants() {
+        final String methodName = "getAllUnMappedPlants() : ";
+        logger.info(methodName + "called with parameters empty");
+
+        List<PlantMasterBean> unMappedPlantList ;
+        try {
+            LocalDate endDate = LocalDate.now();
+            List<String> plantCodeInMfpMapping = meterFeederPlantMappingRepo.findDistinctPlantCodeByEndDateAndStatus(endDate,"active");
+            // get unmapped plants excluding plant codes present in mfp mapping table.
+            unMappedPlantList= plantMasterRepo.findUnmappedPlants(plantCodeInMfpMapping,"active");
+            if (unMappedPlantList.isEmpty())
+                throw new ApiException(HttpStatus.BAD_REQUEST, "plant list are not found.");
+            logger.info(methodName + " return with  PlantMasterBean list of size : {}", unMappedPlantList.size());
+            return unMappedPlantList;
+        } catch (ApiException apiException){
+            logger.error(methodName+" throw apiException");
+            throw apiException;
+        }catch (DataIntegrityViolationException d){
+            logger.error(methodName+" throw DataIntegrityViolationException");
+            throw d;
+        }catch (NullPointerException ex){
+            logger.error(methodName+" throw NullPointerException");
+            throw ex;
+        } catch (Exception e) {
+            logger.error(methodName+" throw Exception");
+            throw e;
+        }
+
+    }
 }
 
 

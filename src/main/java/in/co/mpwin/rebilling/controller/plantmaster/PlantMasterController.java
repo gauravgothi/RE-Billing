@@ -215,6 +215,29 @@ public class PlantMasterController {
             }
         return plantResp;
     }
+// api for getting unmapped plant for mfp mapping
+    @RequestMapping(method= RequestMethod.GET,value="/unmapped")
+    public ResponseEntity<PlantMasterBean> getAllUnMappedPlants(){
+        final String methodName = "getAllUnMappedPlants() : ";
+        logger.info(methodName + "called with parameters empty");
+        ResponseEntity plantResp = null;
+        try {
+            List<PlantMasterBean> plantList = plantMasterService.getAllUnMappedPlants();
+            plantResp = new ResponseEntity<>(plantList, HttpStatus.OK);
+            logger.info(methodName + "return with PlantMasterBean list of size : {} ",plantList.size());
+        }catch(ApiException apiException) {
+            plantResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+            logger.error(methodName+" API Exception occurred: {}", apiException.getMessage());
+        } catch(DataIntegrityViolationException e) {
+            plantResp = new ResponseEntity<>(new Message("Data Integrity Violation Exception occurred : "+e.getMessage()),HttpStatus.BAD_REQUEST);
+            logger.error(methodName+"Data Integrity Violation Exception occurred: {}",e.getMessage());
+        } catch(Exception e) {
+            plantResp = new ResponseEntity<>(new Message("Exception occurred : " +e.getMessage()),HttpStatus.BAD_REQUEST);
+            logger.error(methodName+" Exception occurred: {}",e.getMessage(),e);
+        }
+        return plantResp;
+    }
+
 
 
 }
