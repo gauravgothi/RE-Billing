@@ -1,5 +1,6 @@
 package in.co.mpwin.rebilling.jwt.util;
 
+import in.co.mpwin.rebilling.miscellanious.DateMethods;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -137,11 +138,12 @@ public class PasswordEncoderGenerator {
             System.out.println(itr);
         }*/
 
+        Timestamp replacementDate = new DateMethods().getServerTime();
+        LocalDate endDate = LocalDate.now();
+        System.out.println("local end date ="+endDate);
 
-//        LocalDate endDate = LocalDate.now();
-//        System.out.println("local end date ="+endDate);
 
-
+/*
         try{
             String msg = null;
             System.out.println("string msg ="+msg+" and length="+msg.length()+" and lower case="+msg.toLowerCase());
@@ -153,7 +155,7 @@ public class PasswordEncoderGenerator {
             System.out.println(" \n ex.getCause() ="+ex.getCause());
             System.out.println(" \n ex.getStackTrace()="+ex.getStackTrace());
 
-        }
+        }*/
 
     }
 }

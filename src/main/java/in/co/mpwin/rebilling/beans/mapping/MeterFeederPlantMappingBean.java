@@ -1,6 +1,7 @@
 package in.co.mpwin.rebilling.beans.mapping;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import in.co.mpwin.rebilling.beans.feedermaster.FeederMasterBean;
 import in.co.mpwin.rebilling.beans.metermaster.MeterMasterBean;
 import in.co.mpwin.rebilling.beans.plantmaster.PlantMasterBean;
@@ -72,7 +73,7 @@ public class MeterFeederPlantMappingBean implements BeanInterface {
 
 
     @NotNull
-    @Column(name="end_date")
+    @Column(name="end_date") @NotNull @JsonFormat(pattern = "yyyy-MM-dd",timezone = "IST")
     Date endDate ;
     @Column(name = "created_by")
     private String createdBy;

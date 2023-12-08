@@ -1,5 +1,6 @@
 package in.co.mpwin.rebilling.services.metermaster;
 
+import in.co.mpwin.rebilling.beans.mapping.InvestorMachineMappingBean;
 import in.co.mpwin.rebilling.beans.mapping.MeterFeederPlantMappingBean;
 import in.co.mpwin.rebilling.beans.metermaster.MeterMasterBean;
 import in.co.mpwin.rebilling.beans.metermaster.MeterReplacementBean;
@@ -9,6 +10,7 @@ import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.AuditControlServices;
 import in.co.mpwin.rebilling.miscellanious.DateMethods;
 import in.co.mpwin.rebilling.miscellanious.TokenInfo;
+import in.co.mpwin.rebilling.repositories.mapping.InvestorMachineMappingRepo;
 import in.co.mpwin.rebilling.repositories.mapping.MeterFeederPlantMappingRepo;
 import in.co.mpwin.rebilling.repositories.metermaster.MeterMasterRepo;
 import in.co.mpwin.rebilling.repositories.metermaster.MeterReplacementRepo;
@@ -25,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -41,11 +44,12 @@ public class MeterReplacementService {
 
     @Autowired
     MeterFeederPlantMappingService meterFeederPlantMappingService;
-
     @Autowired
     AuditControlServices auditControlServices;
     @Autowired MeterMasterRepo meterMasterRepo;
     @Autowired private MeterFeederPlantMappingRepo meterFeederPlantMappingRepo;
+
+    @Autowired private InvestorMachineMappingRepo investorMachineMappingRepo;
 
 
     @Transactional
@@ -73,8 +77,6 @@ public class MeterReplacementService {
                         break;
                 }
 
-                Timestamp replacementDate = new DateMethods().getServerTime();
-
                 newMFPMapping.setCreatedOn(new DateMethods().getServerTime());
                 newMFPMapping.setUpdatedOn(new DateMethods().getServerTime());
                 newMFPMapping.setCreatedBy(new TokenInfo().getCurrentUsername());
@@ -86,14 +88,16 @@ public class MeterReplacementService {
                 newMFPMapping.setStatus("active");
 
                 // update old mfp mapping end date
-                oldMFPMapping.setEndDate(new DateMethods().getServerTime());
-                oldMFPMapping.setUpdatedOn(replacementDate);
+
+                oldMFPMapping.setEndDate(replaceDate);
+                oldMFPMapping.setUpdatedOn(new DateMethods().getServerTime());
                 oldMFPMapping.setUpdatedBy(new TokenInfo().getCurrentUsername());
 
 
-                MeterFeederPlantMappingBean resp1 =   meterFeederPlantMappingRepo.save(newMFPMapping);
-                MeterFeederPlantMappingBean resp2 =    meterFeederPlantMappingRepo.save(oldMFPMapping);
-                if (resp1 != null &&  resp2!=null) {
+                MeterFeederPlantMappingBean newMappingResponse =   meterFeederPlantMappingRepo.save(newMFPMapping);
+                MeterFeederPlantMappingBean oldMappingResponse =    meterFeederPlantMappingRepo.save(oldMFPMapping);
+                if (newMappingResponse != null &&  oldMappingResponse!=null) {
+                 updateInvestorMachineMapping(oldMappingResponse.getId(),newMappingResponse.getId());
                     logger.info(methodName + " return with result = true ");
                     return true;
                 }else{
@@ -357,6 +361,35 @@ public class MeterReplacementService {
             logger.error(methodName+" throw Exception");
             throw e;
         }
+    }
 
+    //In meter replacement case, all investors and machines of oldMfpId are added in ecell.re_investor_machine_mapping table with newMfpId for bifurcation of both old and new meters.
+    public void updateInvestorMachineMapping(Long oldMfpId,Long newMfpId){
+        final String methodName = "updateInvestorMachineMapping() : ";
+        logger.info(methodName + "called with parameters oldMfpId={}, newMfpId={}",oldMfpId,newMfpId);
+        List<InvestorMachineMappingBean> oldMapping = investorMachineMappingRepo.findAllByMfpIdAndStatus(oldMfpId,"active");
+          if(!oldMapping.isEmpty()) {
+            List<InvestorMachineMappingBean> newMapping = new ArrayList<>(oldMapping.size());
+            for (int i = 0; i < oldMapping.size(); i++) {
+                // newMapping.add(oldMapping.get(i));
+                InvestorMachineMappingBean newBean = new InvestorMachineMappingBean();
+                oldMapping.get(i).setUpdatedBy(new TokenInfo().getCurrentUsername());
+                oldMapping.get(i).setUpdatedOn(new DateMethods().getServerTime());
+                oldMapping.get(i).setRemark("meter_replaced");
+                newBean.setMfpId(newMfpId);
+                newBean.setCreatedBy(new TokenInfo().getCurrentUsername());
+                newBean.setCreatedOn(new DateMethods().getServerTime());
+                newBean.setUpdatedBy(new TokenInfo().getCurrentUsername());
+                newBean.setUpdatedOn(new DateMethods().getServerTime());
+                newBean.setInvestorCode(oldMapping.get(i).getInvestorCode());
+                newBean.setMachineCode(oldMapping.get(i).getMachineCode());
+                newBean.setStatus(oldMapping.get(i).getStatus());
+                newBean.setRemark("");
+                newMapping.add(newBean);
+            }
+            investorMachineMappingRepo.saveAll(oldMapping);
+            investorMachineMappingRepo.saveAll(newMapping);
+        }
+        logger.info(methodName+"return with void");
     }
 }

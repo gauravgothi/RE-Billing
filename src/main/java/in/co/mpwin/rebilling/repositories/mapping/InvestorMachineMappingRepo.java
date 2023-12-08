@@ -28,4 +28,6 @@ public interface InvestorMachineMappingRepo extends CrudRepository<InvestorMachi
     @Query(value ="select distinct machine_code from ecell.re_investor_machine_mapping where status=:status",nativeQuery = true)
     List<String> findMachineCodesByStatus(@Param("status") String active);
 
+    @Query(value ="select * from ecell.re_investor_machine_mapping where mfp_id=:mfpId And status=:status ORDER BY id ASC",nativeQuery = true)
+    List<InvestorMachineMappingBean> findAllByMfpIdAndStatus(@Param("mfpId") Long mfpId,@Param("status") String active);
 }
