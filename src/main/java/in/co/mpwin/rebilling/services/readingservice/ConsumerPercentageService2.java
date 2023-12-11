@@ -14,6 +14,8 @@ import in.co.mpwin.rebilling.services.mapping.MeterFeederPlantMappingService;
 import in.co.mpwin.rebilling.services.metermaster.MeterMasterService;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -28,6 +30,8 @@ import java.util.stream.Stream;
 
 @Service
 public class ConsumerPercentageService2 {
+
+    private static final Logger logger = LoggerFactory.getLogger(ConsumerPercentageService2.class);
     @Autowired private DeveloperMasterService developerMasterService;
     @Autowired private MeterFeederPlantMappingService meterFeederPlantMappingService;
     @Autowired private FeederMasterService feederMasterService;
@@ -39,11 +43,15 @@ public class ConsumerPercentageService2 {
     private FivePercentRepo fivePercentRepo;
 
     public List<ConsumptionPercentageDto2> calculatePercentageReport2(Date startDate, Date endDate) throws ParseException{
+        final String methodName = "calculatePercentageReport2() : ";
+        logger.info(methodName + " called with parameters startDate={} and endDate",startDate,endDate);
         List<ConsumptionPercentageDto2> dtoList = new ArrayList<>();
         Date futureEndDate = new SimpleDateFormat("dd-MM-yyyy").parse("31-12-2024");
         String monthYear = new DateMethods().getMonthYear(endDate);
         try {
             List<DeveloperMasterBean> developerList = developerMasterService.getAllDeveloperMasterBean("active");
+            logger.info(methodName + "all active developers fetched..");
+            logger.info(methodName + "looping on developers and set mfp beans with respect to plant code in map..");
             for (int k =0;developerList.size()>k;k++){
 
                 List<MeterFeederPlantMappingBean> mappingBeanList = meterFeederPlantMappingService
@@ -53,12 +61,14 @@ public class ConsumerPercentageService2 {
                 // now arrange it plant wise in map <PlantCode,List<MFPBean>>
                 List<Map<String,List<MeterFeederPlantMappingBean>>> plantMFPList = new ArrayList<>();
                 List<String> distinctPlants = meterFeederPlantMappingService.getDistinctPlantCodeByDeveloperId(String.valueOf(developerList.get(k).getId()), "active");
+                logger.info(methodName + "looping on distinct plants..");
                 for (String plant : distinctPlants){
                     //If calculation is already done for plant then simple continue
                     Boolean isAlreadyExist = fivePercentService.isAlreadyExistRecord(plant,monthYear);
-                    if (isAlreadyExist)
+                    if (isAlreadyExist) {
+                        logger.info(methodName + "0.5% already calculated for plant = {}",plant);
                         continue;
-
+                    }
                     //for each plant we have list of mapping, calculate the consumption for each plant
                     Map<String,List<MeterFeederPlantMappingBean>> singlePlantMap = new HashMap<>();
                     singlePlantMap.put(plant,mappingBeanList.stream().filter(bean -> ((bean.getPlantCode().equals(plant)) &&
@@ -70,6 +80,7 @@ public class ConsumerPercentageService2 {
                     plantMFPList.add(singlePlantMap);
                 }
                 //now run loop on map to calculate main meters consumption
+                logger.info(methodName + "calculated 0.5% report in loop for remaining plants which reading newly inserted..");
                 for(Map<String,List<MeterFeederPlantMappingBean>> plantMFP : plantMFPList){
                     ConsumptionPercentageDto2 consumptionPercentageDto2 = new ConsumptionPercentageDto2();
                     consumptionPercentageDto2.setDeveloperId(String.valueOf(developerList.get(k).getId()));
@@ -83,8 +94,10 @@ public class ConsumerPercentageService2 {
                     List<MeterFeederPlantMappingBean> MFPBeans = plantMFP.values().iterator().next();
 
                     //IF DEVELOPER HAVE NOT ANY MAPPING THEN SIMPLY CONTINUE THE LOOP
-                    if(MFPBeans.size()==0)
+                    if(MFPBeans.size()==0){
+                        logger.info(methodName + "developer ={} not have any mapping then simply continue..",developerList.get(k).getDeveloperName());
                         continue;
+                    }
                     consumptionPercentageDto2.setFeederCode(MFPBeans.get(0).getFeederCode());
                     consumptionPercentageDto2.setFeederName(feederMasterService.getFeederByFeederNumber(
                             MFPBeans.get(0).getFeederCode(), "active").getFeederName());
@@ -149,17 +162,23 @@ public class ConsumerPercentageService2 {
 
             }
         }catch (ApiException apiException) {
+            logger.error(methodName+" throw apiException");
             throw apiException;
         } catch (DataIntegrityViolationException d) {
+            logger.error(methodName+" throw DataIntegrityViolationException");
             throw d;
         } catch (Exception e) {
+            logger.error(methodName+" throw common Exception");
             throw e;
             // Handle the exception or log the error as needed
         }
+        logger.info(methodName + "end and return 0.5% report dto(s)..");
         return dtoList;
     }
     //set single Main meter DTO value operation
     private MainMeterDto calculateMainMeterCons(String meterNo,Date startDate,Date endDate){
+        final String methodName1 = "calculateMainMeterCons() : ";
+        logger.info(methodName1 + " called with parameters meterNo={}, startDate = {} and endDate ={}",meterNo,startDate,endDate);
         MainMeterDto mainMeterDto = new MainMeterDto();
         mainMeterDto.setMainMeterNumber(meterNo);
 
@@ -176,6 +195,7 @@ public class ConsumerPercentageService2 {
         mainMeterDto.setMainPreviousReading(previous);
         mainMeterDto.setMainCurrentReading(current);
         if (isBothReadingAvailable){
+            logger.info(methodName1 + "both reading available for main meter so calculating 0.5% dto");
             mainMeterDto.setMainAssessment(currentReading.getEAssesment());
             mainMeterDto.setMainReadingDifference(current.subtract(previous));
             mainMeterDto.setMainMf(meterMasterService.getMeterDetailsByMeterNo(meterNo, "active").getMf());
@@ -183,17 +203,21 @@ public class ConsumerPercentageService2 {
                     .setScale(2, RoundingMode.HALF_DOWN));
             mainMeterDto.setMainTotalConsumption(mainMeterDto.getMainConsumption().add(mainMeterDto.getMainAssessment()));
         }else{
+            logger.info(methodName1 + "both reading not available for main meter so set value to -1..");
             mainMeterDto.setMainAssessment(BigDecimal.valueOf(-1));
             mainMeterDto.setMainReadingDifference(BigDecimal.valueOf(-1));
             mainMeterDto.setMainMf(meterMasterService.getMeterDetailsByMeterNo(meterNo, "active").getMf());
             mainMeterDto.setMainConsumption(BigDecimal.valueOf(-1));
             mainMeterDto.setMainTotalConsumption(BigDecimal.valueOf(-1));
         }
+        logger.info(methodName1 + "returned mainMeterDto success..");
         return mainMeterDto;
     }
 
     //set single Check meter DTO value operation
     private CheckMeterDto calculateCheckMeterCons(String meterNo,Date startDate,Date endDate){
+        final String methodName1 = "calculateCheckMeterCons() : ";
+        logger.info(methodName1 + " called with parameters meterNo={}, startDate = {} and endDate ={}",meterNo,startDate,endDate);
         CheckMeterDto checkMeterDto = new CheckMeterDto();
         checkMeterDto.setCheckMeterNumber(meterNo);
 
@@ -210,6 +234,7 @@ public class ConsumerPercentageService2 {
         checkMeterDto.setCheckPreviousReading(previous);
         checkMeterDto.setCheckCurrentReading(current);
         if (isBothReadingAvailable){
+            logger.info(methodName1 + "both reading available for check meter so calculating 0.5% dto");
             checkMeterDto.setCheckAssessment(currentReading.getEAssesment());
             checkMeterDto.setCheckReadingDifference(current.subtract(previous));
             checkMeterDto.setCheckMf(meterMasterService.getMeterDetailsByMeterNo(meterNo, "active").getMf());
@@ -217,12 +242,14 @@ public class ConsumerPercentageService2 {
                     .setScale(2, RoundingMode.HALF_DOWN));
             checkMeterDto.setCheckTotalConsumption(checkMeterDto.getCheckConsumption().add(checkMeterDto.getCheckAssessment()));
         }else{
+            logger.info(methodName1 + "both reading not available for check meter so set value to -1..");
             checkMeterDto.setCheckAssessment(BigDecimal.valueOf(-1));
             checkMeterDto.setCheckReadingDifference(BigDecimal.valueOf(-1));
             checkMeterDto.setCheckMf(meterMasterService.getMeterDetailsByMeterNo(meterNo, "active").getMf());
             checkMeterDto.setCheckConsumption(BigDecimal.valueOf(-1));
             checkMeterDto.setCheckTotalConsumption(BigDecimal.valueOf(-1));
         }
+        logger.info(methodName1 + "returned checkMeterDto success..");
         return checkMeterDto;
     }
 
@@ -230,12 +257,16 @@ public class ConsumerPercentageService2 {
     public List<FivePercentBean> consumptionPercentageDto2ToFivePercentageBean(List<ConsumptionPercentageDto2> consumptionPercentageDto2List, String month){
         //If calculation is already done for plant then simple fetch beans and convert to dto, after combine and collect in set
         //List<FivePercentBean> alreadyExistBeans = fivePercentService.getByMonth(month);
+        final String methodName1 = "consumptionPercentageDto2ToFivePercentageBean() : ";
+        logger.info(methodName1 + " called with parameters consumptionPercentageDto2List={}, month = {}",consumptionPercentageDto2List,month);
+
         List<FivePercentBean> alreadyExistButNotApproved = fivePercentService.getByMonthAndRemarkEqualTo(month,"calculated");
         List<FivePercentBean> newlyCalculatedBeans = consumptionPercentageDto2List.stream().map((value)->convertDtoToBean(value)).collect(Collectors.toList());
         List<FivePercentBean> combinedBeans = new ArrayList<>(alreadyExistButNotApproved);
                             combinedBeans.addAll(newlyCalculatedBeans);
         Set<FivePercentBean> fivePercentBeanSet = new HashSet<>(combinedBeans);
 
+        logger.info(methodName1 + "return list of FivePercentBean class");
         return fivePercentBeanSet.stream().sorted(Comparator.comparing(FivePercentBean::getDeveloperId)).collect(Collectors.toList());
 
     }
@@ -243,6 +274,9 @@ public class ConsumerPercentageService2 {
     //Convert single consumptionpercentagedto to string consumptionpercentagebean
     private FivePercentBean convertDtoToBean(ConsumptionPercentageDto2 dto2){
         //Setup of type map because destination have extra property
+        final String methodName1 = "convertDtoToBean() : ";
+        logger.info(methodName1 + " Convert single consumptionpercentagedto to string consumptionpercentagebean");
+
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.addMappings(new PropertyMap<ConsumptionPercentageDto2, FivePercentBean>() {
             @Override
@@ -274,7 +308,8 @@ public class ConsumerPercentageService2 {
         bean.setCheckAssessment(concatDelim(checkMeters.stream().map(c -> c.getCheckAssessment().toPlainString())).replaceAll("-1","NA"));
         bean.setCheckConsumption(concatDelim(checkMeters.stream().map(c -> c.getCheckConsumption().toPlainString())).replaceAll("-1","NA"));
         bean.setCheckTotalConsumption(String.valueOf(dto2.getCheckGrandTotalConsumption().toPlainString()).replaceAll("-1","NA"));
-        
+
+        logger.info(methodName1 + "return five percent bean..");
         return bean;
     }
 
