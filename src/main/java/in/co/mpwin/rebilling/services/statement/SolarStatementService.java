@@ -27,6 +27,8 @@ import in.co.mpwin.rebilling.services.metermaster.MeterMasterService;
 import in.co.mpwin.rebilling.services.plantmaster.PlantMasterService;
 import in.co.mpwin.rebilling.services.readingservice.MeterReadingService;
 import in.co.mpwin.rebilling.services.thirdparty.ThirdPartyService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -44,6 +46,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class SolarStatementService {
+
+    private static final Logger logger = LoggerFactory.getLogger(SolarStatementService.class);
 
     @Autowired
     private MeterFeederPlantMappingService mfpService;
@@ -70,13 +74,18 @@ public class SolarStatementService {
 
     @Transactional
     public List<SolarStatementBean> getSolarStatement(String meterNo, String monthYear) throws ParseException {
+        final String methodName = "getSolarStatement() : ";
+        logger.info(methodName + " called with parameters meter={} and month = {}",meterNo,monthYear);
         try {
             //check if solar statement is already exist if exist then return beanlist otherwise generate bean and return
             List<SolarStatementBean> alreadyExistStatementBeanList = solarStatementRepo.findAllByMeterNumberAndMonthYearAndStatus(meterNo,monthYear,"active");
-            if (alreadyExistStatementBeanList.size() != 0)
+            if (alreadyExistStatementBeanList.size() != 0) {
+                logger.info(methodName + " return the already existed solar statement from db");
                 return alreadyExistStatementBeanList;
+            }
             List<SolarStatementBean> solarStatementBeanList = new ArrayList<>();
             //Third check is meter is only one out of two meter present in mapping , means if check already done then main not possible or vice versa
+            logger.info(methodName + " validating if either check or main already done then other not possible");
             MeterFeederPlantMappingBean mfpBean = mfpService.getByAnyMeterNoAndStatus(meterNo, "active");
             FeederMasterBean feederMasterBean = feederMasterService.getFeederByFeederNumber(mfpBean.getFeederCode(), "active");
             if (feederMasterBean == null)
@@ -213,6 +222,7 @@ public class SolarStatementService {
                     solarStatementBean.setEAdjustmentActiveEnergy(toBeAdjust);
 
                     //if e kwh is grater than tod sum then ekwh will be adjusted tod will as it is
+                    logger.info(methodName + " e kwh is grater than tod sum then ekwh will be adjusted tod will as it is.");
                     solarStatementBean.setTotalTod3(meterConsumptionDto.getEConsumptionTod3());
                     solarStatementBean.setTotalAdjustment(BigDecimal.valueOf(0)); //tod adjustment as it is
                     solarStatementBean.setTotalTod1(meterConsumptionDto.getEConsumptionTod1());
@@ -225,6 +235,7 @@ public class SolarStatementService {
                     solarStatementBean.setEConsumptionActiveEnergy(meterEKwhConsumption);// as it is
                     //e adjustment active energy remain 0 and tod3 will decreased
                     //if e kwh is less then tod sum then tod will be adjusted, ekwh will as it is
+                    logger.info(methodName + " e kwh is less than tod sum so tod will adjust , ekwh will as it is.");
                     solarStatementBean.setTotalTod3(meterConsumptionDto.getEConsumptionTod3().subtract(toBeAdjust));
                     solarStatementBean.setTotalAdjustment(toBeAdjust);
                     solarStatementBean.setTotalTod1(meterConsumptionDto.getEConsumptionTod1());
@@ -246,6 +257,7 @@ public class SolarStatementService {
                     //solarStatementBean.setInvestorProjectCapacity(thirdPartyBean.getPlantCapacity());
                     //if tod adjstment 0 then individual adjustment is also 0
                     if (solarStatementBean.getTotalAdjustment().compareTo(BigDecimal.valueOf(0)) >= 0){
+                        logger.info(methodName + " tod adjustment is 0 , so individual adjustment is also 0..");
                         thirdPartyTod.setTpAdjustment(thirdPartyTod.getTpPercentage().multiply(solarStatementBean.getTotalAdjustment()
                         ).divide(BigDecimal.valueOf(100)).setScale(2, RoundingMode.HALF_DOWN));
                         thirdPartyTod.setTpTod3(thirdPartyTod.getTpPercentage().multiply(solarStatementBean.getTotalTod3())
@@ -266,12 +278,16 @@ public class SolarStatementService {
                 solarStatementBeanList.add(solarStatementBean);
             }
             List<SolarStatementBean> savedBeanList = (List<SolarStatementBean>) solarStatementRepo.saveAll(solarStatementBeanList);
+            logger.info(methodName + " return solar statement bean list .");
             return savedBeanList;
         }catch (ApiException apiException) {
+            logger.error(methodName+" throw apiException");
             throw apiException;
         } catch (DataIntegrityViolationException d) {
+            logger.error(methodName+" throw DataIntegrityViolationException");
             throw d;
         } catch (Exception e) {
+            logger.error(methodName+" throw common exception..");
             throw new RuntimeException(e);
         }
     }

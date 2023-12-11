@@ -13,11 +13,14 @@ import in.co.mpwin.rebilling.miscellanious.TokenInfo;
 import in.co.mpwin.rebilling.repositories.bifurcaterepo.BifurcateBeanRepo;
 import in.co.mpwin.rebilling.repositories.invoicerepo.InvoiceBeanRepo;
 import in.co.mpwin.rebilling.repositories.metermaster.MeterMasterRepo;
+import in.co.mpwin.rebilling.repositories.metermaster.MeterReplacementRepo;
 import in.co.mpwin.rebilling.services.bifurcateservice.BifurcateConsumptionService;
 import in.co.mpwin.rebilling.services.developermaster.DeveloperMasterService;
 import in.co.mpwin.rebilling.services.investormaster.InvestorMasterService;
 import in.co.mpwin.rebilling.services.mapping.InvestorPpwaMappingService;
 import in.co.mpwin.rebilling.services.plantmaster.PlantMasterService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -31,11 +34,14 @@ import java.util.*;
 @Service
 public class InvoiceService {
 
+    private static final Logger logger = LoggerFactory.getLogger(InvoiceService.class);
+
     @Autowired private InvoiceBeanRepo invoiceBeanRepo;
     @Autowired private DeveloperMasterService developerMasterService;
     @Autowired private PlantMasterService plantMasterService;
     @Autowired private InvestorMasterService investorMasterService;
     @Autowired private InvestorPpwaMappingService investorPpwaMappingService;
+    @Autowired private MeterReplacementRepo meterReplacementRepo;
     @Autowired private BifurcateConsumptionService bifurcateConsumptionService;
     @Autowired
     private BifurcateBeanRepo bifurcateBeanRepo;
@@ -43,10 +49,13 @@ public class InvoiceService {
     private MeterMasterRepo meterMasterRepo;
 
     public InvoiceBean generateInvoiceNonPPWA(String investorCode, String monthYear){
+        final String methodName = "generateInvoiceNonPPWA() : ";
+        logger.info(methodName + "called with parameters investorCode = {} and monthYear = {}",investorCode,monthYear);
         try {
             InvoiceBean invoiceBean = new InvoiceBean();
             //validation for invoice generation
             // 1.investor must be bifurcated for given month   2.investor must not be third party
+            logger.info(methodName + "validation for invoice generation" + "1.investor must be bifurcated for given month" + "2.investor must not be third party");
             boolean isBifurcationDone = bifurcateConsumptionService.isExistsInvestorInBifurcateBean(investorCode,monthYear,"active");
             InvestorMasterBean investorMasterBean = investorMasterService.getInvestorByInvestorCode(investorCode,"active");
             boolean isBuyerThirdParty = investorMasterBean.getBuyer().equalsIgnoreCase("Third Party");
@@ -60,7 +69,7 @@ public class InvoiceService {
                 throw new ApiException(HttpStatus.BAD_REQUEST,"Investor "+investorCode+" invoice already generated for month "
                         +monthYear+" and invoice number is "+alreadyExistInvoice.getInvoiceNumber());
             else if (isBifurcationDone && !(isBuyerThirdParty)){
-
+                logger.info(methodName + "validation success. now generating invoice....");
                 BifurcateBean bifurcateBean = bifurcateConsumptionService.getBifurcateBeanByInvestorCodeAndMonth(investorCode,monthYear,"active");
                 invoiceBean.setHMeterNo(bifurcateBean.gethMeterNumber());
                 invoiceBean.setHCategory(bifurcateBean.gethCategory());
@@ -109,7 +118,7 @@ public class InvoiceService {
                 //set adjustment unit amount = adjustment line unit * active rate
                 invoiceBean.setLineAdjustmentUnitAmt(invoiceBean.getlAdjustment().multiply(invoiceBean.getlActiveRate()).setScale(2,RoundingMode.HALF_DOWN));
                 //set free unit amount of = free unit of investor under the ppa supplementry * active rate
-                invoiceBean.setLineAdjustmentUnitAmt(invoiceBean.getlAdjustment().multiply(invoiceBean.getlFreeUnit()).setScale(2,RoundingMode.HALF_DOWN
+                invoiceBean.setLineFreeUnitAmt(invoiceBean.getlFreeUnit().multiply(invoiceBean.getlActiveRate()).setScale(2,RoundingMode.HALF_DOWN
                 ));
                 invoiceBean.setTotalAmount(invoiceBean.getLineKwhAmount().add(invoiceBean.getLineRkvahAmount())
                         .subtract(invoiceBean.getLineFixAdjAmt()).subtract(invoiceBean.getLineAdjustmentUnitAmt())
@@ -119,6 +128,7 @@ public class InvoiceService {
                 invoiceBean.setAmountWords(Currency.convertToIndianCurrency(invoiceBean.getGrandTotalAmountRounded()));
 
                 //set invoice number
+                logger.info(methodName + "setting invoice number....");
                 Integer maxBillNumberOfInvestorOnYear = invoiceBeanRepo.findMaxBillNumber(investorCode,monthYear.substring(4,8));
                 if(maxBillNumberOfInvestorOnYear == null)
                     maxBillNumberOfInvestorOnYear = 0;
@@ -129,22 +139,29 @@ public class InvoiceService {
                 invoiceBean.setInvoiceStage("pending");
 
             }
+            logger.info(methodName + "return generated invoice bean = {}",invoiceBean);
             return invoiceBean;
         }catch (ApiException apiException){
+            logger.error(methodName+"throw apiException");
             throw apiException;
         }catch (DataIntegrityViolationException d){
+            logger.error(methodName+"throw DataIntegrityViolationException");
             throw d;
         }catch (Exception e){
+            logger.error(methodName+"throw Exception");
             throw e;
         }
     }
 
     public List<InvoiceBean> generateInvoicePPWA(String ppwaNo, String monthYear){
+        final String methodName = "generateInvoicePPWA() : ";
+        logger.info(methodName + "called with parameters ppwaNo = {} and monthYear = {}",ppwaNo,monthYear);
         try {
             List<InvoiceBean> invoiceBeanList = new ArrayList<>();
             //validation for invoice generation
             // 1.all investors related to ppwa must be bifurcated for given month
             // 2.investor must not be third party
+            logger.info(methodName + "validation for invoice generation" + "1.all investors related to ppwa must be bifurcated for given month." + "2.investor must not be third party");
             List<String> investorCodeLIst = investorPpwaMappingService.getInvestorCodeListByPpwaNo(ppwaNo,"active");
             for (String investorCode : investorCodeLIst){
                 boolean isBifurcationDone = bifurcateConsumptionService.isExistsInvestorInBifurcateBean(investorCode,monthYear,"active");
@@ -162,6 +179,7 @@ public class InvoiceService {
                     throw new ApiException(HttpStatus.BAD_REQUEST,"Investor "+investorCode+" invoice already generated for month "
                             +monthYear+" and invoice number is "+alreadyExistInvoice.getInvoiceNumber());
                 else if (isBifurcationDone && !(isBuyerThirdParty)) {
+                    logger.info(methodName + "validation success. now generating invoice....");
                     InvoiceBean invoiceBean = new InvoiceBean();
                     BifurcateBean bifurcateBean = bifurcateConsumptionService.getBifurcateBeanByInvestorCodeAndMonth(investorCode, monthYear, "active");
                     invoiceBean.setHMeterNo(bifurcateBean.gethMeterNumber());
@@ -213,11 +231,13 @@ public class InvoiceService {
 
 
                     //set bill number
+                    logger.info(methodName + "setting bill number....");
                     Integer maxBillNumberOfInvestorOnYear = invoiceBeanRepo.findMaxBillNumber(investorCode,monthYear.substring(4,8));
                     if(maxBillNumberOfInvestorOnYear == null)
                         maxBillNumberOfInvestorOnYear = 0;
                     String newBillNumber = "MPWZ-"+monthYear.substring(4,8)+"-"+invoiceBean.getInvestorCode()+"-"+String.format("%03d",maxBillNumberOfInvestorOnYear+1);
                     //set invoice number
+                    logger.info(methodName + "setting invoice number....");
                     Integer maxInvoiceNumberofPpwaNo = invoiceBeanRepo.findMaxInvoiceNumber(invoiceBean.getPpwaNo(),monthYear.substring(4,8));
                     if (maxInvoiceNumberofPpwaNo == null)
                         maxInvoiceNumberofPpwaNo = 0;
@@ -228,6 +248,7 @@ public class InvoiceService {
                     invoiceBean.setInvoiceDate(new DateMethods().getServerTime());
                     invoiceBean.setInvoiceStage("pending");
 
+                    logger.info(methodName + "invoice bean added to list of invoice bean(ppwa case)....");
                     invoiceBeanList.add(invoiceBean);
                 }
             }
@@ -240,60 +261,81 @@ public class InvoiceService {
             invoiceBeanList.stream().forEach(i -> {i.setGrandTotalAmount(grandTotAmt);
                                              i.setGrandTotalAmountRounded(grandTotAmtRod);
                                              i.setAmountWords(Currency.convertToIndianCurrency(grandTotAmtRod));});
+            logger.info(methodName + "return invoice bean list(ppwa case)....");
             return invoiceBeanList;
         }catch (ApiException apiException){
+            logger.error(methodName+"throw apiException");
             throw apiException;
         }catch (DataIntegrityViolationException d){
+            logger.error(methodName+"throw DataIntegrityViolationException");
             throw d;
         }catch (Exception e){
+            logger.error(methodName+"throw common Exception");
             throw e;
         }
     }
 
     @Transactional
     public String saveInvoiceNonPpwa(InvoiceBean invoiceBean) {
+        final String methodName = "saveInvoiceNonPpwa() : ";
+        logger.info(methodName + "called with parameters InvoiceBean bean = {}",invoiceBean);
         try {   if (invoiceBean != null) {
                 //save audit trails
                 new AuditControlServices().setInitialAuditControlParameters(invoiceBean);
+                logger.info(methodName + "invoice bean with audit trails ",invoiceBean);
                 invoiceBean.setInvoiceStage("invoice_freezed");
                 InvoiceBean savedBean = invoiceBeanRepo.save(invoiceBean);
+                logger.info(methodName + "invoice bean saved");
                 return savedBean.getInvoiceNumber();
                 }
             else
                 throw new ApiException(HttpStatus.BAD_REQUEST,"No Invoices Bean List Provided");
         }catch (ApiException apiException){
+            logger.error(methodName+"throw apiException");
             throw apiException;
         }catch (DataIntegrityViolationException d){
+            logger.error(methodName+"throw DataIntegrityViolationException");
             throw d;
         }catch (Exception e){
+            logger.error(methodName+"throw common Exception");
             throw e;
         }
     }
 
     @Transactional
     public String saveInvoicePpwa(List<InvoiceBean> invoiceBeanList) {
-        try {   if (invoiceBeanList.size()>0)
-                    for (InvoiceBean bean : invoiceBeanList) {
-                        //save audit trails
-                        new AuditControlServices().setInitialAuditControlParameters(bean);
-                        bean.setInvoiceStage("invoice_freezed");
-                        InvoiceBean savedBean = invoiceBeanRepo.save(bean);
-
-                    }
+        final String methodName = "saveInvoicePpwa() : ";
+        logger.info(methodName + "called with parameters InvoiceBean bean list of size = {}",invoiceBeanList.size());
+        try {   if (invoiceBeanList.size()>0) {
+            logger.info(methodName + "looping on above invoice bean list");
+            for (InvoiceBean bean : invoiceBeanList) {
+                //save audit trails
+                new AuditControlServices().setInitialAuditControlParameters(bean);
+                bean.setInvoiceStage("invoice_freezed");
+                logger.info(methodName + "invoice bean in loop with audit trails ", bean);
+                InvoiceBean savedBean = invoiceBeanRepo.save(bean);
+                logger.info(methodName + "invoice bean saved");
+            }
+        }
                  else
                      throw new ApiException(HttpStatus.BAD_REQUEST,"No Invoices Bean List Provided");
+                logger.info(methodName + "return with invoice number ={}",invoiceBeanList.get(0).getInvoiceNumber());
                 return "Invoice number " + invoiceBeanList.get(0).getInvoiceNumber()+ " generated successfully.";
         }catch (ApiException apiException){
+            logger.error(methodName+"throw apiException");
             throw apiException;
         }catch (DataIntegrityViolationException d){
+            logger.error(methodName+"throw DataIntegrityViolationException");
             throw d;
         }catch (Exception e){
+            logger.error(methodName+"throw common Exception");
             throw e;
         }
     }
 
     public List<InvoiceInvestorDto> loadInvoiceDetailOfMeter(String meterNo, String monthYear) {
-
+        final String methodName = "loadInvoiceDetailOfMeter() : ";
+        logger.info(methodName + "called with parameters meterNo = {} and monthYear = {}",meterNo,monthYear);
         try {
                 //First make meter set by traversing each bifurcate dto wrt to meter if ppwa found then search distinct meter
                 //by ppwa number add these meters to newmeterset and on exit of outer foreach loop set finalsetsize equal to newmeterset size
@@ -302,7 +344,7 @@ public class InvoiceService {
                 meterSet.add(meterNo);
                 LinkedHashSet<String> newMeterSet = new LinkedHashSet<>(meterSet);
                 int initialSetSize,finalSetSize;
-
+                logger.info(methodName + "loading all meter related to given meter on the basis on ppwa number..");
                 do {
                     meterSet = new LinkedHashSet<>(newMeterSet);
                     initialSetSize = meterSet.size();
@@ -312,6 +354,11 @@ public class InvoiceService {
                         if (bifurcateBeanList.isEmpty()) {
                             throw new ApiException(HttpStatus.BAD_REQUEST, "Bifurcation is not done yet for " + meter + " meter number for the given month");
                         }
+
+                        //if meter replaced in given month then search associated meter. this is added on 07.12.2023
+                        List<String> replacedMeters =
+                                meterReplacementRepo.findOtherMetersByReplacedMeterNumber(meter,monthYear);
+                        newMeterSet.addAll(replacedMeters);
 
                         for (BifurcateBean b : bifurcateBeanList) {
                             if (!"NA".equals(b.getPpwaNo())) {
@@ -325,6 +372,7 @@ public class InvoiceService {
 
 
                 //after picking all related meter then start to load investor invoice dto
+                logger.info(methodName + "loading of invoice dto started on different meter..");
                 List<InvoiceInvestorDto> invoiceInvestorDtoList = new ArrayList<>();
 
                     for (String meter : meterSet) {
@@ -361,51 +409,69 @@ public class InvoiceService {
                         }
                 }
 
-
+                logger.info(methodName + "return invoiceInvestorDto list = {} ",invoiceInvestorDtoList);
                 return invoiceInvestorDtoList;
 
         }catch (ApiException apiException){
+            logger.error(methodName+"throw apiException");
             throw apiException;
         }catch (DataIntegrityViolationException d){
+            logger.error(methodName+"throw DataIntegrityViolationException");
             throw d;
         }catch (Exception e){
+            logger.error(methodName+"throw common Exception");
             throw e;
         }
     }
 
     public InvoiceBean viewInvoiceNonPpwa(String invoiceNumber) {
+        final String methodName = "viewInvoiceNonPpwa() : ";
+        logger.info(methodName + "called with parameters invoiceNumber = {}",invoiceNumber);
         try {
                 List<InvoiceBean> invoiceBeanList = invoiceBeanRepo.findAllByInvoiceNumberAndStatus(invoiceNumber,"active");
                 if (invoiceBeanList.size() == 0)
                     throw new ApiException(HttpStatus.BAD_REQUEST,"Invoice number " +invoiceNumber+" is invalid.");
+                logger.info(methodName + "return non ppwa invoice  = {}",invoiceBeanList.get(0));
                 return invoiceBeanList.get(0);
         }catch (ApiException apiException){
+            logger.error(methodName+"throw apiException..");
             throw apiException;
         }catch (DataIntegrityViolationException d){
+            logger.error(methodName+"throw DataIntegrityViolationException..");
             throw d;
         }catch (Exception e){
+            logger.error(methodName+"throw common exception..");
             throw e;
         }
     }
 
     public List<InvoiceBean> viewInvoicePpwa(String invoiceNumber){
+        final String methodName = "viewInvoicePpwa() : ";
+        logger.info(methodName + "called with parameters invoiceNumber = {}",invoiceNumber);
         try {
             List<InvoiceBean> invoiceBeanList = invoiceBeanRepo.findAllByInvoiceNumberAndStatus(invoiceNumber,"active");
             if (invoiceBeanList.size() == 0)
                 throw new ApiException(HttpStatus.BAD_REQUEST,"Invoice number " +invoiceNumber+" is invalid.");
+            logger.info(methodName + "return ppwa invoice(bean list)  = {}",invoiceBeanList);
             return invoiceBeanList;
         }catch (ApiException apiException){
+            logger.error(methodName+"throw apiException..");
             throw apiException;
         }catch (DataIntegrityViolationException d){
+            logger.error(methodName+"throw DataIntegrityViolationException..");
             throw d;
         }catch (Exception e){
+            logger.error(methodName+"throw common exception..");
             throw e;
         }
     }
 
     @Transactional
     public String submitInvoice(List<InvoiceInvestorDto> invoiceInvestorDtoList) {
+        final String methodName = "submitInvoice() : ";
+        logger.info(methodName + "called with parameters List<InvoiceInvestorDto> = {}",invoiceInvestorDtoList);
         //check for invoiceInvestorDto
+        logger.info(methodName + " check for invoice validation must be present in db in invoice_freezed stage..");
         try {
             for (InvoiceInvestorDto dto : invoiceInvestorDtoList) {
                 InvoiceBean bean = invoiceBeanRepo.findByInvoiceNumberAndInvestorCodeAndStatus(dto.getInvoiceNumber(), dto.getInvestorCode(), "active");
@@ -417,24 +483,33 @@ public class InvoiceService {
                     //save update audit trail
                     bean.setUpdatedBy(new TokenInfo().getCurrentUsername());
                     bean.setUpdatedOn(new DateMethods().getServerTime());
+                    logger.info(methodName + "fetching invoice bean on iterating loop with set audit trails = {}",bean);
                     invoiceBeanRepo.save(bean);
+                    logger.info(methodName + "invoice bean is saved..");
                 } else
                     throw new ApiException(HttpStatus.BAD_REQUEST, "Invoice " +bean.getInvoiceNumber()+" not in freezed stage for sending approval and current stage is "
                                         +bean.getInvoiceStage());
             }
+            logger.info(methodName + "all invoice beans are saved and return with string response..");
             return "Invoices submitted successfully..";
         } catch (ApiException apiException) {
+            logger.error(methodName+"throw apiException..");
             throw apiException;
         } catch (DataIntegrityViolationException d) {
+            logger.error(methodName+"throw DataIntegrityViolationException..");
             throw d;
         } catch (Exception e) {
+            logger.error(methodName+"throw Exception..");
             throw e;
         }
     }
 
     @Transactional
     public String approveInvoice(List<InvoiceInvestorDto> invoiceInvestorDtoList) {
+        final String methodName = "approveInvoice() : ";
+        logger.info(methodName + "called with parameters List<InvoiceInvestorDto> = {}",invoiceInvestorDtoList);
         //check for invoiceInvestorDto
+        logger.info(methodName + " check for invoice validation must be present in db in invoice_submitted stage..");
         try {
             for (InvoiceInvestorDto dto : invoiceInvestorDtoList) {
                 InvoiceBean bean = invoiceBeanRepo.findByInvoiceNumberAndInvestorCodeAndStatus(dto.getInvoiceNumber(), dto.getInvestorCode(), "active");
@@ -446,24 +521,33 @@ public class InvoiceService {
                     bean.setUpdatedBy(new TokenInfo().getCurrentUsername());
                     bean.setUpdatedOn(new DateMethods().getServerTime());
                     bean.setInvoiceStage("invoice_approved");
+                    logger.info(methodName + "fetching invoice bean on iterating loop with set audit trails = {}",bean);
                     invoiceBeanRepo.save(bean);
+                    logger.info(methodName + "invoice bean is saved..");
                 } else
                     throw new ApiException(HttpStatus.BAD_REQUEST, "Invoice " +bean.getInvoiceNumber()+" not in submitted stage for approval and current stage is "+
                             bean.getInvoiceStage());
             }
+            logger.info(methodName + "all invoice beans are saved and return with string response..");
             return "Invoices approved successfully..";
         } catch (ApiException apiException) {
+            logger.error(methodName+"throw apiException..");
             throw apiException;
         } catch (DataIntegrityViolationException d) {
+            logger.error(methodName+"throw DataIntegrityViolationException..");
             throw d;
         } catch (Exception e) {
+            logger.error(methodName+"throw common Exception..");
             throw e;
         }
     }
 
     @Transactional
     public String rejectInvoice(List<InvoiceInvestorDto> invoiceInvestorDtoList) {
+        final String methodName = "rejectInvoice() : ";
+        logger.info(methodName + "called with parameters List<InvoiceInvestorDto> = {}",invoiceInvestorDtoList);
         //check for invoiceInvestorDto
+        logger.info(methodName + " check for invoice validation must be present in db in invoice_submitted stage..");
         try {
             for (InvoiceInvestorDto dto : invoiceInvestorDtoList) {
                 InvoiceBean bean = invoiceBeanRepo.findByInvoiceNumberAndInvestorCodeAndStatus(dto.getInvoiceNumber(), dto.getInvestorCode(), "active");
@@ -478,17 +562,23 @@ public class InvoiceService {
                     //save update audit trail
                     bean.setUpdatedBy(new TokenInfo().getCurrentUsername());
                     bean.setUpdatedOn(new DateMethods().getServerTime());
+                    logger.info(methodName + "fetching invoice bean on iterating loop with set audit trails = {}",bean);
                     invoiceBeanRepo.save(bean);
+                    logger.info(methodName + "invoice bean is saved..");
                 } else
                     throw new ApiException(HttpStatus.BAD_REQUEST, "Invoice " +bean.getInvoiceNumber()+" not in submitted stage for reject action and current stage is "+
                             bean.getInvoiceStage());
             }
+            logger.info(methodName + "all invoice beans are saved and return with string response..");
             return "Invoices rejected successfully..";
         } catch (ApiException apiException) {
+            logger.error(methodName+"throw apiException..");
             throw apiException;
         } catch (DataIntegrityViolationException d) {
+            logger.error(methodName+"throw DataIntegrityViolationException..");
             throw d;
         } catch (Exception e) {
+            logger.error(methodName+"throw common exception..");
             throw e;
         }
     }
