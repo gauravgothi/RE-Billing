@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>in.co.mpwin</groupId>
 	<artifactId>rebilling</artifactId>
-	<version>0.0.4-SNAPSHOT</version>
+	<version>0.0.5-SNAPSHOT</version>
 	<name>rebilling</name>
 	<description>Rebuilding of re billing</description>
 	<properties>

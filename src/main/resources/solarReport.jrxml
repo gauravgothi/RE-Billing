@@ -1149,7 +1149,7 @@ GPH Compound, Pologround, Indore]]></text>
 		<band height="20" splitType="Stretch">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<subreport overflowType="Stretch">
-				<reportElement stretchType="RelativeToTallestObject" positionType="Float" isPrintWhenDetailOverflows="true" x="0" y="0" width="545" height="20" uuid="abbf3fb7-84bb-4f47-84d7-04679e84699e">
+				<reportElement stretchType="RelativeToBandHeight" positionType="Float" isPrintWhenDetailOverflows="true" x="0" y="0" width="545" height="20" uuid="abbf3fb7-84bb-4f47-84d7-04679e84699e">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{thirdPartyTodSet})]]></dataSourceExpression>
