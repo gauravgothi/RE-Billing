@@ -2,11 +2,13 @@ package in.co.mpwin.rebilling.services.metermaster;
 
 import in.co.mpwin.rebilling.beans.mapping.MeterFeederPlantMappingBean;
 import in.co.mpwin.rebilling.beans.metermaster.MeterMasterBean;
+import in.co.mpwin.rebilling.beans.plantmaster.PlantMasterBean;
 import in.co.mpwin.rebilling.dao.metermaster.MeterMasterDao;
 import in.co.mpwin.rebilling.jwt.exception.ApiException;
 import in.co.mpwin.rebilling.miscellanious.DateMethods;
 import in.co.mpwin.rebilling.miscellanious.TokenInfo;
 import in.co.mpwin.rebilling.repositories.metermaster.MeterMasterRepo;
+import in.co.mpwin.rebilling.repositories.plantmaster.PlantMasterRepo;
 import in.co.mpwin.rebilling.services.developermaster.DeveloperMasterService;
 import in.co.mpwin.rebilling.services.mapping.MeterFeederPlantMappingService;
 import org.slf4j.Logger;
@@ -34,6 +36,8 @@ public class MeterMasterService {
 
     @Autowired private  DeveloperMasterService developerMasterService;
     @Autowired private MeterMasterRepo meterMasterRepo;
+    @Autowired
+    private PlantMasterRepo plantMasterRepo;
 
     public MeterMasterBean getMeterDetailsByMeterNo(String meterno, String status) {
         final String methodName = "getMeterDetailsByMeterNo() : ";
@@ -194,6 +198,7 @@ public class MeterMasterService {
         }
     }
 
+    //use for meter consumption report meter list by developer username
     public List<Map<String,String>> getMetersByUser(){
         final String methodName = "getMetersByUser() : ";
         logger.info(methodName + "called with parameters empty ");
@@ -227,6 +232,46 @@ public class MeterMasterService {
                     logger.error(methodName+" throw Exception");
                     throw e;
                 }
+    }
+
+    //use for meter consumption report meter list by circle username
+    public List<Map<String,String>> getMetersByCircleUser(){
+        final String methodName = "getMetersByCircleUser() : ";
+        logger.info(methodName + "called with parameters empty ");
+        List<Map<String,String>> meterList = new ArrayList<>();
+        try {
+            String roleName = new TokenInfo().getCurrentUserRole();
+            if (!roleName.equalsIgnoreCase("CIRCLE"))
+                throw new ApiException(HttpStatus.BAD_REQUEST,"Current User must be circle to access this.");
+            String username = new TokenInfo().getCurrentUsername();
+            List<PlantMasterBean> plantMasterBeans = plantMasterRepo.findDistinctPlantsByCircleName(username);
+            List<MeterFeederPlantMappingBean> mfpBeans = new ArrayList<>();
+            for (PlantMasterBean plant : plantMasterBeans){
+                List<MeterFeederPlantMappingBean> mfpBeansTemp =  mfpService.getMappingByPlantCode(plant.getPlantCode(),"active");
+                mfpBeans.addAll(mfpBeansTemp);
+            }
+            if (mfpBeans.isEmpty())
+                throw new ApiException(HttpStatus.BAD_REQUEST,"Not any Meter Feeder Plant mapping is present for user.");
+            List<String> meters = mfpBeans.stream().flatMap(m-> Stream.of(m.getMainMeterNo(),m.getCheckMeterNo())).distinct().collect(Collectors.toList());
+            for (String meter : meters){
+                Map<String,String> m = new HashMap<>();
+                String meterCategory = meterMasterRepo.findByMeterNumberAndStatus(meter,"active").getCategory();
+                m.put("meterNo",meter);
+                m.put("meterCategory",meterCategory);
+                meterList.add(m);
+            }
+            logger.info(methodName + " return with  MeterMasterBean list of size : {}", meterList.size());
+            return meterList;
+        }catch (ApiException apiException){
+            logger.error(methodName+" throw apiException");
+            throw apiException;
+        }catch (DataIntegrityViolationException d){
+            logger.error(methodName+" throw DataIntegrityViolationException");
+            throw d;
+        } catch (Exception e) {
+            logger.error(methodName+" throw Exception");
+            throw e;
+        }
     }
 
     public List<Map<String,String>> getMeters(){

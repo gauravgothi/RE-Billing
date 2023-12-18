@@ -123,10 +123,116 @@ public class MeterReadingService {
             MeterReadingBean previousReading = meterReadingRepo.findJustBefore(passMRB.getMeterNo(), passMRB.getReadingDate());
             //reading insertion validation
             if (validationCount <= 0) throw new ApiException(HttpStatus.BAD_REQUEST, "Meter is not actively mapped");
+            //check export active energy
             if (nextReading != null && nextReading.getEActiveEnergy().compareTo(passMRB.getEActiveEnergy()) < 0)
-                throw new ApiException(HttpStatus.BAD_REQUEST, "you are entering reading which is greater than reading already present at "+nextReading.getReadingDate());
+                throw new ApiException(HttpStatus.BAD_REQUEST, " export active energy(kwh) is greater than reading already present at "+nextReading.getReadingDate());
             if (previousReading != null && previousReading.getEActiveEnergy().compareTo(passMRB.getEActiveEnergy()) > 0)
-                throw new ApiException(HttpStatus.BAD_REQUEST, "you are entering reading which is lesser than reading already present at "+previousReading.getReadingDate());
+                throw new ApiException(HttpStatus.BAD_REQUEST, "export active energy(kwh) is lesser than reading already present at "+previousReading.getReadingDate());
+            //check import active energy
+            if (nextReading != null && nextReading.getIActiveEnergy().compareTo(passMRB.getIActiveEnergy()) < 0)
+                throw new ApiException(HttpStatus.BAD_REQUEST, " import active energy(kwh) is greater than reading already present at "+nextReading.getReadingDate());
+            if (previousReading != null && previousReading.getIActiveEnergy().compareTo(passMRB.getIActiveEnergy()) > 0)
+                throw new ApiException(HttpStatus.BAD_REQUEST, "import active energy(kwh) is lesser than reading already present at "+previousReading.getReadingDate());
+
+            //check export kvah apparent energy
+            if (nextReading != null && nextReading.getEKvah().compareTo(passMRB.getEKvah()) < 0)
+                throw new ApiException(HttpStatus.BAD_REQUEST, " export apparent energy(kvah) is greater than reading already present at "+nextReading.getReadingDate());
+            if (previousReading != null && previousReading.getEKvah().compareTo(passMRB.getEKvah()) > 0)
+                throw new ApiException(HttpStatus.BAD_REQUEST, "export apparent energy(kvah) is lesser than reading already present at "+previousReading.getReadingDate());
+            //check import kvah apparent energy
+            if (nextReading != null && nextReading.getIKvah().compareTo(passMRB.getIKvah()) < 0)
+                throw new ApiException(HttpStatus.BAD_REQUEST, " import apparent energy(kvah) is greater than reading already present at "+nextReading.getReadingDate());
+            if (previousReading != null && previousReading.getIKvah().compareTo(passMRB.getIKvah()) > 0)
+                throw new ApiException(HttpStatus.BAD_REQUEST, "import apparent energy(kvah) is lesser than reading already present at "+previousReading.getReadingDate());
+
+            //check export tod1
+            if (nextReading != null && nextReading.getETod1().compareTo(passMRB.getETod1()) < 0)
+                throw new ApiException(HttpStatus.BAD_REQUEST, " export TOD1 is greater than reading already present at "+nextReading.getReadingDate());
+            if (previousReading != null && previousReading.getETod1().compareTo(passMRB.getETod1()) > 0)
+                throw new ApiException(HttpStatus.BAD_REQUEST, "export TOD1 is lesser than reading already present at "+previousReading.getReadingDate());
+            //check import tod1
+            if (nextReading != null && nextReading.getITod1().compareTo(passMRB.getITod1()) < 0)
+                throw new ApiException(HttpStatus.BAD_REQUEST, " import TOD1 is greater than reading already present at "+nextReading.getReadingDate());
+            if (previousReading != null && previousReading.getITod1().compareTo(passMRB.getITod1()) > 0)
+                throw new ApiException(HttpStatus.BAD_REQUEST, "import TOD1 is lesser than reading already present at "+previousReading.getReadingDate());
+
+            //check export tod2
+            if (nextReading != null && nextReading.getETod2().compareTo(passMRB.getETod2()) < 0)
+                throw new ApiException(HttpStatus.BAD_REQUEST, " export TOD2 is greater than reading already present at "+nextReading.getReadingDate());
+            if (previousReading != null && previousReading.getETod2().compareTo(passMRB.getETod2()) > 0)
+                throw new ApiException(HttpStatus.BAD_REQUEST, "export TOD2 is lesser than reading already present at "+previousReading.getReadingDate());
+            //check import tod2
+            if (nextReading != null && nextReading.getITod2().compareTo(passMRB.getITod2()) < 0)
+                throw new ApiException(HttpStatus.BAD_REQUEST, " import TOD2 is greater than reading already present at "+nextReading.getReadingDate());
+            if (previousReading != null && previousReading.getITod2().compareTo(passMRB.getITod2()) > 0)
+                throw new ApiException(HttpStatus.BAD_REQUEST, "import TOD2 is lesser than reading already present at "+previousReading.getReadingDate());
+
+            //check export tod3
+            if (nextReading != null && nextReading.getETod3().compareTo(passMRB.getETod3()) < 0)
+                throw new ApiException(HttpStatus.BAD_REQUEST, " export TOD3 is greater than reading already present at "+nextReading.getReadingDate());
+            if (previousReading != null && previousReading.getETod3().compareTo(passMRB.getETod3()) > 0)
+                throw new ApiException(HttpStatus.BAD_REQUEST, "export TOD3 is lesser than reading already present at "+previousReading.getReadingDate());
+            //check import tod3
+            if (nextReading != null && nextReading.getITod3().compareTo(passMRB.getITod3()) < 0)
+                throw new ApiException(HttpStatus.BAD_REQUEST, " import TOD3 is greater than reading already present at "+nextReading.getReadingDate());
+            if (previousReading != null && previousReading.getITod3().compareTo(passMRB.getITod3()) > 0)
+                throw new ApiException(HttpStatus.BAD_REQUEST, "import TOD3 is lesser than reading already present at "+previousReading.getReadingDate());
+
+            //check export tod4
+            if (nextReading != null && nextReading.getETod4().compareTo(passMRB.getETod4()) < 0)
+                throw new ApiException(HttpStatus.BAD_REQUEST, " export TOD4 is greater than reading already present at "+nextReading.getReadingDate());
+            if (previousReading != null && previousReading.getETod4().compareTo(passMRB.getETod4()) > 0)
+                throw new ApiException(HttpStatus.BAD_REQUEST, "export TOD4 is lesser than reading already present at "+previousReading.getReadingDate());
+            //check import tod4
+            if (nextReading != null && nextReading.getITod4().compareTo(passMRB.getITod4()) < 0)
+                throw new ApiException(HttpStatus.BAD_REQUEST, " import TOD4 is greater than reading already present at "+nextReading.getReadingDate());
+            if (previousReading != null && previousReading.getITod4().compareTo(passMRB.getITod4()) > 0)
+                throw new ApiException(HttpStatus.BAD_REQUEST, "import TOD4 is lesser than reading already present at "+previousReading.getReadingDate());
+
+            //check export REACTIVE(IMP) - ACTIVE(IMP) (QUAD 1)
+            if (nextReading != null && nextReading.getEReactiveQuad1().compareTo(passMRB.getEReactiveQuad1()) < 0)
+                throw new ApiException(HttpStatus.BAD_REQUEST, " export REACTIVE(IMP) - ACTIVE(IMP) (QUAD 1) is greater than reading already present at "+nextReading.getReadingDate());
+            if (previousReading != null && previousReading.getEReactiveQuad1().compareTo(passMRB.getEReactiveQuad1()) > 0)
+                throw new ApiException(HttpStatus.BAD_REQUEST, "export REACTIVE(IMP) - ACTIVE(IMP) (QUAD 1) is lesser than reading already present at "+previousReading.getReadingDate());
+            //check import REACTIVE(IMP) - ACTIVE(IMP) (QUAD 1)
+            if (nextReading != null && nextReading.getIReactiveQuad1().compareTo(passMRB.getIReactiveQuad1()) < 0)
+                throw new ApiException(HttpStatus.BAD_REQUEST, " import REACTIVE(IMP) - ACTIVE(IMP) (QUAD 1) is greater than reading already present at "+nextReading.getReadingDate());
+            if (previousReading != null && previousReading.getIReactiveQuad1().compareTo(passMRB.getIReactiveQuad1()) > 0)
+                throw new ApiException(HttpStatus.BAD_REQUEST, "import REACTIVE(IMP) - ACTIVE(IMP) (QUAD 1) is lesser than reading already present at "+previousReading.getReadingDate());
+
+            //check export REACTIVE(EXP) - ACTIVE(IMP) (QUAD 2)
+            if (nextReading != null && nextReading.getEReactiveQuad2().compareTo(passMRB.getEReactiveQuad2()) < 0)
+                throw new ApiException(HttpStatus.BAD_REQUEST, " export REACTIVE(EXP) - ACTIVE(IMP) (QUAD 2) is greater than reading already present at "+nextReading.getReadingDate());
+            if (previousReading != null && previousReading.getEReactiveQuad2().compareTo(passMRB.getEReactiveQuad2()) > 0)
+                throw new ApiException(HttpStatus.BAD_REQUEST, "export REACTIVE(EXP) - ACTIVE(IMP) (QUAD 2) is lesser than reading already present at "+previousReading.getReadingDate());
+            //check import REACTIVE(EXP) - ACTIVE(IMP) (QUAD 2)
+            if (nextReading != null && nextReading.getIReactiveQuad2().compareTo(passMRB.getIReactiveQuad2()) < 0)
+                throw new ApiException(HttpStatus.BAD_REQUEST, " import REACTIVE(EXP) - ACTIVE(IMP) (QUAD 2) is greater than reading already present at "+nextReading.getReadingDate());
+            if (previousReading != null && previousReading.getIReactiveQuad2().compareTo(passMRB.getIReactiveQuad2()) > 0)
+                throw new ApiException(HttpStatus.BAD_REQUEST, "import REACTIVE(EXP) - ACTIVE(IMP) (QUAD 2) is lesser than reading already present at "+previousReading.getReadingDate());
+
+            //check export REACTIVE(IMP) - ACTIVE(EXP) (QUAD 3)
+            if (nextReading != null && nextReading.getEReactiveQuad3().compareTo(passMRB.getEReactiveQuad3()) < 0)
+                throw new ApiException(HttpStatus.BAD_REQUEST, " export REACTIVE(IMP) - ACTIVE(EXP) (QUAD 3) is greater than reading already present at "+nextReading.getReadingDate());
+            if (previousReading != null && previousReading.getEReactiveQuad3().compareTo(passMRB.getEReactiveQuad3()) > 0)
+                throw new ApiException(HttpStatus.BAD_REQUEST, "export REACTIVE(IMP) - ACTIVE(EXP) (QUAD 3) is lesser than reading already present at "+previousReading.getReadingDate());
+            //check import REACTIVE(IMP) - ACTIVE(EXP) (QUAD 3)
+            if (nextReading != null && nextReading.getIReactiveQuad3().compareTo(passMRB.getIReactiveQuad3()) < 0)
+                throw new ApiException(HttpStatus.BAD_REQUEST, " import REACTIVE(IMP) - ACTIVE(EXP) (QUAD 3) is greater than reading already present at "+nextReading.getReadingDate());
+            if (previousReading != null && previousReading.getIReactiveQuad3().compareTo(passMRB.getIReactiveQuad3()) > 0)
+                throw new ApiException(HttpStatus.BAD_REQUEST, "import REACTIVE(IMP) - ACTIVE(EXP) (QUAD 3) is lesser than reading already present at "+previousReading.getReadingDate());
+
+            //check export REACTIVE(EXP) - ACTIVE (EXP) (QUAD 4)
+            if (nextReading != null && nextReading.getEReactiveQuad4().compareTo(passMRB.getEReactiveQuad4()) < 0)
+                throw new ApiException(HttpStatus.BAD_REQUEST, " export REACTIVE(EXP) - ACTIVE (EXP) (QUAD 4) is greater than reading already present at "+nextReading.getReadingDate());
+            if (previousReading != null && previousReading.getEReactiveQuad4().compareTo(passMRB.getEReactiveQuad4()) > 0)
+                throw new ApiException(HttpStatus.BAD_REQUEST, "export REACTIVE(EXP) - ACTIVE (EXP) (QUAD 4) is lesser than reading already present at "+previousReading.getReadingDate());
+            //check import REACTIVE(EXP) - ACTIVE (EXP) (QUAD 4)
+            if (nextReading != null && nextReading.getIReactiveQuad4().compareTo(passMRB.getIReactiveQuad4()) < 0)
+                throw new ApiException(HttpStatus.BAD_REQUEST, " import REACTIVE(EXP) - ACTIVE (EXP) (QUAD 4) is greater than reading already present at "+nextReading.getReadingDate());
+            if (previousReading != null && previousReading.getIReactiveQuad4().compareTo(passMRB.getIReactiveQuad4()) > 0)
+                throw new ApiException(HttpStatus.BAD_REQUEST, "import REACTIVE(EXP) - ACTIVE (EXP) (QUAD 4) is lesser than reading already present at "+previousReading.getReadingDate());
+
             //insertion in DB
             if (validationCount > 0 &&
                     (nextReading == null || nextReading.getEActiveEnergy().compareTo(passMRB.getEActiveEnergy()) >= 0) &&

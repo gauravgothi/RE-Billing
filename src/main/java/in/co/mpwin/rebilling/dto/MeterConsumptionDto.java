@@ -23,9 +23,9 @@ public class MeterConsumptionDto {
     private BigDecimal mf;
     @Column(name="category")@NotNull
     private String category;
-    @Column(name = "reading_date")@NotNull@JsonFormat(timezone = "IST")
+    @Column(name = "previous_reading_date")@NotNull@JsonFormat(timezone = "IST",pattern = "yyyy-MM-dd")
     private Date previousReadingDate;
-    @Column(name = "reading_date")@NotNull@JsonFormat(timezone = "IST")
+    @Column(name = "current_reading_date")@NotNull@JsonFormat(timezone = "IST",pattern = "yyyy-MM-dd")
     private Date currentReadingDate;
     @Column(name = "month_year")@NotNull
     private String monthYear;

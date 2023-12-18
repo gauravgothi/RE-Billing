@@ -117,6 +117,7 @@ public class MeterMasterController {
         return meterInsrtResp;
     }
 
+    //use for meter consumption report meter list by developer username
     @GetMapping(value = "/list/byUser")
     public ResponseEntity<?> getMetersByUser(){
         final String methodName = "getMetersByUser() : ";
@@ -126,6 +127,30 @@ public class MeterMasterController {
         try {
                 List<Map<String,String>> meterList = meterMasterService.getMetersByUser();
                 meterListResp = new ResponseEntity<>(meterList,HttpStatus.OK);
+            logger.info(methodName + "return with MeterMasterBean list of size : {} ",meterList.size());
+        }catch(ApiException apiException) {
+            meterListResp  = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+            logger.error(methodName+" API Exception occurred: {}", apiException.getMessage());
+        } catch(DataIntegrityViolationException e) {
+            meterListResp  = new ResponseEntity<>(new Message("Data Integrity Violation Exception occurred : "+e.getMessage()),HttpStatus.BAD_REQUEST);
+            logger.error(methodName+"Data Integrity Violation Exception occurred: {}",e.getMessage());
+        } catch(Exception e) {
+            meterListResp  = new ResponseEntity<>(new Message("Exception occurred : " +e.getMessage()),HttpStatus.BAD_REQUEST);
+            logger.error(methodName+" Exception occurred: {}",e.getMessage(),e);
+        }
+        return meterListResp;
+    }
+
+    //use for meter consumption report meter list by developer username
+    @GetMapping(value = "/list/byCircleUser")
+    public ResponseEntity<?> getMetersByCircleUser(){
+        final String methodName = "getMetersByCircleUser() : ";
+        logger.info(methodName + "called with parameter empty ");
+        //int result = -1;
+        ResponseEntity meterListResp  = null;
+        try {
+            List<Map<String,String>> meterList = meterMasterService.getMetersByCircleUser();
+            meterListResp = new ResponseEntity<>(meterList,HttpStatus.OK);
             logger.info(methodName + "return with MeterMasterBean list of size : {} ",meterList.size());
         }catch(ApiException apiException) {
             meterListResp  = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());

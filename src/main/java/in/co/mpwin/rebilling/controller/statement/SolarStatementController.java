@@ -30,7 +30,7 @@ public class SolarStatementController {
     @Autowired
     SolarStatementReportService solarStatementReportService;
 
-    @GetMapping("/solar/meterNo/{meterNo}/monthYear/{monthYear}")
+    @GetMapping("/solar-generate-save-download/meterNo/{meterNo}/monthYear/{monthYear}")
     public ResponseEntity<?> getSolarStatement(@PathVariable("meterNo") String meterNo,@PathVariable("monthYear") String monthYear)
     {
         final String methodName = "getSolarStatement() : ";
@@ -40,6 +40,53 @@ public class SolarStatementController {
                 List<SolarStatementBean> solarStatementBeanList = solarStatementService.getSolarStatement(meterNo,monthYear);
                 byte[] solarStatementInPdf = solarStatementReportService.exportSolarStatement("pdf",solarStatementBeanList);
                 statementResp = new ResponseEntity<>( solarStatementInPdf, HttpStatus.OK);
+            logger.info(methodName + "return. byte array of solar statement pdf:");
+        }catch (ApiException apiException) {
+            statementResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+            logger.error(methodName+" API Exception occurred: {}", apiException.getMessage());
+        } catch (DataIntegrityViolationException d) {
+            statementResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+            logger.error(methodName+"Data Integrity Violation Exception occurred: {}", d.getMessage());
+        } catch (Exception e) {
+            statementResp = new ResponseEntity<>(new Message(e.getMessage()), HttpStatus.BAD_REQUEST);
+            logger.error(methodName+" Exception occurred: {}", e.getMessage(),e);
+        }
+        return statementResp;
+    }
+
+    @GetMapping("/solar-generate-save/meterNo/{meterNo}/monthYear/{monthYear}")
+    public ResponseEntity<?> generateSolarStatement(@PathVariable("meterNo") String meterNo,@PathVariable("monthYear") String monthYear)
+    {
+        final String methodName = "generateSolarStatement() : ";
+        logger.info(methodName + "called. with parameters meterNo: {}, monthYear: {}",meterNo,monthYear);
+        ResponseEntity statementBeanListResp = null;
+        try {
+            List<SolarStatementBean> solarStatementBeanList = solarStatementService.getSolarStatement(meterNo,monthYear);
+            statementBeanListResp = new ResponseEntity<>( solarStatementBeanList, HttpStatus.OK);
+            logger.info(methodName + "return solar statement bean list of size ={}",solarStatementBeanList.size());
+        }catch (ApiException apiException) {
+            statementBeanListResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
+            logger.error(methodName+" API Exception occurred: {}", apiException.getMessage());
+        } catch (DataIntegrityViolationException d) {
+            statementBeanListResp = new ResponseEntity<>(new Message("Data Integrity Violation"), HttpStatus.BAD_REQUEST);
+            logger.error(methodName+"Data Integrity Violation Exception occurred: {}", d.getMessage());
+        } catch (Exception e) {
+            statementBeanListResp = new ResponseEntity<>(new Message(e.getMessage()), HttpStatus.BAD_REQUEST);
+            logger.error(methodName+" Exception occurred: {}", e.getMessage(),e);
+        }
+        return statementBeanListResp;
+    }
+
+    @GetMapping("/solar-download/meterNo/{meterNo}/monthYear/{monthYear}")
+    public ResponseEntity<?> downloadSolarStatement(@PathVariable("meterNo") String meterNo,@PathVariable("monthYear") String monthYear)
+    {
+        final String methodName = "downloadSolarStatement() : ";
+        logger.info(methodName + "called. with parameters meterNo: {}, monthYear: {}",meterNo,monthYear);
+        ResponseEntity statementResp = null;
+        try {
+            List<SolarStatementBean> solarStatementBeanList = solarStatementService.downloadSolarStatement(meterNo,monthYear);
+            byte[] solarStatementInPdf = solarStatementReportService.exportSolarStatement("pdf",solarStatementBeanList);
+            statementResp = new ResponseEntity<>( solarStatementInPdf, HttpStatus.OK);
             logger.info(methodName + "return. byte array of solar statement pdf:");
         }catch (ApiException apiException) {
             statementResp = new ResponseEntity<>(new Message(apiException.getMessage()), apiException.getHttpStatus());
