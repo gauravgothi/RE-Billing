@@ -44,9 +44,10 @@ public class ThirdPartyTod {
     @JoinColumn(name = "solar_statement_id",nullable = false,referencedColumnName = "id")
     private SolarStatementBean solarStatementBean;
 
-    public SolarStatementBean getSolarStatementBean() {
-        return solarStatementBean;
-    }
+    //not required to set the solar statement bean in thirdparty tod otherwise recursion occur
+//    public SolarStatementBean getSolarStatementBean() {
+//        return solarStatementBean;
+//    }
 
     public long getId() {
         return id;

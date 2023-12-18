@@ -105,8 +105,8 @@ public class SolarStatementService {
 
             List<String> investorCodes = investorMachineMappingBeans.stream().map(InvestorMachineMappingBean::getInvestorCode)
                     .distinct().collect(Collectors.toList());
-//        if (investorCodes.size() > 1)
-//            throw new ApiException(HttpStatus.BAD_REQUEST, "More than one investor present on solar power plant");
+            if (investorCodes.size() > 1)
+            throw new ApiException(HttpStatus.BAD_REQUEST, "More than one investor present on solar power plant");
 
             for (String investor : investorCodes) {
                 SolarStatementBean solarStatementBean = new SolarStatementBean();
@@ -280,6 +280,32 @@ public class SolarStatementService {
             List<SolarStatementBean> savedBeanList = (List<SolarStatementBean>) solarStatementRepo.saveAll(solarStatementBeanList);
             logger.info(methodName + " return solar statement bean list .");
             return savedBeanList;
+        }catch (ApiException apiException) {
+            logger.error(methodName+" throw apiException");
+            throw apiException;
+        } catch (DataIntegrityViolationException d) {
+            logger.error(methodName+" throw DataIntegrityViolationException");
+            throw d;
+        } catch (Exception e) {
+            logger.error(methodName+" throw common exception..");
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Transactional
+    public List<SolarStatementBean> downloadSolarStatement(String meterNo, String monthYear) throws ParseException {
+        final String methodName = "downloadSolarStatement() : ";
+        logger.info(methodName + " called with parameters meter={} and month = {}",meterNo,monthYear);
+        try {
+            //check if solar statement is already exist if exist then return beanlist otherwise generate bean and return
+            List<SolarStatementBean> alreadyExistStatementBeanList = solarStatementRepo.findAllByMeterNumberAndMonthYearAndStatus(meterNo,monthYear,"active");
+            if (alreadyExistStatementBeanList.size() != 0) {
+                logger.info(methodName + " return the already existed solar statement from db");
+                return alreadyExistStatementBeanList;
+            }else   {
+                logger.info(methodName + "solar statement not generated for meter ={} , month = {}",meterNo,monthYear);
+                throw new ApiException(HttpStatus.BAD_REQUEST,"Solar Statement is not generated yet for given meter: " + meterNo + " and month: "+monthYear);
+            }
         }catch (ApiException apiException) {
             logger.error(methodName+" throw apiException");
             throw apiException;

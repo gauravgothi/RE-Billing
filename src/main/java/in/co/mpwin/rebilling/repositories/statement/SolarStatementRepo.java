@@ -6,5 +6,5 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.List;
 
 public interface SolarStatementRepo extends CrudRepository<SolarStatementBean,Long> {
-    List<SolarStatementBean> findAllByMeterNumberAndMonthYearAndStatus(String meterNo, String monthYear, String active);
+    List<SolarStatementBean> findAllByMeterNumberAndMonthYearAndStatus(String meterNumber, String monthYear, String status);
 }

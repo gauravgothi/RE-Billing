@@ -39,4 +39,7 @@ public interface PlantMasterRepo extends CrudRepository<PlantMasterBean,Long> {
     PlantMasterBean findByPlantNameIgnoreCaseAndStatus(String plantName, String active);
     @Query(value = "select * from ecell.re_plant_master where plant_code not in (:mappedPlantCodes) AND status=:status ORDER BY id ASC ", nativeQuery = true)
     List<PlantMasterBean> findUnmappedPlants(@Param("mappedPlantCodes") List<String> mappedPlantCodes, @Param("status") String status);
+
+    @Query(value = "SELECT DISTINCT pm.* FROM ecell.re_plant_master pm JOIN ecell.re_location_master lm ON pm.location_id = lm.id WHERE lm.circle_name=:circleName", nativeQuery = true)
+    List<PlantMasterBean> findDistinctPlantsByCircleName(@Param("circleName") String circleName);
 }

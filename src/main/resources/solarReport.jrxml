@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.20.6.final using JasperReports Library version 6.20.6-5c96b6aa8a39ac1dc6b6bea4b81168e16dd39231  -->
+<!-- Created with Jaspersoft Studio version 6.20.6.final using JasperReports Library version 6.0.0  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="solarReport" pageWidth="595" pageHeight="842" columnWidth="545" leftMargin="25" rightMargin="25" topMargin="25" bottomMargin="25" uuid="c93b5fb5-6522-4f8a-8f56-cb87af5ff7dc">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="SolarBean-Array"/>
-<!--	<property name="net.sf.jasperreports.text.truncate.at.char" value="false"/>-->
 	<property name="net.sf.jasperreports.print.keep.full.text" value="true"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<property name="net.sf.jasperreports.default.font.name" value="DejaVu Sans"/>
@@ -207,8 +206,10 @@ GPH Compound, Pologround, Indore]]></text>
 				</box>
 				<imageExpression><![CDATA["classpath:/mppkvvcl_logo.png"]]></imageExpression>
 			</image>
-			<staticText>
-				<reportElement mode="Opaque" x="80" y="45" width="190" height="16" backcolor="#B8B6B6" uuid="e653784f-a619-4991-95b5-09a848ef4901"/>
+			<textField>
+				<reportElement mode="Opaque" x="80" y="45" width="230" height="16" backcolor="#B8B6B6" uuid="e653784f-a619-4991-95b5-09a848ef4901">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<box>
 					<topPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
@@ -216,10 +217,12 @@ GPH Compound, Pologround, Indore]]></text>
 					<rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
-				<text><![CDATA[Meter Reading Statement for Solar Plant]]></text>
-			</staticText>
+				<textFieldExpression><![CDATA["Meter Reading Statement for Solar Plant "+$F{monthYear}]]></textFieldExpression>
+			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="270" y="45" width="90" height="16" backcolor="#B8B6B6" uuid="386f1bd7-0ca8-481c-92cf-6b6a91fb3efc"/>
+				<reportElement mode="Opaque" x="310" y="45" width="60" height="16" backcolor="#B8B6B6" uuid="386f1bd7-0ca8-481c-92cf-6b6a91fb3efc">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<box>
 					<topPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -227,10 +230,10 @@ GPH Compound, Pologround, Indore]]></text>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
-				<text><![CDATA[ Download Date :]]></text>
+				<text><![CDATA[ Download :]]></text>
 			</staticText>
-			<textField pattern="MMMMM dd,yyyy hh:mm a">
-				<reportElement mode="Opaque" x="360" y="45" width="120" height="16" backcolor="#B8B6B6" uuid="436a6934-ba2a-47ff-8192-738fa220a509"/>
+			<textField pattern="dd-MM-yyyy hh:mm a">
+				<reportElement mode="Opaque" x="370" y="45" width="110" height="16" backcolor="#B8B6B6" uuid="436a6934-ba2a-47ff-8192-738fa220a509"/>
 				<box>
 					<topPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -390,7 +393,7 @@ GPH Compound, Pologround, Indore]]></text>
 				<textFieldExpression><![CDATA["CURRENT READING"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="300" y="90" width="70" height="20" uuid="0bc62fcf-8c90-4f1d-afcb-edb7ad318a30">
+				<reportElement x="300" y="90" width="90" height="20" uuid="0bc62fcf-8c90-4f1d-afcb-edb7ad318a30">
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -407,23 +410,7 @@ GPH Compound, Pologround, Indore]]></text>
 				<textFieldExpression><![CDATA["DIFF."]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="370" y="90" width="40" height="20" uuid="8e6007e7-83d1-4a89-8421-b8a6e2fd5b61">
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<box>
-					<pen lineWidth="0.5"/>
-					<topPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="10" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA["M.F."]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="410" y="90" width="55" height="20" uuid="5c1df0ab-3b38-4da1-a158-ac8988cdabad">
+				<reportElement x="390" y="90" width="75" height="20" uuid="8e6007e7-83d1-4a89-8421-b8a6e2fd5b61">
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -437,7 +424,7 @@ GPH Compound, Pologround, Indore]]></text>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="10" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["ADJ."]]></textFieldExpression>
+				<textFieldExpression><![CDATA["M.F."]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="465" y="90" width="90" height="20" uuid="723062d2-921f-4c40-8440-22d9a26c0ec6">
@@ -542,8 +529,9 @@ GPH Compound, Pologround, Indore]]></text>
 				<textFieldExpression><![CDATA[" "]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="300" y="125" width="70" height="15" uuid="1d75970d-07b0-47f1-962d-dcc59225d122">
+				<reportElement x="300" y="125" width="90" height="15" uuid="1d75970d-07b0-47f1-962d-dcc59225d122">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<box>
 					<pen lineWidth="0.5"/>
@@ -558,9 +546,10 @@ GPH Compound, Pologround, Indore]]></text>
 				<textFieldExpression><![CDATA[$F{eDiffActiveEnergy}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="370" y="125" width="40" height="15" uuid="9cfab07a-6e61-4eb0-9109-6fc67bc89a2f">
+				<reportElement x="390" y="125" width="75" height="15" uuid="9cfab07a-6e61-4eb0-9109-6fc67bc89a2f">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<box>
 					<pen lineWidth="0.5"/>
@@ -573,22 +562,6 @@ GPH Compound, Pologround, Indore]]></text>
 					<font size="10" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{meterMf}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="410" y="125" width="55" height="15" uuid="c17a6981-ad62-4e90-8e8f-f87a51962003">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box>
-					<pen lineWidth="0.5"/>
-					<topPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="10" isBold="false"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{eAdjustmentActiveEnergy}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="465" y="125" width="90" height="15" uuid="69cf9200-e8ec-492c-b681-fdfdf01ef785">
@@ -1031,7 +1004,7 @@ GPH Compound, Pologround, Indore]]></text>
 				<textFieldExpression><![CDATA["S.N."]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="20" y="235" width="135" height="20" uuid="56155ded-de21-4934-96f3-228fb176ea9c">
+				<reportElement x="20" y="235" width="145" height="20" uuid="56155ded-de21-4934-96f3-228fb176ea9c">
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -1048,7 +1021,7 @@ GPH Compound, Pologround, Indore]]></text>
 				<textFieldExpression><![CDATA["THIRD PARTY"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="155" y="235" width="65" height="20" uuid="f46682ba-a5e6-4fed-9b53-da58c16c5c6a">
+				<reportElement x="165" y="235" width="75" height="20" uuid="f46682ba-a5e6-4fed-9b53-da58c16c5c6a">
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -1065,8 +1038,9 @@ GPH Compound, Pologround, Indore]]></text>
 				<textFieldExpression><![CDATA["TOD1"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="220" y="235" width="65" height="20" uuid="bcf15039-366c-467c-93b3-e06dfc5ad414">
+				<reportElement x="240" y="235" width="75" height="20" uuid="bcf15039-366c-467c-93b3-e06dfc5ad414">
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<box>
 					<pen lineWidth="0.5"/>
@@ -1081,7 +1055,8 @@ GPH Compound, Pologround, Indore]]></text>
 				<textFieldExpression><![CDATA["TOD2"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="285" y="235" width="65" height="20" uuid="11e3d7b7-756f-44ad-86e7-d47f7f2cfa2f">
+				<reportElement x="315" y="235" width="75" height="20" uuid="11e3d7b7-756f-44ad-86e7-d47f7f2cfa2f">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 				</reportElement>
 				<box>
@@ -1097,7 +1072,8 @@ GPH Compound, Pologround, Indore]]></text>
 				<textFieldExpression><![CDATA["TOD3"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="350" y="235" width="65" height="20" uuid="af34722c-0949-4b53-bafc-58bc82c00718">
+				<reportElement x="390" y="235" width="75" height="20" uuid="af34722c-0949-4b53-bafc-58bc82c00718">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 				</reportElement>
 				<box>
@@ -1113,23 +1089,7 @@ GPH Compound, Pologround, Indore]]></text>
 				<textFieldExpression><![CDATA["TOD4"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="415" y="235" width="60" height="20" uuid="ab911fae-7628-4400-836e-e70299e622f8">
-					<property name="com.jaspersoft.studio.unit.x" value="px"/>
-				</reportElement>
-				<box>
-					<pen lineWidth="0.5"/>
-					<topPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="10" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA["ADJ."]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="475" y="235" width="80" height="20" uuid="848dad64-db30-43f2-9b8b-0bf5d761a551">
+				<reportElement x="465" y="235" width="90" height="20" uuid="848dad64-db30-43f2-9b8b-0bf5d761a551">
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -1149,7 +1109,7 @@ GPH Compound, Pologround, Indore]]></text>
 		<band height="20" splitType="Stretch">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<subreport overflowType="Stretch">
-				<reportElement stretchType="RelativeToBandHeight" positionType="Float" isPrintWhenDetailOverflows="true" x="0" y="0" width="545" height="20" uuid="abbf3fb7-84bb-4f47-84d7-04679e84699e">
+				<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="0" y="0" width="545" height="20" isPrintWhenDetailOverflows="true" uuid="abbf3fb7-84bb-4f47-84d7-04679e84699e">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{thirdPartyTodSet})]]></dataSourceExpression>
@@ -1159,7 +1119,7 @@ GPH Compound, Pologround, Indore]]></text>
 		<band height="370" splitType="Stretch">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<textField>
-				<reportElement x="0" y="0" width="155" height="20" uuid="5d12455f-e6f4-47a4-aa07-8d156922089a">
+				<reportElement x="0" y="0" width="165" height="20" uuid="5d12455f-e6f4-47a4-aa07-8d156922089a">
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -1176,7 +1136,7 @@ GPH Compound, Pologround, Indore]]></text>
 				<textFieldExpression><![CDATA["    TOTAL"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="155" y="0" width="65" height="20" uuid="025fbe27-22ef-4979-b116-731ac5a4faff">
+				<reportElement x="165" y="0" width="75" height="20" uuid="025fbe27-22ef-4979-b116-731ac5a4faff">
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -1193,8 +1153,9 @@ GPH Compound, Pologround, Indore]]></text>
 				<textFieldExpression><![CDATA[$F{totalTod1}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="220" y="0" width="65" height="20" uuid="53f695c3-5822-4f13-9511-22f405e4339d">
+				<reportElement x="240" y="0" width="75" height="20" uuid="53f695c3-5822-4f13-9511-22f405e4339d">
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<box>
 					<pen lineWidth="0.5"/>
@@ -1209,8 +1170,9 @@ GPH Compound, Pologround, Indore]]></text>
 				<textFieldExpression><![CDATA[$F{totalTod2}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="285" y="0" width="65" height="20" uuid="faab98b5-425c-49eb-81ae-75c12cc8d9f1">
+				<reportElement x="315" y="0" width="75" height="20" uuid="faab98b5-425c-49eb-81ae-75c12cc8d9f1">
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<box>
 					<pen lineWidth="0.5"/>
@@ -1225,8 +1187,9 @@ GPH Compound, Pologround, Indore]]></text>
 				<textFieldExpression><![CDATA[$F{totalTod3}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="350" y="0" width="65" height="20" uuid="18344969-c929-4485-9f74-672dd1f6c525">
+				<reportElement x="390" y="0" width="75" height="20" uuid="18344969-c929-4485-9f74-672dd1f6c525">
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<box>
 					<pen lineWidth="0.5"/>
@@ -1241,23 +1204,7 @@ GPH Compound, Pologround, Indore]]></text>
 				<textFieldExpression><![CDATA[$F{totalTod4}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="415" y="0" width="60" height="20" uuid="be2fd7a8-fcdc-43c0-95ca-4d08ddac9c9d">
-					<property name="com.jaspersoft.studio.unit.x" value="px"/>
-				</reportElement>
-				<box>
-					<pen lineWidth="0.5"/>
-					<topPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="10" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{totalAdjustment}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="475" y="0" width="80" height="20" uuid="d72ee46a-322e-40b3-9ca2-bf02023d5772">
+				<reportElement x="465" y="0" width="90" height="20" uuid="d72ee46a-322e-40b3-9ca2-bf02023d5772">
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
